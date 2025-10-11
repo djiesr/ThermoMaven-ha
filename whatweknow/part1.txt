@@ -1,0 +1,529 @@
+Processing triggers for libc-bin (2.41-12+rpt1) ...
+[
+  {
+    "dictKey": "mqtt_conn_param",
+    "dictValue": {
+      "endpoint": "a2ubmaqm3a642j-ats.iot.eu-central-1.amazonaws.com",
+      "region": "eu-central-1",
+      "port": 8883,
+      "heartbeatSec": 30,
+      "retryIntervalSec": 5
+    },
+    "dictLang": "en_US",
+    "modifyTime": 1696821170113
+  },
+  {
+    "dictKey": "user_agreement",
+    "dictValue": {
+      "url": "https://h5.iot.thermomaven.de/#/user-agreement",
+      "version": "1.0"
+    },
+    "dictLang": "en_US",
+    "modifyTime": 1706754208760
+  },
+  {
+    "dictKey": "pravicy_policy",
+    "dictValue": {
+      "url": "https://h5.iot.thermomaven.de/#/privacy-statement",
+      "version": "1.1"
+    },
+    "dictLang": "en_US",
+    "modifyTime": 1758785201662
+  },
+  {
+    "dictKey": "device_list_h5",
+    "dictValue": {
+      "url": "/device-list/index.html"
+    },
+    "dictLang": "en_US",
+    "modifyTime": 1678102483460
+  },
+  {
+    "dictKey": "device_h5_package_version_control",
+    "dictValue": [
+      {
+        "minimumVersionCode": "1000",
+        "url": "https://file.iot.thermomaven.de/config/h5ctrl/tm-web-device_1.0.0_20240322.60_prod.zip"
+      },
+      {
+        "minimumVersionCode": "1100",
+        "url": "https://file.iot.thermomaven.de/config/h5ctrl/tm-web-device_1.1.0_20240410.75_prod.zip"
+      },
+      {
+        "minimumVersionCode": "1102",
+        "url": "https://file.iot.thermomaven.de/config/h5ctrl/tm-web-device_1.1.2_20240418.78_prod.zip"
+      },
+      {
+        "minimumVersionCode": "1200",
+        "url": "https://file.iot.thermomaven.de/config/h5ctrl/tm-web-device_1.2.0_20240517.93_prod.zip"
+      },
+      {
+        "minimumVersionCode": "1300",
+        "url": "https://file.iot.thermomaven.de/config/h5ctrl/tm-web-device_1.3.0_20240702.101_prod.zip"
+      },
+      {
+        "minimumVersionCode": "1400",
+        "url": "https://file.iot.thermomaven.de/config/h5ctrl/tm-web-device_1.4.0_20240709.104_prod.zip"
+      },
+      {
+        "minimumVersionCode": "1500",
+        "url": "https://file.iot.thermomaven.de/config/h5ctrl/tm-web-device_1.5.2_20240826.113_prod.zip"
+      },
+      {
+        "minimumVersionCode": "1506",
+        "url": "https://file.iot.thermomaven.de/config/h5ctrl/tm-web-device_1.5.6_20241114.126_prod.zip"
+      },
+      {
+        "minimumVersionCode": "1600",
+        "url": "https://file.iot.thermomaven.de/config/h5ctrl/tm-web-device_1.6.0_20241121.130_prod.zip"
+      },
+      {
+        "minimumVersionCode": "1602",
+        "url": "https://file.iot.thermomaven.de/config/h5ctrl/tm-web-device_1.6.2_20241211.146_prod.zip"
+      },
+      {
+        "minimumVersionCode": "1604",
+        "url": "https://file.iot.thermomaven.de/config/h5ctrl/tm-web-device_1.6.4_20241224.153_prod.zip"
+      },
+      {
+        "minimumVersionCode": "1606",
+        "url": "https://file.iot.thermomaven.de/config/h5ctrl/tm-web-device_1.6.6_20250226.170_prod.zip"
+      },
+      {
+        "minimumVersionCode": "1608",
+        "url": "https://file.iot.thermomaven.de/config/h5ctrl/tm-web-device_1.6.8_20250415.182_prod.zip"
+      },
+      {
+        "minimumVersionCode": "1700",
+        "url": "https://file.iot.thermomaven.de/config/h5ctrl/tm-web-device_1.7.0_20250515.185_prod.zip"
+      },
+      {
+        "minimumVersionCode": "1701",
+        "url": "https://file.iot.thermomaven.de/config/h5ctrl/tm-web-device_1.7.1_20250523.191_prod.zip"
+      },
+      {
+        "minimumVersionCode": "1704",
+        "url": "https://file.iot.thermomaven.de/config/h5ctrl/tm-web-device_1.7.4_20250612.203_prod.zip"
+      },
+      {
+        "minimumVersionCode": "1706",
+        "url": "https://file.iot.thermomaven.de/config/h5ctrl/tm-web-device_1.7.6_20250707.207_prod.zip"
+      },
+      {
+        "minimumVersionCode": "1800",
+        "url": "https://file.iot.thermomaven.de/config/h5ctrl/tm-web-device_1.8.0_20250801.218_prod.zip"
+      },
+      {
+        "minimumVersionCode": "1802",
+        "url": "https://file.iot.thermomaven.de/config/h5ctrl/tm-web-device_1.8.2_20250820.220_prod.zip"
+      },
+      {
+        "minimumVersionCode": "1804",
+        "url": "https://file.iot.thermomaven.com/config/h5ctrl/tm-web-device_1.8.4_20250925.223_prod.zip"
+      }
+    ],
+    "dictLang": "en_US",
+    "modifyTime": 1758785477719
+  },
+  {
+    "dictKey": "bind_device",
+    "dictValue": {
+      "bluetooth": {
+        "connect": "https://h5.iot.thermomaven.de/?type=connect#/notfind/help",
+        "device": "https://h5.iot.thermomaven.de/?type=device#/notfind/help",
+        "wifi": "https://h5.iot.thermomaven.de/?type=wifi#/notfind/help",
+        "pairingOvertime": "https://h5.iot.thermomaven.de/#/pairing_overtime",
+        "regionMismatch": "https://h5.iot.thermomaven.de/?type=regionMismatch#/notfind/help"
+      }
+    },
+    "dictLang": "en_US",
+    "modifyTime": 1713334526695
+  },
+  {
+    "dictKey": "view_chart",
+    "dictValue": {
+      "WT02": {
+        "url": "/insta_probe/cooking_history.html"
+      },
+      "WT06": {
+        "url": "/insta_probe/cooking_history.html"
+      }
+    },
+    "dictLang": "en_US",
+    "modifyTime": 1712629738179
+  },
+  {
+    "dictKey": "region",
+    "dictValue": [
+      {
+        "region": "US",
+        "regionName": "United States",
+        "baseURL": "https://api.iot.thermomaven.com",
+        "isUSSystem": true,
+        "warrantyDeviceList": "https://www.thermomaven.com/product-registration?utm_source=devicelist&utm_medium=APP",
+        "warrantyPaired": "https://www.thermomaven.com/product-registration?utm_source=bind&utm_medium=APP",
+        "dataCenterCode": "US"
+      },
+      {
+        "region": "NZ",
+        "regionName": "New Zealand",
+        "baseURL": "https://api.iot.thermomaven.com",
+        "isUSSystem": false,
+        "warrantyDeviceList": "https://www.thermomaven.com/product-registration?utm_source=devicelist&utm_medium=APP",
+        "warrantyPaired": "https://www.thermomaven.com/product-registration?utm_source=bind&utm_medium=APP",
+        "dataCenterCode": "US",
+        "minimumVersionCode": "1706"
+      },
+      {
+        "region": "CA",
+        "regionName": "Canada",
+        "baseURL": "https://api.iot.thermomaven.com",
+        "isUSSystem": false,
+        "warrantyDeviceList": "https://www.thermomaven.com/product-registration?utm_source=devicelist&utm_medium=APP",
+        "warrantyPaired": "https://www.thermomaven.com/product-registration?utm_source=bind&utm_medium=APP",
+        "dataCenterCode": "US",
+        "minimumVersionCode": "1706"
+      },
+      {
+        "region": "AU",
+        "regionName": "Australia",
+        "baseURL": "https://api.iot.thermomaven.com",
+        "isUSSystem": false,
+        "warrantyDeviceList": "https://www.thermomaven.com/product-registration?utm_source=devicelist&utm_medium=APP",
+        "warrantyPaired": "https://www.thermomaven.com/product-registration?utm_source=bind&utm_medium=APP",
+        "dataCenterCode": "US",
+        "minimumVersionCode": "1706"
+      },
+      {
+        "region": "UK",
+        "regionName": "United Kingdom",
+        "baseURL": "https://api.iot.thermomaven.de",
+        "isUSSystem": false,
+        "dataCenterCode": "DE"
+      },
+      {
+        "region": "DE",
+        "regionName": "Germany",
+        "baseURL": "https://api.iot.thermomaven.de",
+        "isUSSystem": false,
+        "dataCenterCode": "DE"
+      },
+      {
+        "region": "FR",
+        "regionName": "France",
+        "baseURL": "https://api.iot.thermomaven.de",
+        "isUSSystem": false,
+        "dataCenterCode": "DE"
+      },
+      {
+        "region": "DK",
+        "regionName": "Denmark",
+        "baseURL": "https://api.iot.thermomaven.de",
+        "isUSSystem": false,
+        "dataCenterCode": "DE",
+        "minimumVersionCode": "1706"
+      },
+      {
+        "region": "FI",
+        "regionName": "Finland",
+        "baseURL": "https://api.iot.thermomaven.de",
+        "isUSSystem": false,
+        "dataCenterCode": "DE",
+        "minimumVersionCode": "1706"
+      },
+      {
+        "region": "IS",
+        "regionName": "Iceland",
+        "baseURL": "https://api.iot.thermomaven.de",
+        "isUSSystem": false,
+        "dataCenterCode": "DE",
+        "minimumVersionCode": "1706"
+      },
+      {
+        "region": "NO",
+        "regionName": "Norway",
+        "baseURL": "https://api.iot.thermomaven.de",
+        "isUSSystem": false,
+        "dataCenterCode": "DE",
+        "minimumVersionCode": "1706"
+      },
+      {
+        "region": "CH",
+        "regionName": "Switzerland",
+        "baseURL": "https://api.iot.thermomaven.de",
+        "isUSSystem": false,
+        "dataCenterCode": "DE",
+        "minimumVersionCode": "1706"
+      },
+      {
+        "region": "SE",
+        "regionName": "Sweden",
+        "baseURL": "https://api.iot.thermomaven.de",
+        "isUSSystem": false,
+        "dataCenterCode": "DE",
+        "minimumVersionCode": "1706"
+      },
+      {
+        "region": "ZA",
+        "regionName": "South Africa",
+        "baseURL": "https://api.iot.thermomaven.de",
+        "isUSSystem": false,
+        "dataCenterCode": "DE",
+        "minimumVersionCode": "1706"
+      },
+      {
+        "region": "AT",
+        "regionName": "Austria",
+        "baseURL": "https://api.iot.thermomaven.de",
+        "isUSSystem": false,
+        "dataCenterCode": "DE",
+        "minimumVersionCode": "1706"
+      },
+      {
+        "region": "BE",
+        "regionName": "Belgium",
+        "baseURL": "https://api.iot.thermomaven.de",
+        "isUSSystem": false,
+        "dataCenterCode": "DE",
+        "minimumVersionCode": "1706"
+      },
+      {
+        "region": "BG",
+        "regionName": "Bulgaria",
+        "baseURL": "https://api.iot.thermomaven.de",
+        "isUSSystem": false,
+        "dataCenterCode": "DE",
+        "minimumVersionCode": "1706"
+      },
+      {
+        "region": "CZ",
+        "regionName": "Czechia",
+        "baseURL": "https://api.iot.thermomaven.de",
+        "isUSSystem": false,
+        "dataCenterCode": "DE",
+        "minimumVersionCode": "1706"
+      },
+      {
+        "region": "HU",
+        "regionName": "Hungary",
+        "baseURL": "https://api.iot.thermomaven.de",
+        "isUSSystem": false,
+        "dataCenterCode": "DE",
+        "minimumVersionCode": "1706"
+      },
+      {
+        "region": "IE",
+        "regionName": "Ireland",
+        "baseURL": "https://api.iot.thermomaven.de",
+        "isUSSystem": false,
+        "dataCenterCode": "DE",
+        "minimumVersionCode": "1706"
+      },
+      {
+        "region": "IT",
+        "regionName": "Italy",
+        "baseURL": "https://api.iot.thermomaven.de",
+        "isUSSystem": false,
+        "dataCenterCode": "DE",
+        "minimumVersionCode": "1706"
+      },
+      {
+        "region": "LU",
+        "regionName": "Luxembourg",
+        "baseURL": "https://api.iot.thermomaven.de",
+        "isUSSystem": false,
+        "dataCenterCode": "DE",
+        "minimumVersionCode": "1706"
+      },
+      {
+        "region": "NL",
+        "regionName": "Netherlands",
+        "baseURL": "https://api.iot.thermomaven.de",
+        "isUSSystem": false,
+        "dataCenterCode": "DE",
+        "minimumVersionCode": "1706"
+      },
+      {
+        "region": "PL",
+        "regionName": "Poland",
+        "baseURL": "https://api.iot.thermomaven.de",
+        "isUSSystem": false,
+        "dataCenterCode": "DE",
+        "minimumVersionCode": "1706"
+      },
+      {
+        "region": "PT",
+        "regionName": "Portugal",
+        "baseURL": "https://api.iot.thermomaven.de",
+        "isUSSystem": false,
+        "dataCenterCode": "DE",
+        "minimumVersionCode": "1706"
+      },
+      {
+        "region": "RO",
+        "regionName": "Romania",
+        "baseURL": "https://api.iot.thermomaven.de",
+        "isUSSystem": false,
+        "dataCenterCode": "DE",
+        "minimumVersionCode": "1706"
+      },
+      {
+        "region": "RS",
+        "regionName": "Serbia",
+        "baseURL": "https://api.iot.thermomaven.de",
+        "isUSSystem": false,
+        "dataCenterCode": "DE",
+        "minimumVersionCode": "1706"
+      },
+      {
+        "region": "SK",
+        "regionName": "Slovakia",
+        "baseURL": "https://api.iot.thermomaven.de",
+        "isUSSystem": false,
+        "dataCenterCode": "DE",
+        "minimumVersionCode": "1706"
+      },
+      {
+        "region": "ES",
+        "regionName": "Spain",
+        "baseURL": "https://api.iot.thermomaven.de",
+        "isUSSystem": false,
+        "dataCenterCode": "DE",
+        "minimumVersionCode": "1706"
+      },
+      {
+        "region": "TR",
+        "regionName": "Türkiye",
+        "baseURL": "https://api.iot.thermomaven.de",
+        "isUSSystem": false,
+        "dataCenterCode": "DE",
+        "minimumVersionCode": "1706"
+      }
+    ],
+    "dictLang": "en_US",
+    "modifyTime": 1750399989671
+  },
+  {
+    "dictKey": "help",
+    "dictValue": {
+      "region": {
+        "url": "https://h5.iot.thermomaven.de/?type=findRegion#/notfind/help"
+      },
+      "insertProbe": {
+        "url": "/insta_probe/bind_insert_probe_tip.html"
+      }
+    },
+    "dictLang": "en_US",
+    "modifyTime": 1734950335101
+  },
+  {
+    "dictKey": "device_setting_user_manual",
+    "dictValue": {
+      "WT02": "https://cdn.shopify.com/s/files/1/0828/4726/9152/files/WT02_User_Manual.pdf?v=1733455611",
+      "WT06": "https://cdn.shopify.com/s/files/1/0828/4726/9152/files/WT06_-241213.pdf?v=1734417264",
+      "WT07": "https://cdn.shopify.com/s/files/1/0828/4726/9152/files/WT07_User_Manual.pdf?v=1733455132",
+      "WT10": "https://cdn.shopify.com/s/files/1/0828/4726/9152/files/ThermoMaven_G1_User_Manual.pdf?v=1730185560"
+    },
+    "dictLang": "en_US",
+    "modifyTime": 1734943646293
+  },
+  {
+    "dictKey": "device_setting_how_to_video",
+    "dictValue": {
+      "WT02": "https://cdn.shopify.com/videos/c/o/v/1add65adf348403ca619fc067a680ed6.mp4",
+      "WT06": "https://youtu.be/G7vg7I2fC-w",
+      "WT07": "https://youtu.be/J7jLyvz9z-E",
+      "WT09": "https://youtu.be/izhdwIU0Ctk",
+      "WT10": "https://youtu.be/4P5IOKiWxP0"
+    },
+    "dictLang": "en_US",
+    "modifyTime": 1734943675013
+  },
+  {
+    "dictKey": "device_detail_h5",
+    "dictValue": {
+      "WT02": "/insta_probe/probe_detail.html"
+    },
+    "dictLang": "en_US",
+    "modifyTime": 1733729773442
+  },
+  {
+    "dictKey": "how_insert_probe_video",
+    "dictValue": {
+      "WT02": "https://file.iot.thermomaven.de/config/h5ctrl/Wtt-How-To-Insert-EN.mp4",
+      "WT06": "https://file.iot.thermomaven.de/config/h5ctrl/Wtt-How-To-Insert-EN.mp4",
+      "WT07": "https://file.iot.thermomaven.de/config/h5ctrl/x177-How-To-Insert-EN.mp4",
+      "WT09": "https://file.iot.thermomaven.de/config/h5ctrl/x177-How-To-Insert-EN.mp4",
+      "WT10": "https://file.iot.thermomaven.de/config/h5ctrl/x177-How-To-Insert-EN.mp4",
+      "WT11": "https://file.iot.thermomaven.de/config/h5ctrl/x150-How-To-Insert-EN.mp4",
+      "WTT": "https://file.iot.thermomaven.de/config/h5ctrl/Wtt-How-To-Insert-EN.mp4",
+      "WTG": "https://file.iot.thermomaven.de/config/h5ctrl/x177-How-To-Insert-EN.mp4",
+      "WPT_WPG": "https://file.iot.thermomaven.de/config/h5ctrl/x150-How-To-Insert-EN.mp4"
+    },
+    "dictLang": "en_US",
+    "modifyTime": 1749714433041
+  },
+  {
+    "dictKey": "start_up_page",
+    "dictValue": {
+      "enable": false
+    },
+    "dictLang": "en_US",
+    "modifyTime": 1747996612329
+  },
+  {
+    "dictKey": "device_setting_config",
+    "dictValue": {
+      "WT02": {
+        "user_manual": {
+          "A": "https://cdn.shopify.com/s/files/1/0828/4726/9152/files/1206_-WT02.pdf?v=1734056381"
+        },
+        "how_to_video": {
+          "A": "https://youtu.be/2lTTn6vWSQM"
+        }
+      },
+      "WT06": {
+        "user_manual": {
+          "A": "https://cdn.shopify.com/s/files/1/0828/4726/9152/files/WT06_-241213.pdf?v=1734417264"
+        },
+        "how_to_video": {
+          "A": "https://youtu.be/G7vg7I2fC-w"
+        }
+      },
+      "WT07": {
+        "user_manual": {
+          "A": "https://cdn.shopify.com/s/files/1/0828/4726/9152/files/WT07_User_Manual.pdf?v=1733455132"
+        },
+        "how_to_video": {
+          "A": "https://youtu.be/J7jLyvz9z-E"
+        }
+      },
+      "WT09": {
+        "user_manual": {
+          "A": "https://cdn.shopify.com/s/files/1/0828/4726/9152/files/1224-WT09.pdf?v=1735896448"
+        },
+        "how_to_video": {
+          "A": "https://youtu.be/izhdwIU0Ctk"
+        }
+      },
+      "WT10": {
+        "user_manual": {
+          "A": "https://cdn.shopify.com/s/files/1/0828/4726/9152/files/WT10_0106.pdf?v=1736234108"
+        },
+        "how_to_video": {
+          "A": "https://youtu.be/4P5IOKiWxP0"
+        }
+      }
+    },
+    "dictLang": "en_US",
+    "modifyTime": 1749714366433
+  },
+  {
+    "dictKey": "feedback",
+    "dictValue": {
+      "url": "https://www.thermomaven.com/contact-us"
+    },
+    "dictLang": "en_US",
+    "modifyTime": 1755761969261
+  }
+]
