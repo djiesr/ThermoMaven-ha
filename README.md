@@ -2,7 +2,13 @@
 
 An unofficial Python client for interacting with the ThermoMaven IoT API.
 
-⚠️ **Work in Progress** - This client is not yet fully functional. See [Missing Components](#missing-components) below.
+## ⚠️ CRITICAL: App Key Required
+
+**This client is not yet functional.** The ThermoMaven API requires an `app_key` for authentication that has not been found. All API calls currently fail with "Sign error".
+
+**See [FINDING_APPKEY.md](FINDING_APPKEY.md) for details on how to help find it.**
+
+---
 
 ## Description
 
