@@ -1,122 +1,178 @@
 # ThermoMaven API Client
 
-Un client Python non officiel pour interagir avec l'API ThermoMaven IoT.
+An unofficial Python client for interacting with the ThermoMaven IoT API.
+
+⚠️ **Work in Progress** - This client is not yet fully functional. See [Missing Components](#missing-components) below.
 
 ## Description
 
-Ce projet fournit un client Python pour communiquer avec l'API ThermoMaven, permettant de contrôler et surveiller les appareils de cuisine connectés ThermoMaven.
+This project provides a Python client to communicate with the ThermoMaven API, allowing control and monitoring of ThermoMaven connected kitchen devices.
 
-## Caractéristiques
+## Features
 
-- Authentification sécurisée avec l'API ThermoMaven
-- Génération automatique des signatures requises
-- Support de plusieurs régions (US, EU, etc.)
-- Client HTTP configurable
+- Secure authentication with ThermoMaven API
+- Automatic signature generation
+- Multi-region support (US, EU, etc.)
+- Configurable HTTP client
 
 ## Installation
 
-1. Clonez ce dépôt :
+1. Clone this repository:
 ```bash
-git clone https://github.com/votre-username/ThermoMaven.git
-cd ThermoMaven
+git clone https://github.com/djiesr/ThermoMaven-ha.git
+cd ThermoMaven-ha
 ```
 
-2. Installez les dépendances :
+2. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
 ## Configuration
 
-Créez un fichier `.env` à la racine du projet avec vos identifiants :
+Create a `.env` file at the project root with your credentials:
 
 ```env
-THERMOMAVEN_EMAIL=votre-email@example.com
-THERMOMAVEN_PASSWORD=votre-mot-de-passe
-THERMOMAVEN_APP_KEY=votre-app-key
+THERMOMAVEN_EMAIL=your-email@example.com
+THERMOMAVEN_PASSWORD=your-password
+THERMOMAVEN_APP_KEY=your-app-key
 ```
 
-## Utilisation
+## Usage
 
 ```python
 from thermomaven_client import ThermoMavenClient
 import os
 
-# Initialiser le client
+# Initialize the client
 client = ThermoMavenClient(
     email=os.getenv('THERMOMAVEN_EMAIL'),
     password=os.getenv('THERMOMAVEN_PASSWORD')
 )
 
-# Configurer l'app key (à trouver)
+# Set the app key
 client.app_key = os.getenv('THERMOMAVEN_APP_KEY', '')
 
-# Se connecter
+# Login
 result = client.login()
 
 if result:
-    print("Connexion réussie!")
-    # Votre code ici...
+    print("Login successful!")
+    # Your code here...
 else:
-    print("Échec de la connexion")
+    print("Login failed")
 ```
 
-## Documentation API
+## Missing Components
 
-Le dossier `whatweknow/` contient des informations extraites sur l'API ThermoMaven :
+### ⚠️ Critical: App Key Required
 
-- `part1.txt` : Configuration de l'API (endpoints MQTT, régions, versions)
-- `part2.txt` : Liste des endpoints disponibles
-
-### Endpoints principaux
-
-- `/app/account/login` - Authentification
-- `/app/device/*` - Gestion des appareils
-- `/app/user/*` - Gestion utilisateur
-- `/app/history/*` - Historique des données
-- `/app/recipe/*` - Recettes
-- `/app/mqtt/cert/apply` - Certificats MQTT
-
-### Régions supportées
-
-Le service utilise deux centres de données :
-- **US** : `https://api.iot.thermomaven.com` (États-Unis, Canada, Australie, etc.)
-- **DE** : `https://api.iot.thermomaven.de` (Europe, UK, etc.)
-
-## Structure du projet
+The authentication requires an `app_key` that has not yet been found. The API signature is calculated as:
 
 ```
-ThermoMaven/
-├── thermomaven_client.py    # Client API principal
-├── whatweknow/              # Documentation de l'API
-│   ├── part1.txt           # Configuration et régions
-│   └── part2.txt           # Endpoints disponibles
-├── requirements.txt         # Dépendances Python
-├── .gitignore              # Fichiers à ignorer
-└── README.md               # Ce fichier
+MD5(app_key|params_str|body_str)
 ```
 
-## Sécurité
+Without the correct `app_key`, the API returns:
+- Status 200
+- Code: `40000`
+- Message: "Sign error"
 
-⚠️ **Important** : Ne commitez jamais vos identifiants dans le code. Utilisez toujours des variables d'environnement ou un fichier `.env` (qui doit être dans `.gitignore`).
+**How to find it:**
+- Decompile the ThermoMaven Android/iOS app
+- Look in configuration files or hardcoded strings
+- Possible locations: `strings.xml`, ProGuard obfuscated code, native libraries
 
-## Avertissement
+### What Works
+- ✅ API endpoint structure
+- ✅ Request signature algorithm
+- ✅ Header construction
+- ✅ Region configuration
 
-Ce projet est non officiel et n'est pas affilié à ThermoMaven. Utilisez-le à vos propres risques. L'utilisation de ce client peut violer les conditions d'utilisation de ThermoMaven.
+### What's Missing
+- ❌ Valid `app_key` value
+- ❌ Device management endpoints implementation
+- ❌ MQTT integration
+- ❌ Historical data retrieval
+- ❌ Recipe management
 
-## Licence
+## API Documentation
 
-Ce projet est fourni "tel quel" à des fins éducatives uniquement.
+The `whatweknow/` folder contains extracted API information:
 
-## Contribution
+- `part1.txt`: API configuration (MQTT endpoints, regions, versions)
+- `part2.txt`: Available endpoints list
 
-Les contributions sont les bienvenues ! N'hésitez pas à ouvrir une issue ou une pull request.
+### Main Endpoints
 
-## À faire
+- `/app/account/login` - Authentication
+- `/app/device/*` - Device management
+- `/app/user/*` - User management
+- `/app/history/*` - Historical data
+- `/app/recipe/*` - Recipes
+- `/app/mqtt/cert/apply` - MQTT certificates
 
-- [ ] Trouver l'`app_key` valide
-- [ ] Implémenter les autres endpoints (appareils, historique, etc.)
-- [ ] Ajouter le support MQTT
-- [ ] Créer des tests unitaires
-- [ ] Ajouter la documentation des modèles de données
+### Supported Regions
 
+The service uses two data centers:
+- **US**: `https://api.iot.thermomaven.com` (USA, Canada, Australia, etc.)
+- **DE**: `https://api.iot.thermomaven.de` (Europe, UK, etc.)
+
+## Project Structure
+
+```
+ThermoMaven-ha/
+├── thermomaven_client.py    # Main API client
+├── whatweknow/              # API documentation
+│   ├── part1.txt           # Configuration and regions
+│   └── part2.txt           # Available endpoints
+├── requirements.txt         # Python dependencies
+├── env.example             # Configuration template
+├── .gitignore              # Files to ignore
+└── README.md               # This file
+```
+
+## Security
+
+⚠️ **Important**: Never commit your credentials to the code. Always use environment variables or a `.env` file (which must be in `.gitignore`).
+
+## Known Information
+
+From decompiled APK:
+- Project ID: `thermomavencom`
+- App Version: `1804`
+- Google API Key: `AIzaSyDt1OT_Vmmy8Am61ViPRdiGNMeOjw8lsmE`
+- Facebook App ID: `625697601818899`
+
+## Disclaimer
+
+This project is unofficial and not affiliated with ThermoMaven. Use at your own risk. Using this client may violate ThermoMaven's Terms of Service.
+
+## License
+
+This project is provided "as is" for educational purposes only.
+
+## Contributing
+
+Contributions are welcome! Especially if you can find the `app_key` value. Feel free to open an issue or pull request.
+
+## TODO
+
+- [ ] Find the valid `app_key`
+- [ ] Implement other endpoints (devices, history, etc.)
+- [ ] Add MQTT support
+- [ ] Create unit tests
+- [ ] Add data models documentation
+- [ ] Implement device control methods
+- [ ] Add recipe browsing/management
+- [ ] Create Home Assistant integration
+
+## Help Wanted
+
+**If you can help find the `app_key`**, please:
+1. Check the decompiled APK in native libraries (`.so` files)
+2. Look for network traffic captures
+3. Search for obfuscated strings in the Java/Kotlin code
+4. Check for any initialization code in the main Application class
+
+The `app_key` is likely a string of 32-64 characters (possibly hex or base64).
