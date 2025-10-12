@@ -1,6 +1,36 @@
 # Changelog
 
-## 2025-10-12 - MQTT Support & API Improvements
+## [1.0.1] - 2025-10-12 - Logging Improvements
+
+### 🔧 Improvements
+- **Enhanced logging**: Added detailed debug and info logs for device retrieval
+  - Log device count from API responses
+  - Log MQTT data processing with cmdType information
+  - Log final device count after merging API and MQTT data
+  - Log device details in MQTT messages for better debugging
+  - Warning when MQTT device list is empty
+
+### 🐛 Bug Fixes
+- Better error tracking for empty device lists
+- More informative logs when MQTT data is processed
+
+### 📝 Technical Details
+- `custom_components/thermomaven/__init__.py`:
+  - Added debug logging for API device count
+  - Added debug logging for MQTT cmdType
+  - Added info logging for MQTT device count
+  - Added warning for empty MQTT device lists
+  - Added final device count logging
+
+- `custom_components/thermomaven/thermomaven_api.py`:
+  - Enhanced MQTT device list logging with device count
+  - Added debug logging with full device data in JSON format
+
+These improvements make it much easier to diagnose issues with device detection and MQTT integration.
+
+---
+
+## [1.0.0] - 2025-10-12 - Initial Release - MQTT Support & API Improvements
 
 ### ✨ Nouveautés
 

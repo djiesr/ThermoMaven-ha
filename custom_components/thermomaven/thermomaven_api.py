@@ -277,7 +277,11 @@ class ThermoMavenAPI:
             
             # Trigger coordinator update on device list changes
             if cmd_type == "user:device:list":
-                _LOGGER.info("Device list updated via MQTT")
+                # Log the device data for debugging
+                cmd_data = data.get("cmdData", {})
+                devices = cmd_data.get("devices", [])
+                _LOGGER.info("Device list updated via MQTT: %d devices found", len(devices))
+                _LOGGER.debug("MQTT device data: %s", json.dumps(devices, indent=2))
                 if self.coordinator:
                     self.hass.add_job(self.coordinator.async_request_refresh())
             

@@ -87,14 +87,21 @@ class ThermoMavenDataUpdateCoordinator(DataUpdateCoordinator):
             devices = await self.api.async_get_devices()
             user_info = await self.api.async_get_user_info()
             
+            _LOGGER.debug("API returned %d devices", len(devices) if devices else 0)
+            
             # Si on a des données MQTT plus récentes, les utiliser
             if self.api._latest_mqtt_data:
                 mqtt_data = self.api._latest_mqtt_data
+                _LOGGER.debug("Processing MQTT data with cmdType: %s", mqtt_data.get("cmdType"))
+                
                 if mqtt_data.get("cmdType") == "user:device:list":
                     mqtt_devices = mqtt_data.get("cmdData", {}).get("devices", [])
+                    _LOGGER.info("MQTT device list: %d devices", len(mqtt_devices))
                     if mqtt_devices:
                         _LOGGER.info("Using MQTT device data: %d devices", len(mqtt_devices))
                         devices = mqtt_devices
+                    else:
+                        _LOGGER.warning("MQTT device list is empty")
                 elif "status:report" in mqtt_data.get("cmdType", ""):
                     # Mettre à jour les données de température des appareils existants
                     device_id = mqtt_data.get("deviceId")
@@ -104,6 +111,8 @@ class ThermoMavenDataUpdateCoordinator(DataUpdateCoordinator):
                                 # Mettre à jour les données de température
                                 device["lastStatusCmd"] = mqtt_data
                                 break
+            
+            _LOGGER.info("Final device count: %d", len(devices) if devices else 0)
             
             return {
                 "devices": devices,
