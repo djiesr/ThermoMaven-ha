@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.1.1] - 2025-10-12 - Icon & Status Display Fix
+
+### 🐛 Bug Fixes
+- **Fixed logo not appearing**: Added `logo.png` and `issue_tracker` in manifest
+- **Fixed "Unavailable" status**: Entities now show empty state instead of "Unavailable" when device is offline
+- **Better offline handling**: Devices remain "available" in HA even when powered off
+
+### ✨ Improvements
+- **Added extra state attributes**: Each sensor now shows detailed status information
+  - Temperature sensors: status, connection, cooking_state, probe_battery
+  - Battery sensors: status, battery_status, connection, wifi_rssi
+- **Status translations**: "En ligne" / "Hors ligne" / "Inconnu"
+- **Better UX**: Users can see device status even when offline
+
+### 📝 Files Modified
+- `custom_components/thermomaven/manifest.json`: Added issue_tracker, version 1.1.1
+- `custom_components/thermomaven/sensor.py`: Fixed available property, added extra_state_attributes
+- `custom_components/thermomaven/strings.json`: Added entity state translations
+- Added `custom_components/thermomaven/logo.png`
+
+---
+
 ## [1.1.0] - 2025-10-12 - Real-Time MQTT & Complete Integration 🎉
 
 ### 🎊 Major Release - Fully Functional Integration!

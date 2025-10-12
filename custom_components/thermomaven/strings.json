@@ -18,6 +18,22 @@
     "abort": {
       "already_configured": "This account is already configured"
     }
+  },
+  "entity": {
+    "sensor": {
+      "temperature": {
+        "state": {
+          "offline": "Déconnecté",
+          "unknown": "Inconnu"
+        }
+      },
+      "battery": {
+        "state": {
+          "offline": "Déconnecté",
+          "unknown": "Inconnu"
+        }
+      }
+    }
   }
 }
 

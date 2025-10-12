@@ -119,10 +119,14 @@ class ThermoMavenTemperatureSensor(CoordinatorEntity, SensorEntity):
         devices = self.coordinator.data.get("devices", [])
         for device in devices:
             if str(device.get("deviceId")) == str(self._device_id):
-                # Chercher dans les données de statut récentes
+                # Vérifier si l'appareil est en ligne
                 last_status = device.get("lastStatusCmd", {})
                 if last_status:
                     cmd_data = last_status.get("cmdData", {})
+                    # Si l'appareil est hors ligne, retourner None pour que available gère l'affichage
+                    if cmd_data.get("globalStatus") != "online":
+                        return None
+                    
                     probes = cmd_data.get("probes", [])
                     if self._probe_num <= len(probes):
                         probe_data = probes[self._probe_num - 1]
@@ -138,19 +142,50 @@ class ThermoMavenTemperatureSensor(CoordinatorEntity, SensorEntity):
     @property
     def available(self) -> bool:
         """Return if entity is available."""
+        # Toujours disponible si le coordinateur fonctionne et que l'appareil existe
         if not self.coordinator.last_update_success:
             return False
         
         devices = self.coordinator.data.get("devices", [])
         for device in devices:
             if str(device.get("deviceId")) == str(self._device_id):
-                # Vérifier le statut en ligne depuis les données MQTT
+                # L'entité est toujours "disponible", même si l'appareil est offline
+                # Cela permet d'afficher l'état "offline" au lieu de "indisponible"
+                return True
+        return False
+    
+    @property
+    def extra_state_attributes(self):
+        """Return additional state attributes."""
+        devices = self.coordinator.data.get("devices", [])
+        for device in devices:
+            if str(device.get("deviceId")) == str(self._device_id):
                 last_status = device.get("lastStatusCmd", {})
                 if last_status:
                     cmd_data = last_status.get("cmdData", {})
-                    return cmd_data.get("globalStatus") == "online"
-                return True  # Si pas de données MQTT, considérer comme disponible
-        return False
+                    status = cmd_data.get("globalStatus", "unknown")
+                    
+                    # Traduction du statut
+                    status_translation = {
+                        "online": "En ligne",
+                        "offline": "Hors ligne",
+                        "unknown": "Inconnu"
+                    }
+                    
+                    attributes = {
+                        "status": status_translation.get(status, status),
+                        "connection": cmd_data.get("connectStatus", "unknown"),
+                    }
+                    
+                    # Ajouter les infos de la sonde si disponible
+                    probes = cmd_data.get("probes", [])
+                    if self._probe_num <= len(probes):
+                        probe_data = probes[self._probe_num - 1]
+                        attributes["cooking_state"] = probe_data.get("cookingState", "idle")
+                        attributes["probe_battery"] = probe_data.get("batteryValue")
+                    
+                    return attributes
+        return {}
 
 
 class ThermoMavenBatterySensor(CoordinatorEntity, SensorEntity):
@@ -185,10 +220,13 @@ class ThermoMavenBatterySensor(CoordinatorEntity, SensorEntity):
         devices = self.coordinator.data.get("devices", [])
         for device in devices:
             if str(device.get("deviceId")) == str(self._device_id):
-                # Chercher dans les données de statut récentes
+                # Vérifier si l'appareil est en ligne
                 last_status = device.get("lastStatusCmd", {})
                 if last_status:
                     cmd_data = last_status.get("cmdData", {})
+                    # Si l'appareil est hors ligne, retourner None
+                    if cmd_data.get("globalStatus") != "online":
+                        return None
                     return cmd_data.get("batteryValue")
                 # Fallback sur les données statiques
                 return device.get("batteryLevel")
@@ -197,17 +235,40 @@ class ThermoMavenBatterySensor(CoordinatorEntity, SensorEntity):
     @property
     def available(self) -> bool:
         """Return if entity is available."""
+        # Toujours disponible si le coordinateur fonctionne et que l'appareil existe
         if not self.coordinator.last_update_success:
             return False
         
         devices = self.coordinator.data.get("devices", [])
         for device in devices:
             if str(device.get("deviceId")) == str(self._device_id):
-                # Vérifier le statut en ligne depuis les données MQTT
+                # L'entité est toujours "disponible", même si l'appareil est offline
+                return True
+        return False
+    
+    @property
+    def extra_state_attributes(self):
+        """Return additional state attributes."""
+        devices = self.coordinator.data.get("devices", [])
+        for device in devices:
+            if str(device.get("deviceId")) == str(self._device_id):
                 last_status = device.get("lastStatusCmd", {})
                 if last_status:
                     cmd_data = last_status.get("cmdData", {})
-                    return cmd_data.get("globalStatus") == "online"
-                return True  # Si pas de données MQTT, considérer comme disponible
-        return False
+                    status = cmd_data.get("globalStatus", "unknown")
+                    
+                    # Traduction du statut
+                    status_translation = {
+                        "online": "En ligne",
+                        "offline": "Hors ligne",
+                        "unknown": "Inconnu"
+                    }
+                    
+                    return {
+                        "status": status_translation.get(status, status),
+                        "battery_status": cmd_data.get("batteryStatus", "unknown"),
+                        "connection": cmd_data.get("connectStatus", "unknown"),
+                        "wifi_rssi": cmd_data.get("wifiRssi"),
+                    }
+        return {}
 
