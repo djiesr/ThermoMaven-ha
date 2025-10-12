@@ -46,6 +46,7 @@ class ThermoMavenAPI:
         self.mqtt_client = None
         self.mqtt_config = None
         self.coordinator = None
+        self._latest_mqtt_data = None
         
         # Fichiers temporaires pour les certificats
         self.cert_files = []
@@ -268,15 +269,21 @@ class ThermoMavenAPI:
         """Handle MQTT message."""
         try:
             data = json.loads(msg.payload.decode("utf-8"))
-            _LOGGER.debug("MQTT message received: %s", data.get("cmdType"))
+            cmd_type = data.get("cmdType", "")
+            _LOGGER.debug("MQTT message received: %s", cmd_type)
+            
+            # Store the latest message data for coordinator
+            self._latest_mqtt_data = data
             
             # Trigger coordinator update on device list changes
-            if data.get("cmdType") == "user:device:list":
+            if cmd_type == "user:device:list":
+                _LOGGER.info("Device list updated via MQTT")
                 if self.coordinator:
                     self.hass.add_job(self.coordinator.async_request_refresh())
             
             # Handle temperature updates
-            elif "status:report" in data.get("cmdType", ""):
+            elif "status:report" in cmd_type:
+                _LOGGER.info("Temperature update received via MQTT")
                 if self.coordinator:
                     self.hass.add_job(self.coordinator.async_request_refresh())
                     

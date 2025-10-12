@@ -94,16 +94,23 @@ class ThermoMavenTemperatureSensor(CoordinatorEntity, SensorEntity):
     @property
     def native_value(self):
         """Return the state of the sensor."""
-        # Les données de température viendront des messages MQTT
-        # Pour l'instant, retourner None si pas de données
         devices = self.coordinator.data.get("devices", [])
         for device in devices:
-            if device.get("deviceId") == self._device_id:
-                # Chercher la température dans les données du device
-                probes = device.get("probes", [])
-                if self._probe_num <= len(probes):
-                    probe_data = probes[self._probe_num - 1]
-                    return probe_data.get("temperature")
+            if str(device.get("deviceId")) == str(self._device_id):
+                # Chercher dans les données de statut récentes
+                last_status = device.get("lastStatusCmd", {})
+                if last_status:
+                    cmd_data = last_status.get("cmdData", {})
+                    probes = cmd_data.get("probes", [])
+                    if self._probe_num <= len(probes):
+                        probe_data = probes[self._probe_num - 1]
+                        # La température est en dixièmes de degré Fahrenheit (748 = 74.8°F)
+                        temp_raw = probe_data.get("curTemperature")
+                        if temp_raw is not None:
+                            # Convertir de °F/10 vers °C
+                            temp_f = temp_raw / 10.0  # 748 -> 74.8°F
+                            temp_c = (temp_f - 32) * 5/9  # Conversion °F -> °C
+                            return round(temp_c, 1)
         return None
 
     @property
@@ -114,8 +121,13 @@ class ThermoMavenTemperatureSensor(CoordinatorEntity, SensorEntity):
         
         devices = self.coordinator.data.get("devices", [])
         for device in devices:
-            if device.get("deviceId") == self._device_id:
-                return device.get("online", False)
+            if str(device.get("deviceId")) == str(self._device_id):
+                # Vérifier le statut en ligne depuis les données MQTT
+                last_status = device.get("lastStatusCmd", {})
+                if last_status:
+                    cmd_data = last_status.get("cmdData", {})
+                    return cmd_data.get("globalStatus") == "online"
+                return True  # Si pas de données MQTT, considérer comme disponible
         return False
 
 
@@ -150,7 +162,13 @@ class ThermoMavenBatterySensor(CoordinatorEntity, SensorEntity):
         """Return the state of the sensor."""
         devices = self.coordinator.data.get("devices", [])
         for device in devices:
-            if device.get("deviceId") == self._device_id:
+            if str(device.get("deviceId")) == str(self._device_id):
+                # Chercher dans les données de statut récentes
+                last_status = device.get("lastStatusCmd", {})
+                if last_status:
+                    cmd_data = last_status.get("cmdData", {})
+                    return cmd_data.get("batteryValue")
+                # Fallback sur les données statiques
                 return device.get("batteryLevel")
         return None
 
@@ -162,7 +180,12 @@ class ThermoMavenBatterySensor(CoordinatorEntity, SensorEntity):
         
         devices = self.coordinator.data.get("devices", [])
         for device in devices:
-            if device.get("deviceId") == self._device_id:
-                return device.get("online", False)
+            if str(device.get("deviceId")) == str(self._device_id):
+                # Vérifier le statut en ligne depuis les données MQTT
+                last_status = device.get("lastStatusCmd", {})
+                if last_status:
+                    cmd_data = last_status.get("cmdData", {})
+                    return cmd_data.get("globalStatus") == "online"
+                return True  # Si pas de données MQTT, considérer comme disponible
         return False
 

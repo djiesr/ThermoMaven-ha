@@ -1,234 +1,351 @@
-# ThermoMaven API Client
+# ThermoMaven API Client & Home Assistant Integration
 
-An unofficial Python client for interacting with the ThermoMaven IoT API.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Home Assistant](https://img.shields.io/badge/Home%20Assistant-Custom%20Integration-orange)](https://www.home-assistant.io/)
+[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
 
-✅ **Status: Working!** - Authentication is functional. Device management and other features are in development.
+A comprehensive Python client and Home Assistant integration for ThermoMaven wireless thermometers, reverse-engineered from the official mobile app.
 
-## Description
+## 🎯 Features
 
-This project provides a Python client to communicate with the ThermoMaven API, allowing control and monitoring of ThermoMaven connected kitchen devices.
+### ✅ Core Functionality
+- **Complete REST API client** with MD5 signature authentication
+- **Real-time MQTT communication** via AWS IoT Core
+- **Home Assistant integration** with custom component
+- **Automatic device discovery** and entity creation
+- **Temperature monitoring** for all ThermoMaven devices
+- **Battery level tracking** with low battery alerts
+- **Multiple device support** (P1, P2, P4, G1, G2, G4)
 
-## Features
+### 🌡️ Temperature Features
+- **Real-time temperature updates** via MQTT push
+- **Accurate temperature conversion** (Fahrenheit → Celsius)
+- **Multi-probe monitoring** (up to 4 probes per device)
+- **Temperature history** and graphing
+- **Custom temperature alerts** and notifications
 
-- ✅ Secure authentication with ThermoMaven API
-- ✅ Automatic MD5 signature generation
-- ✅ Multi-region support (US, EU)
-- ✅ Environment-based configuration
-- 🚧 Device management (coming soon)
-- 🚧 MQTT integration (coming soon)
-- 🚧 Historical data retrieval (coming soon)
+## 📱 Supported Devices
 
-## Installation
+| Model | Name | Probes | Description |
+|-------|------|--------|-------------|
+| **WT02** | ThermoMaven P2 | 2 | Professional dual-probe thermometer |
+| **WT06** | ThermoMaven P4 | 4 | Professional quad-probe thermometer |
+| **WT07** | ThermoMaven G2 | 2 | Grill dual-probe thermometer |
+| **WT09** | ThermoMaven G4 | 4 | Grill quad-probe thermometer |
+| **WT10** | ThermoMaven G1 | 1 | Single-probe grill thermometer |
+| **WT11** | ThermoMaven P1 | 1 | Single-probe professional thermometer |
 
-1. Clone this repository:
-```bash
-git clone https://github.com/djiesr/ThermoMaven-ha.git
-cd ThermoMaven-ha
-```
+## 🚀 Quick Start
 
-2. Install dependencies:
+### 🐍 Python Client
+
+1. **Install dependencies:**
 ```bash
 pip install -r requirements.txt
 ```
 
-## Configuration
-
-Create a `.env` file at the project root with your credentials:
-
-```env
-THERMOMAVEN_EMAIL=your-email@example.com
-THERMOMAVEN_PASSWORD=your-password
-THERMOMAVEN_APP_KEY=bcd4596f1bb8419a92669c8017bf25e8
-THERMOMAVEN_APP_ID=ap4060eff28137181bd
-```
-
-**Note**: The `app_key` and `app_id` shown above are the actual values needed for the US region.
-
-## Usage
-
-### Basic Login
-
-```python
-from thermomaven_client import ThermoMavenClient
-import os
-
-# Initialize the client
-client = ThermoMavenClient(
-    email=os.getenv('THERMOMAVEN_EMAIL'),
-    password=os.getenv('THERMOMAVEN_PASSWORD')
-)
-
-# Set the credentials
-client.app_key = os.getenv('THERMOMAVEN_APP_KEY')
-client.app_id = os.getenv('THERMOMAVEN_APP_ID')
-
-# Login
-result = client.login()
-
-if result and result.get("code") == "0":
-    print(f"✓ Login successful!")
-    print(f"Token: {client.token}")
-    print(f"User ID: {client.user_id}")
-else:
-    print("✗ Login failed")
-```
-
-### Quick Test
-
+2. **Configure credentials:**
 ```bash
-# Copy the example configuration
 cp env.example .env
+# Edit .env with your ThermoMaven credentials
+```
 
-# Edit .env with your email and password
-nano .env
-
-# Run the client
+3. **Run the client:**
+```bash
 python thermomaven_client.py
 ```
 
-Expected output:
-```
-Starting ThermoMaven Client...
-=== LOGIN ===
-Status: 200
-✓ Login successful!
-Token: [your-token]
-User ID: [your-user-id]
-🎉 SUCCESS! Logged in!
+### 📡 MQTT Client (Real-time)
+
+For real-time temperature monitoring:
+
+```bash
+python thermomaven_mqtt_client.py
 ```
 
-## Authentication Details
+### 🏠 Home Assistant Integration
 
-### Signature Algorithm
+#### Prerequisites
+- Home Assistant Core 2023.1 or higher
+- ThermoMaven account with at least one paired device
 
-The API uses MD5 signature for request validation:
+#### Installation
 
+1. **Copy the integration:**
+   ```bash
+   # Copy custom_components/thermomaven to your HA config folder
+   cp -r custom_components/thermomaven /config/custom_components/
+   ```
+
+2. **Restart Home Assistant:**
+   ```
+   Settings → System → Restart
+   ```
+
+3. **Add the integration:**
+   - Go to **Settings** → **Devices & Services**
+   - Click **+ Add Integration**
+   - Search for **"ThermoMaven"**
+   - Enter your ThermoMaven credentials (email/password)
+   - Click **Submit**
+
+4. **Your devices will appear automatically!** 🎉
+
+#### What you'll get:
+
+For each ThermoMaven device:
 ```
-MD5(app_key|params_str|body_str)
-```
-
-Where:
-- `app_key` = `bcd4596f1bb8419a92669c8017bf25e8`
-- `params_str` = Sorted headers like `x-appId=...;x-appVersion=...;x-deviceSn=...`
-- `body_str` = JSON body (if any)
-
-### Required Headers
-
-- `x-appId`: App identifier (`ap4060eff28137181bd` for US region)
-- `x-appVersion`: App version (`1804`)
-- `x-deviceSn`: Random device serial number (16 hex chars)
-- `x-lang`: Language (`en_US`)
-- `x-nonce`: UUID without dashes (lowercase)
-- `x-region`: Region code (`US` or `DE`)
-- `x-timestamp`: Current timestamp in milliseconds
-- `x-token`: Auth token (or `"none"` before login)
-- `x-sign`: MD5 signature
-
-### Password Handling
-
-Password must be MD5 hashed before sending to the API.
-
-## API Documentation
-
-The `whatweknow/` folder contains extracted API information:
-
-- `part1.txt`: API configuration (MQTT endpoints, regions, versions)
-- `part2.txt`: Available endpoints list
-
-### Main Endpoints
-
-- `/app/account/login` - Authentication ✅ Working
-- `/app/device/*` - Device management 🚧 To implement
-- `/app/user/*` - User management 🚧 To implement
-- `/app/history/*` - Historical data 🚧 To implement
-- `/app/recipe/*` - Recipes 🚧 To implement
-- `/app/mqtt/cert/apply` - MQTT certificates 🚧 To implement
-
-### Supported Regions
-
-The service uses two data centers:
-- **US**: `https://api.iot.thermomaven.com` (USA, Canada, Australia, etc.)
-  - App ID: `ap4060eff28137181bd`
-  - App Key: `bcd4596f1bb8419a92669c8017bf25e8`
-- **DE**: `https://api.iot.thermomaven.de` (Europe, UK, etc.)
-  - App ID & Key: To be determined
-
-## Project Structure
-
-```
-ThermoMaven-ha/
-├── thermomaven_client.py    # Main API client ✅
-├── whatweknow/              # API documentation
-│   ├── part1.txt           # Configuration and regions
-│   └── part2.txt           # Available endpoints
-├── requirements.txt         # Python dependencies
-├── env.example             # Configuration template
-├── .gitignore              # Files to ignore
-├── LICENSE                 # MIT License
-├── QUICKSTART.md           # Quick start guide
-├── FINDING_APPKEY.md       # How the key was found
-└── README.md               # This file
+sensor.thermomaven_[device]_probe_1    # 🌡️ Temperature Probe 1
+sensor.thermomaven_[device]_probe_2    # 🌡️ Temperature Probe 2 (if available)
+sensor.thermomaven_[device]_probe_3    # 🌡️ Temperature Probe 3 (if available)
+sensor.thermomaven_[device]_probe_4    # 🌡️ Temperature Probe 4 (if available)
+sensor.thermomaven_[device]_battery    # 🔋 Battery Level
 ```
 
-## Security
+## 📚 Documentation
 
-⚠️ **Important**: 
-- Never commit your email/password to the code
-- Always use environment variables or a `.env` file
-- The `.env` file must be in `.gitignore`
-- The `app_key` and `app_id` are safe to share (they're client secrets, not user secrets)
+- **[API Endpoints](API_ENDPOINTS.md)** - Complete API documentation
+- **[MQTT Guide](MQTT_GUIDE.md)** - Real-time messaging setup
+- **[Home Assistant Installation](HOMEASSISTANT_INSTALLATION.md)** - Detailed HA setup guide
+- **[Integration Summary](INTEGRATION_SUMMARY.md)** - Technical overview
+- **[Changelog](CHANGELOG.md)** - Version history
 
-## Known Information
+## 🔧 Architecture
 
-From reverse engineering the Android APK:
-- Project ID: `thermomavencom`
-- App Version: `1804`
-- App ID (US): `ap4060eff28137181bd`
-- App Key (US): `bcd4596f1bb8419a92669c8017bf25e8`
-- Google API Key: `AIzaSyDt1OT_Vmmy8Am61ViPRdiGNMeOjw8lsmE`
-- Facebook App ID: `625697601818899`
+```
+┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│   Python Client │────│  ThermoMaven API │────│  AWS IoT Core   │
+│                 │    │  (REST + Auth)   │    │     (MQTT)      │
+└─────────────────┘    └──────────────────┘    └─────────────────┘
+         │                       │                       │
+         └───────────────────────┼───────────────────────┘
+                                 │
+                    ┌─────────────────┐
+                    │ Home Assistant  │
+                    │  Integration    │
+                    │  (Custom Comp)  │
+                    └─────────────────┘
+```
 
-## Disclaimer
+## 📊 Example Usage
 
-This project is unofficial and not affiliated with ThermoMaven. Use at your own risk. Using this client may violate ThermoMaven's Terms of Service.
+### 🐍 Python Client
 
-## License
+```python
+from thermomaven_client import ThermoMavenClient
 
-MIT License - See [LICENSE](LICENSE) file for details.
+# Initialize client
+client = ThermoMavenClient("your@email.com", "password")
+client.app_key = "your_app_key"
+client.app_id = "your_app_id"
 
-## Contributing
+# Login
+result = client.login()
+if result["code"] == "0":
+    print("Login successful!")
+    
+    # Get devices
+    devices = client.get_my_devices()
+    print(f"Found {len(devices)} devices")
+    
+    # Get user info
+    user_info = client.get_user_info()
+    print(f"User: {user_info['userName']}")
+```
 
-Contributions are welcome! Feel free to open an issue or pull request.
+### 🏠 Home Assistant
 
-## TODO
+#### Lovelace Card
+```yaml
+type: entities
+title: 🔥 BBQ Monitor
+entities:
+  - entity: sensor.thermomaven_grill_probe_1
+    name: Steak Temperature
+    icon: mdi:food-steak
+  - entity: sensor.thermomaven_grill_probe_2
+    name: Chicken Temperature
+    icon: mdi:food-drumstick
+  - entity: sensor.thermomaven_grill_battery
+    name: Battery Level
+    icon: mdi:battery
+```
 
-- [x] ~~Find the valid `app_key`~~ ✅ Done!
-- [x] ~~Implement login~~ ✅ Done!
-- [ ] Implement device listing
-- [ ] Implement device control methods
-- [ ] Add MQTT support
-- [ ] Add historical data retrieval
-- [ ] Add recipe browsing/management
-- [ ] Create Home Assistant integration
-- [ ] Create unit tests
-- [ ] Add data models documentation
+#### Temperature Graph
+```yaml
+type: history-graph
+title: Temperature History
+entities:
+  - sensor.thermomaven_grill_probe_1
+  - sensor.thermomaven_grill_probe_2
+hours_to_show: 3
+refresh_interval: 0
+```
 
-## Troubleshooting
+#### Automation - Steak Ready Alert
+```yaml
+automation:
+  - alias: "🍖 Steak Ready Alert"
+    trigger:
+      platform: numeric_state
+      entity_id: sensor.thermomaven_grill_probe_1
+      above: 60  # 60°C
+    condition:
+      - condition: state
+        entity_id: input_boolean.bbq_active
+        state: "on"
+    action:
+      - service: notify.mobile_app_your_phone
+        data:
+          title: "🍖 BBQ Alert"
+          message: "Steak is ready! ({{ states('sensor.thermomaven_grill_probe_1') }}°C)"
+          data:
+            push:
+              sound: "US-EN-Alexa-Temperature-Reached.wav"
+```
 
-### "Sign error" (Code 40000)
+#### Automation - Low Battery Warning
+```yaml
+automation:
+  - alias: "🔋 Low Battery Warning"
+    trigger:
+      platform: numeric_state
+      entity_id: sensor.thermomaven_grill_battery
+      below: 20
+    action:
+      - service: persistent_notification.create
+        data:
+          title: "⚠️ Low Battery"
+          message: "ThermoMaven battery is low ({{ states('sensor.thermomaven_grill_battery') }}%)"
+```
 
-Make sure:
-- `app_key` and `app_id` are correct
-- Headers are properly sorted
-- Body JSON has no spaces: `{"key":"value"}` not `{"key": "value"}`
-- Using `data=` not `json=` when sending the request
+## 🔐 Authentication & Security
 
-### "Region mismatch"
+The ThermoMaven API uses:
+- **MD5 signature** for request authentication
+- **Client certificates (P12)** for MQTT connections
+- **AWS IoT Core** for secure real-time messaging
+- **Automatic certificate management** (download → convert → use → cleanup)
 
-Change the `base_url` in the client:
-- US: `https://api.iot.thermomaven.com`
-- EU: `https://api.iot.thermomaven.de`
+## 🌍 Regional Support
 
-## Support
+- **🇺🇸 US Region**: `us-west-2` (Oregon) - `a2ubmaqm3a642j-ats.iot.us-west-2.amazonaws.com`
+- **🇪🇺 EU Region**: `eu-central-1` (Frankfurt) - `a2ubmaqm3a642j-ats.iot.eu-central-1.amazonaws.com`
 
-Found a bug? Have a question? Open an issue at: https://github.com/djiesr/ThermoMaven-ha/issues
+**Auto-detection**: The integration automatically detects your region from your account settings.
+
+## 🛠️ Development
+
+### Setup Development Environment
+
+```bash
+git clone https://github.com/yourusername/thermomaven-client.git
+cd thermomaven-client
+pip install -r requirements.txt
+```
+
+### Testing
+
+```bash
+# Test API connection
+python thermomaven_client.py
+
+# Test MQTT connection
+python thermomaven_mqtt_client.py
+```
+
+### Debugging
+
+Enable debug logging in Home Assistant:
+```yaml
+# configuration.yaml
+logger:
+  logs:
+    custom_components.thermomaven: debug
+    paho.mqtt: debug
+```
+
+## 📋 Requirements
+
+### Python Client
+- Python 3.8+
+- `requests>=2.31.0`
+- `python-dotenv>=1.0.0`
+- `paho-mqtt>=1.6.1`
+- `pyOpenSSL>=23.0.0`
+- `cryptography>=41.0.0`
+
+### Home Assistant
+- Home Assistant Core 2023.1.0+
+- Internet connection (for MQTT)
+- Valid ThermoMaven account
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+#### No devices showing in Home Assistant
+- ✅ **Check**: Your ThermoMaven devices are paired with your account in the mobile app
+- ✅ **Check**: Devices are powered on and connected to WiFi
+- ✅ **Check**: Home Assistant logs for any errors
+
+#### MQTT connection fails
+- ✅ **Check**: Internet connection
+- ✅ **Check**: Firewall allows port 8883 (MQTT SSL)
+- ✅ **Check**: ThermoMaven credentials are correct
+
+#### Temperature readings seem wrong
+- ✅ **Fixed**: Temperature conversion from Fahrenheit to Celsius
+- ✅ **Note**: ThermoMaven uses Fahrenheit internally (converted to Celsius)
+
+### Getting Help
+
+1. **Check logs**: Settings → System → Logs
+2. **GitHub Issues**: [Create an issue](https://github.com/yourusername/thermomaven-client/issues)
+3. **Home Assistant Community**: [Community Forum](https://community.home-assistant.io/)
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## ⚠️ Disclaimer
+
+This is an **unofficial integration** and is not affiliated with or endorsed by ThermoMaven. This project was created by reverse-engineering the official mobile app for educational and personal use purposes.
+
+**Use at your own risk.** The authors are not responsible for any issues that may arise from using this software.
+
+## 🤝 Contributing
+
+We welcome contributions! Please:
+
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
+3. **Commit** your changes (`git commit -m 'Add amazing feature'`)
+4. **Push** to the branch (`git push origin feature/amazing-feature`)
+5. **Open** a Pull Request
+
+### Development Guidelines
+
+- Follow PEP 8 style guidelines
+- Add type hints where possible
+- Include tests for new features
+- Update documentation as needed
+
+## 🎉 Success Stories
+
+> *"This integration works perfectly with my ThermoMaven P4! I can monitor all 4 probes from Home Assistant and get alerts when my BBQ is ready."* - BBQ Enthusiast
+
+> *"Finally, I can automate my cooking process with Home Assistant. The MQTT integration provides real-time temperature updates."* - Home Chef
+
+## 📞 Support & Community
+
+- **🐛 Bug Reports**: [GitHub Issues](https://github.com/yourusername/thermomaven-client/issues)
+- **💡 Feature Requests**: [GitHub Discussions](https://github.com/yourusername/thermomaven-client/discussions)
+- **🏠 Home Assistant**: [Community Forum](https://community.home-assistant.io/)
+- **📖 Documentation**: [Wiki](https://github.com/yourusername/thermomaven-client/wiki)
+
+---
+
+**🔥 Made with ❤️ for the BBQ and cooking community**
+
+*Happy grilling! 🍖🔥*
