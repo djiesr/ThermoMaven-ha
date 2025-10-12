@@ -1,5 +1,56 @@
 # Changelog
 
+## [1.0.4-beta.1] - 2025-10-12 - Device Cache & Temperature Update Improvements (BETA)
+
+⚠️ **This is a BETA release for testing purposes**
+
+### ✨ New Features
+- **Device data caching**: Integration now caches device list for better reliability
+  - Uses previous device data when API returns empty results
+  - Prevents device disappearance during temporary API issues
+  - Maintains device state between coordinator updates
+
+### 🔧 Improvements
+- **Better temperature update handling**:
+  - Uses cached device list for temperature updates when needed
+  - Enhanced logging for status report processing
+  - Better error tracking when device updates fail
+  - Logs device name on successful temperature updates
+
+- **Metadata updates**:
+  - Updated manifest.json with correct GitHub repository links
+  - Fixed codeowner to @djiesr
+  - Documentation URL now points to correct repo
+
+### 📝 Technical Details
+- `custom_components/thermomaven/__init__.py`:
+  - Added device cache using previous `self.data`
+  - Fallback to cached devices when API returns empty
+  - Enhanced debug logging for status reports
+  - Warning when device update fails
+  - Info logging for successful temperature updates
+
+- `custom_components/thermomaven/manifest.json`:
+  - Updated `codeowners` to `@djiesr`
+  - Updated `documentation` URL to correct GitHub repo
+
+### 🎯 Benefits
+- More reliable device state management
+- Better handling of API temporary failures
+- Improved debugging with detailed logs
+- Accurate repository links in Home Assistant
+
+### 🧪 Testing Notes
+This is a **BETA** release. Please test and report:
+- Device persistence during API issues
+- Temperature update reliability
+- Any unexpected warnings or errors in logs
+
+### ⚠️ Known Issues
+None reported yet. This is the first beta for these features.
+
+---
+
 ## [1.0.3] - 2025-10-12 - Device Topic Subscription & MQTT Optimization
 
 ### ✨ New Features

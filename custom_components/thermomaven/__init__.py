@@ -83,11 +83,17 @@ class ThermoMavenDataUpdateCoordinator(DataUpdateCoordinator):
     async def _async_update_data(self):
         """Update data via library."""
         try:
-            # Récupérer les données
+            # Récupérer les données (ou utiliser le cache)
             devices = await self.api.async_get_devices()
             user_info = await self.api.async_get_user_info()
             
             _LOGGER.debug("API returned %d devices", len(devices) if devices else 0)
+            
+            # Utiliser les données précédentes si disponibles
+            if hasattr(self, 'data') and self.data:
+                previous_devices = self.data.get("devices", [])
+            else:
+                previous_devices = []
             
             # Si on a des données MQTT plus récentes, les utiliser
             if self.api._latest_mqtt_data:
@@ -105,12 +111,22 @@ class ThermoMavenDataUpdateCoordinator(DataUpdateCoordinator):
                 elif "status:report" in mqtt_data.get("cmdType", ""):
                     # Mettre à jour les données de température des appareils existants
                     device_id = mqtt_data.get("deviceId")
+                    _LOGGER.debug("Status report for device %s", device_id)
+                    
+                    # Utiliser les appareils précédents si l'API n'en retourne pas
+                    if not devices and previous_devices:
+                        devices = previous_devices
+                        _LOGGER.debug("Using previous device list: %d devices", len(devices))
+                    
                     if device_id and devices:
                         for device in devices:
                             if str(device.get("deviceId")) == str(device_id):
                                 # Mettre à jour les données de température
                                 device["lastStatusCmd"] = mqtt_data
+                                _LOGGER.info("Updated temperature data for device %s", device.get("deviceName"))
                                 break
+                    else:
+                        _LOGGER.warning("Cannot update device %s: no devices in list", device_id)
             
             _LOGGER.info("Final device count: %d", len(devices) if devices else 0)
             
