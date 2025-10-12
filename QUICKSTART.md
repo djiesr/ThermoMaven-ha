@@ -1,19 +1,21 @@
 # Quick Start Guide
 
-## Local Installation (Before GitHub)
+Get up and running with ThermoMaven API Client in 5 minutes!
 
-### 1. Create Your Configuration File
+## Prerequisites
+
+- Python 3.7 or higher
+- ThermoMaven account (email and password)
+- Internet connection
+
+## Installation
+
+### 1. Clone the Repository
 
 ```bash
-# Copy the template
-cp env.example .env
-
-# Edit with your real credentials
-# (use nano, vim, or your preferred editor)
-nano .env
+git clone https://github.com/djiesr/ThermoMaven-ha.git
+cd ThermoMaven-ha
 ```
-
-⚠️ **Important**: You need to find the `app_key` value first! See README.md for details.
 
 ### 2. Install Dependencies
 
@@ -21,133 +23,179 @@ nano .env
 pip install -r requirements.txt
 ```
 
-### 3. Test the Client
+Or install manually:
+```bash
+pip install requests python-dotenv
+```
+
+## Configuration
+
+### 3. Create Environment File
+
+Copy the example configuration:
+
+```bash
+cp env.example .env
+```
+
+### 4. Edit Your Credentials
+
+Open `.env` in your favorite editor and add **only** your email and password:
+
+```env
+THERMOMAVEN_EMAIL=your-email@example.com
+THERMOMAVEN_PASSWORD=your-password
+THERMOMAVEN_APP_KEY=bcd4596f1bb8419a92669c8017bf25e8
+THERMOMAVEN_APP_ID=ap4060eff28137181bd
+```
+
+**Note**: The `APP_KEY` and `APP_ID` are already correct for US region!
+
+## Test It!
+
+### 5. Run the Client
 
 ```bash
 python thermomaven_client.py
 ```
 
-**Expected Result Without App Key:**
+### Expected Output
+
+If everything works, you should see:
+
 ```
+Starting ThermoMaven Client...
+DEBUG body_str: {"accountName":"your-email@example.com","accountPassword":"...","deviceInfo":"google sdk_gphone_x86_64 11"}
+
+=== SIGNATURE DEBUG ===
+Sign string: bcd4596f1bb8419a92669c8017bf25e8|x-appId=...
+MD5: ...
+=== END DEBUG ===
+
+=== LOGIN ===
+AppId: ap4060eff28137181bd
+AppKey: bcd4596f1bb8419a92669c8017bf25e8
+DeviceSn: 3d053c363f7b23b5
+x-token: none
 Status: 200
-Response: {"code":"40000","msg":"Sign error"}
-[ERROR] Sign error
-=== FAILED ===
+Response: {
+  "code": "0",
+  "msg": "Your request has been successful.",
+  "data": {
+    "token": "...",
+    "userId": ...,
+    "user": {
+      "userName": "...",
+      "userEmail": "...",
+      "passwordExists": true
+    },
+    ...
+  }
+}
+
+✓ Login successful!
+Token: ...
+User ID: ...
+
+🎉 SUCCESS! Logged in!
 ```
 
-## Verify What Will Be Sent to GitHub
+## Troubleshooting
 
-```bash
-# See the list of files to be included
-git add -n .
+### Error: "Missing environment variables"
 
-# Should only show:
-# - thermomaven_client.py
-# - whatweknow/part1.txt
-# - whatweknow/part2.txt
-# - README.md
-# - requirements.txt
-# - .gitignore
-# - .gitattributes
-# - env.example
-# - QUICKSTART.md
+Make sure your `.env` file exists and contains all required variables:
+```env
+THERMOMAVEN_EMAIL=your-email@example.com
+THERMOMAVEN_PASSWORD=your-password
+THERMOMAVEN_APP_KEY=bcd4596f1bb8419a92669c8017bf25e8
+THERMOMAVEN_APP_ID=ap4060eff28137181bd
 ```
 
-## Current Project Structure
+### Error: "Sign error" (Code 40000)
 
-```
-ThermoMaven-ha/
-├── .gitignore              ✓ Created (excludes Frida, root, etc.)
-├── .gitattributes          ✓ Created (for GitHub)
-├── README.md               ✓ Created (documentation)
-├── QUICKSTART.md           ✓ Created (this file)
-├── env.example             ✓ Created (config template)
-├── requirements.txt        ✓ Created (dependencies)
-├── thermomaven_client.py   ✓ Secured (no credentials)
-├── whatweknow/             ✓ To include
-│   ├── part1.txt
-│   └── part2.txt
-├── Frida/                  ✗ Excluded (.gitignore)
-├── root/                   ✗ Excluded (.gitignore)
-├── thermomaven_decompiled/ ✗ Excluded (.gitignore)
-└── thermomaven_client - Copie.py  ✗ Excluded (.gitignore)
-```
+Check that:
+- `app_key` and `app_id` match the values in `env.example`
+- You're using the correct region (`US` vs `DE`)
 
-## Next Steps
+### Error: "Invalid credentials" (Code 4xxxx)
 
-1. **Find the app_key** - Critical for API to work
-2. **Test locally** - Verify the client works
-3. **Check .gitignore** - `git status` should not show excluded folders
-4. **Initialize Git** - Already done if you followed the setup
-5. **Push to GitHub** - Already done if you followed the setup
+- Verify your email and password are correct
+- Make sure you can login to the official ThermoMaven app
 
-## Verification Commands
+### Wrong Region?
 
-```bash
-# 1. Verify folders are excluded
-ls -la | grep -E "(Frida|root|thermomaven_decompiled)"
-# These folders must exist locally
+If you're in Europe, you might need to change the `base_url`:
 
-git status
-# These folders should NOT appear in git status
-
-# 2. Verify the structure to be pushed
-git ls-files  # (after git add .)
-# Should only show desired files
-
-# 3. Verify no credentials in code
-grep -r "djiesr" .
-# Should return nothing (or only in .env which is ignored)
+In `thermomaven_client.py`, line 15:
+```python
+self.base_url = "https://api.iot.thermomaven.de"  # Change from .com to .de
 ```
 
-## Git Commands Reference
-
-```bash
-# View repository status
-git status
-
-# Add modifications
-git add .
-
-# Commit changes
-git commit -m "Description of changes"
-
-# Push to GitHub
-git push
-
-# View history
-git log --oneline
-
-# Create new branch
-git checkout -b branch-name
-
-# Return to main
-git checkout main
+And update your `.env`:
+```env
+# Note: EU keys might be different - to be determined
+THERMOMAVEN_APP_KEY=bcd4596f1bb8419a92669c8017bf25e8
+THERMOMAVEN_APP_ID=ap4060eff28137181bd
 ```
 
-## Help
+## What's Next?
 
-If you see unwanted files:
+Now that you can authenticate, you can:
 
-```bash
-# Remove a file from Git index (without deleting it)
-git rm --cached filename
+1. **Explore the API** - Check out `whatweknow/part2.txt` for available endpoints
+2. **List devices** - Implement `/app/device/list` endpoint
+3. **Control devices** - Send commands to your ThermoMaven devices
+4. **Get history** - Retrieve cooking history
+5. **Contribute** - Help implement more features!
 
-# Remove a folder from Git index
-git rm -r --cached foldername/
+## Using in Your Code
 
-# Then commit
-git commit -m "Remove unwanted files"
-git push
+```python
+import os
+from thermomaven_client import ThermoMavenClient
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
+# Initialize client
+client = ThermoMavenClient(
+    email=os.getenv('THERMOMAVEN_EMAIL'),
+    password=os.getenv('THERMOMAVEN_PASSWORD')
+)
+
+# Set credentials
+client.app_key = os.getenv('THERMOMAVEN_APP_KEY')
+client.app_id = os.getenv('THERMOMAVEN_APP_ID')
+
+# Login
+result = client.login()
+
+if result and result.get("code") == "0":
+    print(f"Logged in! Token: {client.token}")
+    
+    # Now you can make authenticated API calls
+    # TODO: Implement more endpoints!
+else:
+    print("Login failed")
 ```
 
-## Finding the App Key
+## Security Reminder
 
-The `app_key` is essential for the API to work. Possible locations:
+- ✅ `.env` is in `.gitignore` - your credentials won't be committed
+- ✅ `app_key` and `app_id` are safe to share (client secrets)
+- ⚠️ Never commit your email/password to git
+- ⚠️ Never share your authentication token publicly
 
-1. **Native libraries** (`.so` files in the APK)
-2. **Obfuscated strings** in decompiled code
-3. **Network traffic** captures
-4. **Configuration files** embedded in resources
+## Need Help?
 
-Check `thermomaven_decompiled/` folder for clues.
+- 📖 Read the full [README.md](README.md)
+- 🔍 Check [FINDING_APPKEY.md](FINDING_APPKEY.md) for technical details
+- 🐛 Open an issue: https://github.com/djiesr/ThermoMaven-ha/issues
+
+## Success? 🎉
+
+If you successfully logged in, you're ready to start exploring the ThermoMaven API!
+
+Consider contributing to the project by implementing additional endpoints or features.

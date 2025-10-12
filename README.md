@@ -2,13 +2,7 @@
 
 An unofficial Python client for interacting with the ThermoMaven IoT API.
 
-## ⚠️ CRITICAL: App Key Required
-
-**This client is not yet functional.** The ThermoMaven API requires an `app_key` for authentication that has not been found. All API calls currently fail with "Sign error".
-
-**See [FINDING_APPKEY.md](FINDING_APPKEY.md) for details on how to help find it.**
-
----
+✅ **Status: Working!** - Authentication is functional. Device management and other features are in development.
 
 ## Description
 
@@ -16,10 +10,13 @@ This project provides a Python client to communicate with the ThermoMaven API, a
 
 ## Features
 
-- Secure authentication with ThermoMaven API
-- Automatic signature generation
-- Multi-region support (US, EU, etc.)
-- Configurable HTTP client
+- ✅ Secure authentication with ThermoMaven API
+- ✅ Automatic MD5 signature generation
+- ✅ Multi-region support (US, EU)
+- ✅ Environment-based configuration
+- 🚧 Device management (coming soon)
+- 🚧 MQTT integration (coming soon)
+- 🚧 Historical data retrieval (coming soon)
 
 ## Installation
 
@@ -41,10 +38,15 @@ Create a `.env` file at the project root with your credentials:
 ```env
 THERMOMAVEN_EMAIL=your-email@example.com
 THERMOMAVEN_PASSWORD=your-password
-THERMOMAVEN_APP_KEY=your-app-key
+THERMOMAVEN_APP_KEY=bcd4596f1bb8419a92669c8017bf25e8
+THERMOMAVEN_APP_ID=ap4060eff28137181bd
 ```
 
+**Note**: The `app_key` and `app_id` shown above are the actual values needed for the US region.
+
 ## Usage
+
+### Basic Login
 
 ```python
 from thermomaven_client import ThermoMavenClient
@@ -56,51 +58,75 @@ client = ThermoMavenClient(
     password=os.getenv('THERMOMAVEN_PASSWORD')
 )
 
-# Set the app key
-client.app_key = os.getenv('THERMOMAVEN_APP_KEY', '')
+# Set the credentials
+client.app_key = os.getenv('THERMOMAVEN_APP_KEY')
+client.app_id = os.getenv('THERMOMAVEN_APP_ID')
 
 # Login
 result = client.login()
 
-if result:
-    print("Login successful!")
-    # Your code here...
+if result and result.get("code") == "0":
+    print(f"✓ Login successful!")
+    print(f"Token: {client.token}")
+    print(f"User ID: {client.user_id}")
 else:
-    print("Login failed")
+    print("✗ Login failed")
 ```
 
-## Missing Components
+### Quick Test
 
-### ⚠️ Critical: App Key Required
+```bash
+# Copy the example configuration
+cp env.example .env
 
-The authentication requires an `app_key` that has not yet been found. The API signature is calculated as:
+# Edit .env with your email and password
+nano .env
+
+# Run the client
+python thermomaven_client.py
+```
+
+Expected output:
+```
+Starting ThermoMaven Client...
+=== LOGIN ===
+Status: 200
+✓ Login successful!
+Token: [your-token]
+User ID: [your-user-id]
+🎉 SUCCESS! Logged in!
+```
+
+## Authentication Details
+
+### Signature Algorithm
+
+The API uses MD5 signature for request validation:
 
 ```
 MD5(app_key|params_str|body_str)
 ```
 
-Without the correct `app_key`, the API returns:
-- Status 200
-- Code: `40000`
-- Message: "Sign error"
+Where:
+- `app_key` = `bcd4596f1bb8419a92669c8017bf25e8`
+- `params_str` = Sorted headers like `x-appId=...;x-appVersion=...;x-deviceSn=...`
+- `body_str` = JSON body (if any)
 
-**How to find it:**
-- Decompile the ThermoMaven Android/iOS app
-- Look in configuration files or hardcoded strings
-- Possible locations: `strings.xml`, ProGuard obfuscated code, native libraries
+### Required Headers
 
-### What Works
-- ✅ API endpoint structure
-- ✅ Request signature algorithm
-- ✅ Header construction
-- ✅ Region configuration
+- `x-appId`: App identifier (`ap4060eff28137181bd` for US region)
+- `x-appVersion`: App version (`1804`)
+- `x-deviceSn`: Random device serial number (16 hex chars)
+- `x-lang`: Language (`en_US`)
+- `x-nonce`: UUID without dashes (lowercase)
+- `x-region`: Region code (`US` or `DE`)
+- `x-timestamp`: Current timestamp in milliseconds
+- `x-token`: Auth token (or `"none"` before login)
+- `x-sign`: MD5 signature
 
-### What's Missing
-- ❌ Valid `app_key` value
-- ❌ Device management endpoints implementation
-- ❌ MQTT integration
-- ❌ Historical data retrieval
-- ❌ Recipe management
+### Password Handling
+
+Password must be MD5 hashed before sending to the API.
 
 ## API Documentation
 
@@ -111,42 +137,54 @@ The `whatweknow/` folder contains extracted API information:
 
 ### Main Endpoints
 
-- `/app/account/login` - Authentication
-- `/app/device/*` - Device management
-- `/app/user/*` - User management
-- `/app/history/*` - Historical data
-- `/app/recipe/*` - Recipes
-- `/app/mqtt/cert/apply` - MQTT certificates
+- `/app/account/login` - Authentication ✅ Working
+- `/app/device/*` - Device management 🚧 To implement
+- `/app/user/*` - User management 🚧 To implement
+- `/app/history/*` - Historical data 🚧 To implement
+- `/app/recipe/*` - Recipes 🚧 To implement
+- `/app/mqtt/cert/apply` - MQTT certificates 🚧 To implement
 
 ### Supported Regions
 
 The service uses two data centers:
 - **US**: `https://api.iot.thermomaven.com` (USA, Canada, Australia, etc.)
+  - App ID: `ap4060eff28137181bd`
+  - App Key: `bcd4596f1bb8419a92669c8017bf25e8`
 - **DE**: `https://api.iot.thermomaven.de` (Europe, UK, etc.)
+  - App ID & Key: To be determined
 
 ## Project Structure
 
 ```
 ThermoMaven-ha/
-├── thermomaven_client.py    # Main API client
+├── thermomaven_client.py    # Main API client ✅
 ├── whatweknow/              # API documentation
 │   ├── part1.txt           # Configuration and regions
 │   └── part2.txt           # Available endpoints
 ├── requirements.txt         # Python dependencies
 ├── env.example             # Configuration template
 ├── .gitignore              # Files to ignore
+├── LICENSE                 # MIT License
+├── QUICKSTART.md           # Quick start guide
+├── FINDING_APPKEY.md       # How the key was found
 └── README.md               # This file
 ```
 
 ## Security
 
-⚠️ **Important**: Never commit your credentials to the code. Always use environment variables or a `.env` file (which must be in `.gitignore`).
+⚠️ **Important**: 
+- Never commit your email/password to the code
+- Always use environment variables or a `.env` file
+- The `.env` file must be in `.gitignore`
+- The `app_key` and `app_id` are safe to share (they're client secrets, not user secrets)
 
 ## Known Information
 
-From decompiled APK:
+From reverse engineering the Android APK:
 - Project ID: `thermomavencom`
 - App Version: `1804`
+- App ID (US): `ap4060eff28137181bd`
+- App Key (US): `bcd4596f1bb8419a92669c8017bf25e8`
 - Google API Key: `AIzaSyDt1OT_Vmmy8Am61ViPRdiGNMeOjw8lsmE`
 - Facebook App ID: `625697601818899`
 
@@ -156,29 +194,41 @@ This project is unofficial and not affiliated with ThermoMaven. Use at your own 
 
 ## License
 
-This project is provided "as is" for educational purposes only.
+MIT License - See [LICENSE](LICENSE) file for details.
 
 ## Contributing
 
-Contributions are welcome! Especially if you can find the `app_key` value. Feel free to open an issue or pull request.
+Contributions are welcome! Feel free to open an issue or pull request.
 
 ## TODO
 
-- [ ] Find the valid `app_key`
-- [ ] Implement other endpoints (devices, history, etc.)
-- [ ] Add MQTT support
-- [ ] Create unit tests
-- [ ] Add data models documentation
+- [x] ~~Find the valid `app_key`~~ ✅ Done!
+- [x] ~~Implement login~~ ✅ Done!
+- [ ] Implement device listing
 - [ ] Implement device control methods
+- [ ] Add MQTT support
+- [ ] Add historical data retrieval
 - [ ] Add recipe browsing/management
 - [ ] Create Home Assistant integration
+- [ ] Create unit tests
+- [ ] Add data models documentation
 
-## Help Wanted
+## Troubleshooting
 
-**If you can help find the `app_key`**, please:
-1. Check the decompiled APK in native libraries (`.so` files)
-2. Look for network traffic captures
-3. Search for obfuscated strings in the Java/Kotlin code
-4. Check for any initialization code in the main Application class
+### "Sign error" (Code 40000)
 
-The `app_key` is likely a string of 32-64 characters (possibly hex or base64).
+Make sure:
+- `app_key` and `app_id` are correct
+- Headers are properly sorted
+- Body JSON has no spaces: `{"key":"value"}` not `{"key": "value"}`
+- Using `data=` not `json=` when sending the request
+
+### "Region mismatch"
+
+Change the `base_url` in the client:
+- US: `https://api.iot.thermomaven.com`
+- EU: `https://api.iot.thermomaven.de`
+
+## Support
+
+Found a bug? Have a question? Open an issue at: https://github.com/djiesr/ThermoMaven-ha/issues

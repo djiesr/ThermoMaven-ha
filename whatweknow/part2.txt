@@ -36,11 +36,3 @@ Nouveaux endpoints trouvés :
 /app/recipe/detail - Détails recette
 /app/log/print - Logs
 
-
-
-djiesr@raspberrypi:~/thermomaven_decompiled $ cat ./res/values/strings.xml | grep -E "app_id|api_key|project_id|sender" | head -20
-    <string name="facebook_app_id">625697601818899</string>
-    <string name="google_api_key">AIzaSyDt1OT_Vmmy8Am61ViPRdiGNMeOjw8lsmE</string>
-    <string name="google_app_id">1:729740418915:android:c170299b4a2bf813fd3d56</string>
-    <string name="google_crash_reporting_api_key">AIzaSyDt1OT_Vmmy8Am61ViPRdiGNMeOjw8lsmE</string>
-    <string name="project_id">thermomavencom</string>
