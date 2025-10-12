@@ -134,4 +134,4 @@ This information is provided for:
 ---
 
 **Status**: ✅ Fully functional for US region authentication  
-**Last Updated**: January 2025
+**Last Updated**: October 2025

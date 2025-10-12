@@ -74,6 +74,28 @@ class ThermoMavenClient:
         
         return headers
     
+    def _make_request(self, method, endpoint, body=None):
+        """Méthode générique pour faire des requêtes authentifiées"""
+        url = f"{self.base_url}{endpoint}"
+        headers = self._build_headers(body)
+        
+        if body:
+            body_str = json.dumps(body, separators=(',', ':'), ensure_ascii=False)
+            response = requests.request(method, url, data=body_str, headers=headers)
+        else:
+            response = requests.request(method, url, headers=headers)
+        
+        print(f"\n=== {method} {endpoint} ===")
+        print(f"Status: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"Response: {json.dumps(data, indent=2, ensure_ascii=False)}\n")
+            return data
+        else:
+            print(f"[ERROR] HTTP {response.status_code}: {response.text}\n")
+            return None
+    
     def login(self):
         endpoint = f"{self.base_url}/app/account/login"
         
@@ -118,6 +140,66 @@ class ThermoMavenClient:
         else:
             print(f"[ERROR] HTTP {response.status_code}: {response.text}")
             return None
+    
+    def get_my_devices(self):
+        """Récupère la liste des appareils possédés par l'utilisateur"""
+        if not self.token:
+            print("[ERROR] Not logged in! Please login first.")
+            return None
+        
+        return self._make_request("POST", "/app/device/share/my/device/list", body={})
+    
+    def get_shared_devices(self):
+        """Récupère la liste des appareils partagés avec l'utilisateur"""
+        if not self.token:
+            print("[ERROR] Not logged in! Please login first.")
+            return None
+        
+        return self._make_request("POST", "/app/device/share/shared/device/list", body={})
+    
+    def get_user_info(self):
+        """Récupère les informations de l'utilisateur"""
+        if not self.token:
+            print("[ERROR] Not logged in! Please login first.")
+            return None
+        
+        return self._make_request("POST", "/app/user/get", body={})
+    
+    def get_mqtt_certificate(self):
+        """Récupère le certificat P12 pour MQTT"""
+        if not self.token:
+            print("[ERROR] Not logged in! Please login first.")
+            return None
+        
+        return self._make_request("POST", "/app/mqtt/cert/apply", body={})
+    
+    def get_device_models(self):
+        """Récupère la liste des modèles d'appareils disponibles"""
+        if not self.token:
+            print("[ERROR] Not logged in! Please login first.")
+            return None
+        
+        return self._make_request("POST", "/app/device/model/list", body={})
+    
+    def get_notification_devices(self):
+        """Récupère la liste des appareils pour les notifications"""
+        if not self.token:
+            print("[ERROR] Not logged in! Please login first.")
+            return None
+        
+        return self._make_request("POST", "/app/notification/setting/device/list", body={})
+    
+    def get_history_page(self, current=1, size=20):
+        """Récupère l'historique des cuissons (peut contenir info sur les appareils)"""
+        if not self.token:
+            print("[ERROR] Not logged in! Please login first.")
+            return None
+        
+        body = {
+            "current": current,
+            "size": size
+        }
+        return self._make_request("POST", "/app/history/page", body=body)
 
 if __name__ == "__main__":
     print("Starting ThermoMaven Client...")
@@ -142,5 +224,77 @@ if __name__ == "__main__":
         print("\n🎉 SUCCESS! Logged in!")
         print(f"Token: {client.token}")
         print(f"User ID: {client.user_id}")
+        
+        # Récupérer les informations utilisateur
+        print("\n" + "="*50)
+        print("Getting User Info...")
+        print("="*50)
+        user_info = client.get_user_info()
+        
+        # Récupérer le certificat MQTT
+        print("\n" + "="*50)
+        print("Getting MQTT Certificate...")
+        print("="*50)
+        mqtt_cert = client.get_mqtt_certificate()
+        
+        # Récupérer la liste des modèles d'appareils
+        print("\n" + "="*50)
+        print("Getting Device Models...")
+        print("="*50)
+        device_models = client.get_device_models()
+        
+        # Tester les listes d'appareils
+        print("\n" + "="*50)
+        print("Getting My Devices...")
+        print("="*50)
+        my_devices = client.get_my_devices()
+        
+        print("\n" + "="*50)
+        print("Getting Shared Devices...")
+        print("="*50)
+        shared_devices = client.get_shared_devices()
+        
+        print("\n" + "="*50)
+        print("Getting Notification Devices...")
+        print("="*50)
+        notification_devices = client.get_notification_devices()
+        
+        print("\n" + "="*50)
+        print("Getting History Page...")
+        print("="*50)
+        history = client.get_history_page()
+        
+        # Résumé des résultats
+        print("\n" + "="*70)
+        print("SUMMARY - Endpoints with data:")
+        print("="*70)
+        
+        endpoints_results = {
+            "User Info": user_info,
+            "MQTT Certificate": mqtt_cert,
+            "Device Models": device_models,
+            "My Devices": my_devices,
+            "Shared Devices": shared_devices,
+            "Notification Devices": notification_devices,
+            "History": history
+        }
+        
+        for name, result in endpoints_results.items():
+            if result and result.get("code") == "0":
+                data = result.get("data")
+                if data:
+                    if isinstance(data, list):
+                        status = f"✓ {len(data)} items"
+                    elif isinstance(data, dict):
+                        status = f"✓ {len(data)} fields"
+                    else:
+                        status = "✓ Has data"
+                else:
+                    status = "○ Empty"
+            else:
+                status = "✗ Failed or no data"
+            
+            print(f"{name:25} : {status}")
+        
     else:
         print("\n❌ Failed")

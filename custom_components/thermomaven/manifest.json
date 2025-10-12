@@ -1,0 +1,16 @@
+{
+  "domain": "thermomaven",
+  "name": "ThermoMaven",
+  "codeowners": ["@yourusername"],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/yourusername/thermomaven-homeassistant",
+  "integration_type": "hub",
+  "iot_class": "cloud_push",
+  "requirements": [
+    "paho-mqtt>=1.6.1",
+    "cryptography>=41.0.0"
+  ],
+  "version": "1.0.0"
+}
+

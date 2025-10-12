@@ -1,8 +1,9 @@
-# Python
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
-*.so
+
+# Distribution / packaging
 .Python
 build/
 develop-eggs/
@@ -16,37 +17,34 @@ parts/
 sdist/
 var/
 wheels/
-pip-wheel-metadata/
-share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-MANIFEST
 
-# Virtual Environment
-venv/
-ENV/
-env/
-.venv
-
-# IDE
-.vscode/
+# PyCharm
 .idea/
-*.swp
-*.swo
-*~
-.DS_Store
 
-# Environment variables (contains user credentials!)
+# VS Code
+.vscode/
+
+# Environment variables
 .env
+env.copy
 
-# Logs
+# Temporary files
+*.tmp
 *.log
 
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
-
-# OS
+# OS files
+.DS_Store
 Thumbs.db
+
+# Home Assistant
+*.db
+*.db-shm
+*.db-wal
+home-assistant.log
+home-assistant_v2.db
+
+# Test files
+test_output/

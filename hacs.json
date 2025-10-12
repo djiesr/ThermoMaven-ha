@@ -1,0 +1,9 @@
+{
+  "name": "ThermoMaven",
+  "country": ["US", "EU"],
+  "domains": ["sensor"],
+  "iot_class": "Cloud Push",
+  "render_readme": true,
+  "homeassistant": "2023.1.0"
+}
+
