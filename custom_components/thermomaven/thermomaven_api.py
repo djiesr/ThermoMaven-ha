@@ -270,7 +270,7 @@ class ThermoMavenAPI:
         try:
             data = json.loads(msg.payload.decode("utf-8"))
             cmd_type = data.get("cmdType", "")
-            _LOGGER.debug("MQTT message received: %s", cmd_type)
+            _LOGGER.debug("MQTT message received: %s on topic %s", cmd_type, msg.topic)
             
             # Store the latest message data for coordinator
             self._latest_mqtt_data = data
@@ -282,12 +282,20 @@ class ThermoMavenAPI:
                 devices = cmd_data.get("devices", [])
                 _LOGGER.info("Device list updated via MQTT: %d devices found", len(devices))
                 _LOGGER.debug("MQTT device data: %s", json.dumps(devices, indent=2))
+                
+                # Subscribe to each device's topic for real-time updates
+                for device in devices:
+                    device_topics = device.get("subTopics", [])
+                    for topic in device_topics:
+                        _LOGGER.info("Subscribing to device topic: %s", topic)
+                        self.mqtt_client.subscribe(topic)
+                
                 if self.coordinator:
                     self.hass.add_job(self.coordinator.async_request_refresh())
             
             # Handle temperature updates
             elif "status:report" in cmd_type:
-                _LOGGER.info("Temperature update received via MQTT")
+                _LOGGER.info("Temperature update received via MQTT (cmdType: %s)", cmd_type)
                 if self.coordinator:
                     self.hass.add_job(self.coordinator.async_request_refresh())
                     

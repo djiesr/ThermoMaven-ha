@@ -1,5 +1,51 @@
 # Changelog
 
+## [1.0.3] - 2025-10-12 - Device Topic Subscription & MQTT Optimization
+
+### ✨ New Features
+- **Automatic device topic subscription**: Integration now subscribes to individual device topics for real-time updates
+  - When devices are discovered, their specific topics (`subTopics`) are automatically subscribed
+  - Enables direct device-to-integration communication
+  - Better real-time temperature updates
+
+### 🔧 Improvements
+- **MQTT-first approach**: Reduced polling interval from 60s to 300s (5 minutes)
+  - MQTT is now the primary data source for real-time updates
+  - API polling is now a fallback mechanism
+  - Reduces API calls and improves responsiveness
+  
+- **Enhanced logging**:
+  - MQTT messages now log the topic they were received on
+  - Device topic subscriptions are logged for debugging
+  - Temperature update messages include cmdType for better tracking
+
+### 📝 Technical Details
+- `custom_components/thermomaven/thermomaven_api.py`:
+  - Added automatic subscription to device `subTopics` on device list updates
+  - Enhanced logging with topic information in MQTT message handler
+  - Improved temperature update logging with cmdType
+
+- `custom_components/thermomaven/__init__.py`:
+  - Update interval changed from 60s to 300s (MQTT is primary)
+  - Added comment clarifying MQTT-first approach
+
+### 🎯 Benefits
+- Faster response to temperature changes (MQTT push vs API polling)
+- Reduced server load with fewer API calls
+- More reliable real-time data from devices
+- Better debugging with enhanced logging
+
+### 🔄 How It Works
+```
+1. Device list received via MQTT
+2. Extract subTopics for each device
+3. Subscribe to each device's specific topics
+4. Receive real-time updates directly from devices
+5. Fallback to API polling every 5 minutes if needed
+```
+
+---
+
 ## [1.0.2] - 2025-10-12 - Dynamic Device Discovery
 
 ### ✨ New Features
