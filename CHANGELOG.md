@@ -1,5 +1,38 @@
 # Changelog
 
+## [1.0.2] - 2025-10-12 - Dynamic Device Discovery
+
+### ✨ New Features
+- **Dynamic device addition**: Devices are now automatically detected and added when they become available
+  - No need to restart Home Assistant when a new device comes online
+  - Devices detected via MQTT are automatically added to the integration
+  - Prevents duplicate entity creation
+
+### 🔧 Improvements
+- **Smart device tracking**: Integration now tracks which devices have been added
+  - Uses device ID tracking to prevent duplicates
+  - Callback system for real-time device discovery
+  - Better handling of devices appearing/disappearing
+
+### 📝 Technical Details
+- `custom_components/thermomaven/sensor.py`:
+  - Added `added_devices` set to track registered devices
+  - Created `add_devices()` function for dynamic device addition
+  - Registered coordinator listener for automatic updates
+  - Added debug logging for device discovery
+  - Prevents duplicate entity warnings
+
+### 🎯 Benefits
+- Devices automatically appear when they connect via MQTT
+- No more "entity already registered" warnings
+- Better support for multiple devices
+- Seamless device detection in real-time
+
+### 🔄 File Organization
+- Moved `whatweknow/` folder to `api/whatweknow/` for better structure
+
+---
+
 ## [1.0.1] - 2025-10-12 - Logging Improvements
 
 ### 🔧 Improvements

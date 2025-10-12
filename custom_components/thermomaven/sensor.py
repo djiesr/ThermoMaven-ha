@@ -26,29 +26,51 @@ async def async_setup_entry(
     """Set up ThermoMaven sensors."""
     coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
     
-    entities = []
+    # Track which devices we've already added
+    added_devices = set()
     
-    # Add device sensors
-    devices = coordinator.data.get("devices", [])
-    for device in devices:
-        device_id = device.get("deviceId")
-        device_model = device.get("deviceModel", "Unknown")
-        num_probes = _get_num_probes(device_model)
+    def add_devices():
+        """Add new devices that haven't been added yet."""
+        entities = []
+        devices = coordinator.data.get("devices", [])
         
-        # Add temperature sensors for each probe
-        for probe_num in range(1, num_probes + 1):
-            entities.append(
-                ThermoMavenTemperatureSensor(
-                    coordinator, device, probe_num, entry.entry_id
+        _LOGGER.debug("Checking for new devices to add. Current devices: %d", len(devices))
+        
+        for device in devices:
+            device_id = str(device.get("deviceId"))
+            
+            # Skip if already added
+            if device_id in added_devices:
+                continue
+                
+            _LOGGER.info("Adding new device: %s (%s)", device.get("deviceName"), device_id)
+            added_devices.add(device_id)
+            
+            device_model = device.get("deviceModel", "Unknown")
+            num_probes = _get_num_probes(device_model)
+            
+            # Add temperature sensors for each probe
+            for probe_num in range(1, num_probes + 1):
+                entities.append(
+                    ThermoMavenTemperatureSensor(
+                        coordinator, device, probe_num, entry.entry_id
+                    )
                 )
+            
+            # Add battery sensor
+            entities.append(
+                ThermoMavenBatterySensor(coordinator, device, entry.entry_id)
             )
         
-        # Add battery sensor
-        entities.append(
-            ThermoMavenBatterySensor(coordinator, device, entry.entry_id)
-        )
+        if entities:
+            _LOGGER.info("Adding %d new entities", len(entities))
+            async_add_entities(entities)
     
-    async_add_entities(entities)
+    # Add initial devices
+    add_devices()
+    
+    # Register callback to add new devices when coordinator updates
+    coordinator.async_add_listener(lambda: add_devices())
 
 
 def _get_num_probes(model: str) -> int:
