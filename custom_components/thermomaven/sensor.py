@@ -26,8 +26,9 @@ async def async_setup_entry(
     """Set up ThermoMaven sensors."""
     coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
     
-    # Track which devices we've already added
-    added_devices = set()
+    # Track which devices we've already added - use a more persistent approach
+    if not hasattr(coordinator, '_added_devices'):
+        coordinator._added_devices = set()
     
     def add_devices():
         """Add new devices that haven't been added yet."""
@@ -40,11 +41,11 @@ async def async_setup_entry(
             device_id = str(device.get("deviceId"))
             
             # Skip if already added
-            if device_id in added_devices:
+            if device_id in coordinator._added_devices:
                 continue
                 
             _LOGGER.info("Adding new device: %s (%s)", device.get("deviceName"), device_id)
-            added_devices.add(device_id)
+            coordinator._added_devices.add(device_id)
             
             device_model = device.get("deviceModel", "Unknown")
             num_probes = _get_num_probes(device_model)

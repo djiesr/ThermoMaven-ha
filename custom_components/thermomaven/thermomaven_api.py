@@ -317,6 +317,7 @@ class ThermoMavenAPI:
             # Handle temperature updates
             elif "status:report" in cmd_type:
                 _LOGGER.info("Temperature update received via MQTT (cmdType: %s)", cmd_type)
+                # Store the status report data for the coordinator to use
                 if self.coordinator:
                     self.hass.add_job(self.coordinator.async_request_refresh())
                     

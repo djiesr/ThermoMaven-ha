@@ -157,10 +157,15 @@ class ThermoMavenDataUpdateCoordinator(DataUpdateCoordinator):
                             if str(device.get("deviceId")) == str(device_id):
                                 # Mettre à jour les données de température
                                 device["lastStatusCmd"] = mqtt_data
-                                _LOGGER.info("Updated temperature data for device %s", device.get("deviceName"))
+                                _LOGGER.debug("Updated temperature data for device %s", device.get("deviceName"))
                                 break
                     else:
-                        _LOGGER.warning("Cannot update device %s: no devices in list", device_id)
+                        _LOGGER.debug("Cannot update device %s: no devices in list", device_id)
+            
+            # Si on n'a pas de données d'appareils mais qu'on en avait avant, les conserver
+            if not devices and previous_devices:
+                devices = previous_devices
+                _LOGGER.debug("No new device data, keeping previous: %d devices", len(devices))
             
             _LOGGER.info("Final device count: %d", len(devices) if devices else 0)
             
