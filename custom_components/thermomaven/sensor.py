@@ -30,7 +30,7 @@ async def async_setup_entry(
     if not hasattr(coordinator, '_added_devices'):
         coordinator._added_devices = set()
     
-    def add_devices():
+    async def add_devices():
         """Add new devices that haven't been added yet."""
         entities = []
         devices = coordinator.data.get("devices", [])
@@ -68,10 +68,10 @@ async def async_setup_entry(
             async_add_entities(entities)
     
     # Add initial devices
-    add_devices()
+    await add_devices()
     
     # Register callback to add new devices when coordinator updates
-    coordinator.async_add_listener(lambda: add_devices())
+    coordinator.async_add_listener(lambda: hass.async_create_task(add_devices()))
 
 
 def _get_num_probes(model: str) -> int:
