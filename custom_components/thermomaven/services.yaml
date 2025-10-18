@@ -1,0 +1,4 @@
+sync_devices:
+  name: Synchroniser les appareils
+  description: Force la synchronisation de la liste des thermomètres ThermoMaven. Utilise ceci si tes appareils ne sont pas détectés automatiquement.
+

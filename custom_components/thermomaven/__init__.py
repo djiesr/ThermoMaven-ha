@@ -47,6 +47,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # Setup MQTT si disponible
     await api.async_setup_mqtt(coordinator)
 
+    # Register services
+    async def handle_sync_devices(call):
+        """Handle the sync_devices service call."""
+        _LOGGER.info("Manual device sync requested via service")
+        # Reset auto-sync counter to allow new attempts
+        coordinator._auto_sync_attempts = 0
+        await api._trigger_device_sync()
+        await coordinator.async_request_refresh()
+    
+    hass.services.async_register(DOMAIN, "sync_devices", handle_sync_devices)
+
     # Forward entry setup to platforms
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
@@ -63,6 +74,10 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         await api.async_disconnect_mqtt()
         
         hass.data[DOMAIN].pop(entry.entry_id)
+        
+        # Unregister services if no more entries
+        if not hass.data[DOMAIN]:
+            hass.services.async_remove(DOMAIN, "sync_devices")
 
     return unload_ok
 
@@ -73,6 +88,8 @@ class ThermoMavenDataUpdateCoordinator(DataUpdateCoordinator):
     def __init__(self, hass: HomeAssistant, api: ThermoMavenAPI):
         """Initialize."""
         self.api = api
+        self._auto_sync_attempts = 0
+        self._max_auto_sync_attempts = 3  # Limite pour éviter de spammer l'API
         super().__init__(
             hass,
             _LOGGER,
@@ -88,6 +105,22 @@ class ThermoMavenDataUpdateCoordinator(DataUpdateCoordinator):
             user_info = await self.api.async_get_user_info()
             
             _LOGGER.debug("API returned %d devices", len(devices) if devices else 0)
+            
+            # If no devices are returned and MQTT client exists, trigger a sync
+            # Limited to prevent API spam if thermometer is offline
+            if not devices and self.api.mqtt_client:
+                if self._auto_sync_attempts < self._max_auto_sync_attempts:
+                    self._auto_sync_attempts += 1
+                    _LOGGER.info(
+                        "No devices found, triggering MQTT sync (attempt %d/%d)",
+                        self._auto_sync_attempts,
+                        self._max_auto_sync_attempts
+                    )
+                    await self.api._trigger_device_sync()
+                else:
+                    _LOGGER.debug(
+                        "Max auto-sync attempts reached. Use 'thermomaven.sync_devices' service to retry manually."
+                    )
             
             # Utiliser les données précédentes si disponibles
             if hasattr(self, 'data') and self.data:
@@ -129,6 +162,10 @@ class ThermoMavenDataUpdateCoordinator(DataUpdateCoordinator):
                         _LOGGER.warning("Cannot update device %s: no devices in list", device_id)
             
             _LOGGER.info("Final device count: %d", len(devices) if devices else 0)
+            
+            # Reset auto-sync counter if devices are found
+            if devices:
+                self._auto_sync_attempts = 0
             
             return {
                 "devices": devices,

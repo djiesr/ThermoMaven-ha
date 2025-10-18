@@ -1,5 +1,56 @@
 # Changelog
 
+## [1.1.2] - 2025-10-18 - Automatic Device Discovery Fix
+
+### 🐛 Bug Fixes
+- **Fixed device discovery requiring mobile app**: Devices are now discovered automatically without needing to open the mobile app
+- **Automatic MQTT synchronization**: Integration now triggers device list sync via API after connecting to MQTT
+- **Fallback sync mechanism**: If no devices are found, automatic retry (max 3 attempts)
+
+### ✨ Improvements
+- **Proactive device sync**: Calls `/app/device/share/my/device/list` and `/app/device/share/shared/device/list` endpoints automatically
+- **Multiple sync points**: 
+  - On MQTT connection
+  - After MQTT setup (with 2s delay for connection stability)
+  - Every coordinator update if no devices found (max 3 attempts)
+- **Anti-spam protection**: Limited to 3 automatic sync attempts to prevent API overload
+- **Manual sync service**: New `thermomaven.sync_devices` service to force sync on-demand
+- **Better reliability**: No longer depends on external mobile app to trigger MQTT messages
+
+### 🔍 Root Cause
+The ThermoMaven system uses a hybrid REST API + MQTT architecture where:
+- MQTT provides real-time updates (temperatures, status)
+- REST API calls trigger server-side actions that publish MQTT messages
+
+The `user:device:list` MQTT message is only published when a client calls the device listing endpoints. The mobile app calls these automatically on startup, but the Home Assistant integration was only listening passively.
+
+### 📝 Files Modified
+- `custom_components/thermomaven/thermomaven_api.py`: Added `_trigger_device_sync()`, modified `_on_mqtt_connect()` and `async_setup_mqtt()`
+- `custom_components/thermomaven/__init__.py`: Added fallback sync with attempt counter, registered `sync_devices` service
+- `custom_components/thermomaven/strings.json`: Added service translations
+- Added `custom_components/thermomaven/services.yaml`: Service definition
+- Added `DEVICE_DISCOVERY_FIX.md`: Detailed technical documentation
+
+### 🎯 Testing
+To test the fix:
+1. Remove the existing ThermoMaven integration
+2. Restart Home Assistant
+3. Re-add the integration **without opening the mobile app**
+4. Devices should appear within 10-15 seconds automatically
+
+### 🔧 Manual Sync Service
+If devices aren't detected automatically:
+1. Go to Developer Tools → Services
+2. Search for "ThermoMaven: Synchroniser les appareils"
+3. Click "Call Service"
+
+Or use in automations:
+```yaml
+service: thermomaven.sync_devices
+```
+
+---
+
 ## [1.1.1] - 2025-10-12 - Icon & Status Display Fix
 
 ### 🐛 Bug Fixes

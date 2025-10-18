@@ -34,6 +34,12 @@
         }
       }
     }
+  },
+  "services": {
+    "sync_devices": {
+      "name": "Synchroniser les appareils",
+      "description": "Force la synchronisation de la liste des thermomètres ThermoMaven. Utilise ce service si tes appareils ne sont pas détectés automatiquement ou après avoir allumé un nouveau thermomètre."
+    }
   }
 }
 

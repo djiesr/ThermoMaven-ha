@@ -181,6 +181,12 @@ class ThermoMavenAPI:
         # Download and convert certificate in executor
         await self.hass.async_add_executor_job(self._setup_mqtt_sync)
         
+        # Trigger initial device sync after MQTT setup
+        # The on_connect callback will also trigger sync, but this ensures it happens
+        # even if there's a timing issue with MQTT connection
+        await asyncio.sleep(2)  # Give MQTT time to connect
+        await self._trigger_device_sync()
+        
         return True
 
     def _setup_mqtt_sync(self):
@@ -262,6 +268,11 @@ class ThermoMavenAPI:
             for topic in self.mqtt_config["subTopics"]:
                 client.subscribe(topic)
                 _LOGGER.info("Subscribed to %s", topic)
+            
+            # Trigger device list sync by calling API endpoints
+            # This will cause the MQTT broker to publish user:device:list message
+            _LOGGER.info("Triggering device list synchronization via API")
+            self.hass.add_job(self._trigger_device_sync())
         else:
             _LOGGER.error("Failed to connect to MQTT broker: %s", rc)
 
@@ -306,6 +317,23 @@ class ThermoMavenAPI:
         """Handle MQTT disconnection."""
         if rc != 0:
             _LOGGER.warning("Unexpected MQTT disconnection: %s", rc)
+
+    async def _trigger_device_sync(self):
+        """Trigger device synchronization by calling API endpoints.
+        
+        This causes the MQTT broker to publish the user:device:list message,
+        which is needed for device discovery.
+        """
+        try:
+            # Small delay to ensure MQTT subscription is active
+            await asyncio.sleep(1)
+            
+            _LOGGER.info("Calling API endpoints to trigger MQTT device list...")
+            # These API calls will trigger the MQTT broker to send user:device:list
+            await self.async_get_devices()
+            _LOGGER.info("Device sync triggered successfully")
+        except Exception as err:
+            _LOGGER.error("Failed to trigger device sync: %s", err)
 
     async def async_disconnect_mqtt(self):
         """Disconnect MQTT client."""
