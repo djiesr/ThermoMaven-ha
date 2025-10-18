@@ -22,9 +22,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     password = entry.data["password"]
     app_key = entry.data.get("app_key", "bcd4596f1bb8419a92669c8017bf25e8")
     app_id = entry.data.get("app_id", "ap4060eff28137181bd")
+    region = entry.data.get("region", "US")
 
     # Créer l'API client
-    api = ThermoMavenAPI(hass, email, password, app_key, app_id)
+    api = ThermoMavenAPI(hass, email, password, app_key, app_id, region)
     
     # Se connecter
     try:

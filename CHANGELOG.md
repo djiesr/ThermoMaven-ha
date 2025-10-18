@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.1.3] - 2025-10-18 - Region Selection
+
+### ✨ New Features
+- **Region selection during setup**: Users can now choose their region (US/Canada, Europe, Canada alternative)
+- **Proper region handling**: The integration now sends the correct `x-region` header based on user selection
+- **Multi-region support**: Full support for US, DE (Europe), and CA regions
+
+### 🔧 Improvements
+- **Better region detection**: Region is saved in config and used for all API calls
+- **Region-specific MQTT brokers**: Automatically selects the correct MQTT broker based on region
+- **Updated translations**: Added region selection in English and French translations
+
+### 📝 Files Modified
+- `custom_components/thermomaven/config_flow.py`: Added region selection dropdown
+- `custom_components/thermomaven/thermomaven_api.py`: Added region parameter and usage
+- `custom_components/thermomaven/__init__.py`: Pass region to API
+- `custom_components/thermomaven/strings.json`: Added region translations
+- `custom_components/thermomaven/translations/fr.json`: Added French translations
+
+### 🎯 Region Options
+- **US**: United States / Canada (default)
+- **DE**: Europe (Germany, UK, France, etc.)
+- **CA**: Canada (alternative endpoint)
+
+---
+
 ## [1.1.2] - 2025-10-18 - Automatic Device Discovery Fix
 
 ### 🐛 Bug Fixes

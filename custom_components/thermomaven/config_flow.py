@@ -15,10 +15,19 @@ from .thermomaven_api import ThermoMavenAPI
 
 _LOGGER = logging.getLogger(__name__)
 
+CONF_REGION = "region"
+
+REGIONS = {
+    "US": "United States / Canada",
+    "DE": "Europe (Germany, UK, France...)",
+    "CA": "Canada (alternative)",
+}
+
 STEP_USER_DATA_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_EMAIL): str,
         vol.Required(CONF_PASSWORD): str,
+        vol.Required(CONF_REGION, default="US"): vol.In(REGIONS),
     }
 )
 
@@ -31,6 +40,7 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
         data[CONF_PASSWORD],
         DEFAULT_APP_KEY,
         DEFAULT_APP_ID,
+        region=data.get(CONF_REGION, "US"),
     )
 
     try:
@@ -41,8 +51,9 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
         _LOGGER.error("Failed to login: %s", err)
         raise CannotConnect from err
 
+    region_name = REGIONS.get(data.get(CONF_REGION, "US"), "US")
     return {
-        "title": f"ThermoMaven ({data[CONF_EMAIL]})",
+        "title": f"ThermoMaven ({data[CONF_EMAIL]}) - {region_name}",
         "user_id": result["data"]["userId"],
     }
 
@@ -79,6 +90,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         **user_input,
                         "app_key": DEFAULT_APP_KEY,
                         "app_id": DEFAULT_APP_ID,
+                        "region": user_input.get(CONF_REGION, "US"),
                     },
                 )
 

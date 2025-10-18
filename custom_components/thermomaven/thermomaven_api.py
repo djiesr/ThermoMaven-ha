@@ -32,6 +32,7 @@ class ThermoMavenAPI:
         password: str,
         app_key: str,
         app_id: str,
+        region: str = "US",
     ):
         """Initialize the API."""
         self.hass = hass
@@ -39,6 +40,7 @@ class ThermoMavenAPI:
         self.password = password
         self.app_key = app_key
         self.app_id = app_id
+        self.region = region
         self.token = None
         self.user_id = None
         self.device_sn = "".join(random.choices("0123456789abcdef", k=16))
@@ -71,7 +73,7 @@ class ThermoMavenAPI:
             "x-deviceSn": self.device_sn,
             "x-lang": "en_US",
             "x-nonce": nonce,
-            "x-region": "US",
+            "x-region": self.region,
             "x-timestamp": timestamp,
             "x-token": token_value,
         }

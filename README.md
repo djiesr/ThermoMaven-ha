@@ -86,10 +86,21 @@ python thermomaven_mqtt_client.py
    - Go to **Settings** → **Devices & Services**
    - Click **+ Add Integration**
    - Search for **"ThermoMaven"**
+   - **Select your region** (US/Canada, Europe, or Canada alternative)
    - Enter your ThermoMaven credentials (email/password)
    - Click **Submit**
 
 4. **Your devices will appear automatically!** 🎉
+
+#### Region Selection 🌍
+
+**New in v1.1.3**: Choose your region during setup!
+
+- **🇺🇸 United States / Canada** - For US and Canadian accounts (default)
+- **🇪🇺 Europe** - For European accounts (Germany, UK, France, etc.)
+- **🇨🇦 Canada (alternative)** - Alternative endpoint for Canada
+
+**Tip**: If unsure, start with "United States / Canada"
 
 #### What you'll get:
 

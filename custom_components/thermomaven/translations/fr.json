@@ -3,10 +3,14 @@
     "step": {
       "user": {
         "title": "Configuration ThermoMaven",
-        "description": "Entrez vos identifiants ThermoMaven",
+        "description": "Entrez vos identifiants ThermoMaven et sélectionnez votre région",
         "data": {
           "email": "Email",
-          "password": "Mot de passe"
+          "password": "Mot de passe",
+          "region": "Région"
+        },
+        "data_description": {
+          "region": "Sélectionnez la région où votre compte ThermoMaven est enregistré"
         }
       }
     },
