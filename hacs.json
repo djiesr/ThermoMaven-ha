@@ -5,10 +5,11 @@
   "iot_class": "Cloud Push",
   "render_readme": true,
   "homeassistant": "2023.1.0",
-  "version": "1.1.5b1",
+  "version": "1.1.5b2",
   "hide_default_branch": false,
   "persistent_directory": "custom_components/thermomaven",
   "zip_release": true,
-  "filename": "thermomaven.zip"
+  "filename": "thermomaven.zip",
+  "use_default_branch": false
 }
 
