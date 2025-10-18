@@ -17,7 +17,7 @@ from cryptography.hazmat.primitives import serialization
 
 from homeassistant.core import HomeAssistant
 
-from .const import API_BASE_URL, MQTT_BROKERS, MQTT_PORT
+from .const import API_BASE_URL_COM, API_BASE_URL_DE, EUROPEAN_COUNTRIES, MQTT_BROKERS, MQTT_PORT
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -44,6 +44,14 @@ class ThermoMavenAPI:
         self.token = None
         self.user_id = None
         self.device_sn = "".join(random.choices("0123456789abcdef", k=16))
+        
+        # Determine API base URL based on region
+        if region in EUROPEAN_COUNTRIES:
+            self.api_base_url = API_BASE_URL_DE
+            _LOGGER.info("Using European API (DE) for region %s", region)
+        else:
+            self.api_base_url = API_BASE_URL_COM
+            _LOGGER.info("Using Global API (COM) for region %s", region)
         
         self.mqtt_client = None
         self.mqtt_config = None
@@ -97,7 +105,7 @@ class ThermoMavenAPI:
 
     async def async_login(self) -> dict[str, Any]:
         """Login to ThermoMaven API."""
-        endpoint = f"{API_BASE_URL}/app/account/login"
+        endpoint = f"{self.api_base_url}/app/account/login"
         password_md5 = hashlib.md5(self.password.encode("utf-8")).hexdigest()
 
         payload = {
@@ -151,7 +159,7 @@ class ThermoMavenAPI:
 
     async def _async_request(self, method: str, endpoint: str, body: dict) -> dict:
         """Make an authenticated request."""
-        url = f"{API_BASE_URL}{endpoint}"
+        url = f"{self.api_base_url}{endpoint}"
         headers = self._build_headers(body)
         
         if body:

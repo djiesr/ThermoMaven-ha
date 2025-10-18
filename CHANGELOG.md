@@ -1,28 +1,43 @@
 # Changelog
 
-## [1.1.3] - 2025-10-18 - Region Selection
+## [1.1.4] - 2025-10-18 - Multi-Region Support 🌍
 
 ### ✨ New Features
-- **Region selection during setup**: Users can now choose their region (US/Canada, Europe, Canada alternative)
-- **Proper region handling**: The integration now sends the correct `x-region` header based on user selection
-- **Multi-region support**: Full support for US, DE (Europe), and CA regions
+- **Country/Region Selection**: Select your country during setup from 30 supported countries
+- **Multi-Region API Support**: 
+  - European countries → `api-de.iot.thermomaven.com`
+  - Other countries → `api.iot.thermomaven.com`
+- **Dynamic Region Header**: `x-region` header now uses your selected country code (e.g., FR, CA, DE, US)
+- **Official Home Assistant Logos**: Integration now uses official ThermoMaven logos from Home Assistant brands
 
-### 🔧 Improvements
-- **Better region detection**: Region is saved in config and used for all API calls
-- **Region-specific MQTT brokers**: Automatically selects the correct MQTT broker based on region
-- **Updated translations**: Added region selection in English and French translations
+### 🌍 Supported Countries
+**Europe (DE API)**: Austria, Belgium, Bulgaria, Switzerland, Czech Republic, Germany, Denmark, Spain, Finland, France, Hungary, Ireland, Iceland, Italy, Luxembourg, Netherlands, Norway, Poland, Portugal, Romania, Serbia, Sweden, Slovakia, Turkey, United Kingdom
+
+**Rest of World (COM API)**: Australia, Canada, New Zealand, United States, South Africa
+
+### 🔧 Technical Improvements
+- **Smart API routing**: Automatic API endpoint selection based on region
+- **Better localization**: Country selector with proper translations (EN/FR)
+- **Configuration flow enhancement**: User-friendly country dropdown in setup
 
 ### 📝 Files Modified
-- `custom_components/thermomaven/config_flow.py`: Added region selection dropdown
-- `custom_components/thermomaven/thermomaven_api.py`: Added region parameter and usage
-- `custom_components/thermomaven/__init__.py`: Pass region to API
-- `custom_components/thermomaven/strings.json`: Added region translations
-- `custom_components/thermomaven/translations/fr.json`: Added French translations
+- `custom_components/thermomaven/const.py`: Added country list, API URLs, European countries set
+- `custom_components/thermomaven/config_flow.py`: Added region selector to config flow
+- `custom_components/thermomaven/thermomaven_api.py`: Dynamic API URL and region header
+- `custom_components/thermomaven/__init__.py`: Pass region to API client
+- `custom_components/thermomaven/strings.json`: Added region field translation
+- `custom_components/thermomaven/translations/en.json`: English region translations
+- `custom_components/thermomaven/translations/fr.json`: French region translations
+- `custom_components/thermomaven/manifest.json`: Version bump to 1.1.4
 
-### 🎯 Region Options
-- **US**: United States / Canada (default)
-- **DE**: Europe (Germany, UK, France, etc.)
-- **CA**: Canada (alternative endpoint)
+### 🚀 Migration from 1.1.2
+Users upgrading from 1.1.2 will need to:
+1. Remove and re-add the integration
+2. Select their country during setup
+3. The integration will automatically use the correct API endpoint
+
+### 📌 Note
+Version 1.1.3 was skipped due to an internal error.
 
 ---
 

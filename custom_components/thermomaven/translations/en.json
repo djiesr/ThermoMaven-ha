@@ -6,7 +6,8 @@
         "description": "Enter your ThermoMaven account credentials",
         "data": {
           "email": "Email",
-          "password": "Password"
+          "password": "Password",
+          "region": "Country/Region"
         }
       }
     },
