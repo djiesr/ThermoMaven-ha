@@ -135,9 +135,9 @@ class ThermoMavenClimate(CoordinatorEntity, ClimateEntity):
         # Unique ID
         self._attr_unique_id = f"{device_id}_probe_{probe_num}_climate"
         
-        # Entity name
-        probe_name = f"Probe {probe_num}"
-        self._attr_name = f"{probe_name} Control"
+        # Entity name and translation
+        self._attr_name = f"Probe {probe_num} Control"
+        self._attr_translation_key = f"probe_{probe_num}_control"
         
         # Device info
         model_name = DEVICE_MODELS.get(device_model, device_model)

@@ -5,52 +5,52 @@
 [![Version](https://img.shields.io/badge/Version-1.4.4-blue)](https://github.com/djiesr/thermomaven-ha)
 [![hacs](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/hacs/integration)
 
-Intégration Home Assistant pour les thermomètres sans fil ThermoMaven (P1, P2, P4, G1, G2, G4).
+Home Assistant integration for ThermoMaven wireless thermometers (P1, P2, P4, G1, G2, G4).
 
-## ✨ Fonctionnalités
+## ✨ Features
 
-- 🌡️ **Surveillance de température en temps réel** via MQTT
-- 📊 **17+ capteurs par appareil** (température, batterie, cuisson, WiFi)
-- 🎛️ **Contrôle de température** avec entités Climate (v1.4.0+)
-- ⏱️ **Suivi du temps de cuisson** (total, actuel, restant)
-- 🔋 **Niveau de batterie** (appareil et sondes)
-- 📡 **Signal WiFi** (RSSI)
-- 🌍 **Multi-langue** (EN, FR, ES, PT, DE, ZH)
-- 🔄 **Mises à jour automatiques** via MQTT push
+- 🌡️ **Real-time temperature monitoring** via MQTT
+- 📊 **17+ sensors per device** (temperature, battery, cooking time, WiFi)
+- 🎛️ **Temperature control** with Climate entities (v1.4.0+)
+- ⏱️ **Cooking time tracking** (total, current, remaining)
+- 🔋 **Battery levels** (device and probes)
+- 📡 **WiFi signal** (RSSI)
+- 🌍 **Multi-language** (EN, FR, ES, PT, DE, ZH)
+- 🔄 **Automatic updates** via MQTT push
 
-## 📱 Appareils Supportés
+## 📱 Supported Devices
 
-| Modèle | Nom | Sondes | Description |
-|--------|-----|--------|-------------|
-| **WT02** | ThermoMaven P2 | 2 | Thermomètre professionnel 2 sondes |
-| **WT06** | ThermoMaven P4 | 4 | Thermomètre professionnel 4 sondes |
-| **WT07** | ThermoMaven G2 | 2 | Thermomètre grill 2 sondes |
-| **WT09** | ThermoMaven G4 | 4 | Thermomètre grill 4 sondes |
-| **WT10** | ThermoMaven G1 | 1 | Thermomètre grill 1 sonde |
-| **WT11** | ThermoMaven P1 | 1 | Thermomètre professionnel 1 sonde |
+| Model | Name | Probes | Description |
+|-------|------|--------|-------------|
+| **WT02** | ThermoMaven P2 | 2 | Professional 2-probe thermometer |
+| **WT06** | ThermoMaven P4 | 4 | Professional 4-probe thermometer |
+| **WT07** | ThermoMaven G2 | 2 | Grill 2-probe thermometer |
+| **WT09** | ThermoMaven G4 | 4 | Grill 4-probe thermometer |
+| **WT10** | ThermoMaven G1 | 1 | Single-probe grill thermometer |
+| **WT11** | ThermoMaven P1 | 1 | Single-probe professional thermometer |
 
 ## 📦 Installation
 
-### Option 1 : Installation via HACS (Recommandé)
+### Option 1: Installation via HACS (Recommended)
 
-1. **Ouvrez HACS** dans Home Assistant
-2. Allez dans **Intégrations**
-3. Cliquez sur **⋮** (menu) → **Dépôts personnalisés**
-4. Ajoutez l'URL : `https://github.com/djiesr/thermomaven-ha`
-5. Catégorie : **Intégration**
-6. Cliquez sur **Ajouter**
-7. Cherchez **"ThermoMaven"** dans HACS
-8. Cliquez sur **Télécharger**
-9. **Redémarrez Home Assistant**
+1. **Open HACS** in Home Assistant
+2. Go to **Integrations**
+3. Click **⋮** (menu) → **Custom repositories**
+4. Add URL: `https://github.com/djiesr/thermomaven-ha`
+5. Category: **Integration**
+6. Click **Add**
+7. Search for **"ThermoMaven"** in HACS
+8. Click **Download**
+9. **Restart Home Assistant**
 
-### Option 2 : Installation Manuelle
+### Option 2: Manual Installation
 
-1. **Téléchargez** la [dernière version](https://github.com/djiesr/thermomaven-ha/releases/latest)
-2. **Extrayez** le dossier `custom_components/thermomaven`
-3. **Copiez** le dossier dans : `/config/custom_components/thermomaven/`
-4. **Redémarrez Home Assistant**
+1. **Download** the [latest release](https://github.com/djiesr/thermomaven-ha/releases/latest)
+2. **Extract** the `custom_components/thermomaven` folder
+3. **Copy** to: `/config/custom_components/thermomaven/`
+4. **Restart Home Assistant**
 
-Structure finale :
+Final structure:
 ```
 config/
 └── custom_components/
@@ -67,112 +67,101 @@ config/
 
 ## ⚙️ Configuration
 
-### 1. Ajouter l'Intégration
+### 1. Add the Integration
 
-Après l'installation et le redémarrage :
+After installation and restart:
 
-1. Allez dans **Paramètres** → **Appareils et services**
-2. Cliquez sur **+ Ajouter une intégration**
-3. Cherchez **"ThermoMaven"**
-4. Cliquez sur l'intégration ThermoMaven
+1. Go to **Settings** → **Devices & Services**
+2. Click **+ Add Integration**
+3. Search for **"ThermoMaven"**
+4. Click on ThermoMaven integration
 
-### 2. Entrez vos Identifiants
+### 2. Enter Your Credentials
 
-<img src="https://via.placeholder.com/600x300/1f1f1f/ffffff?text=Configuration+ThermoMaven" alt="Configuration" width="500"/>
+Enter:
+- **Email**: Your ThermoMaven email
+- **Password**: Your ThermoMaven password
+- **Region**: Select your country/region
 
-Renseignez :
-- **Email** : Votre email ThermoMaven
-- **Mot de passe** : Votre mot de passe ThermoMaven
-- **Région** : Sélectionnez votre pays/région
-
-**Note :** Ce sont les mêmes identifiants que l'application mobile ThermoMaven.
+**Note:** Use the same credentials as the ThermoMaven mobile app.
 
 ### 3. Validation
 
-L'intégration va :
-- ✅ Se connecter à l'API ThermoMaven
-- ✅ Établir la connexion MQTT pour les mises à jour en temps réel
-- ✅ Découvrir automatiquement vos appareils
-- ✅ Créer toutes les entités (capteurs et contrôles)
+The integration will:
+- ✅ Connect to ThermoMaven API
+- ✅ Establish MQTT connection for real-time updates
+- ✅ Auto-discover your devices
+- ✅ Create all entities (sensors and controls)
 
-## 🎯 Résultat dans Home Assistant
+## 🎯 Entities Created in Home Assistant
 
-### 📊 Entités Créées Automatiquement
+### 📊 Automatically Created Entities
 
-Pour **chaque appareil ThermoMaven**, vous obtiendrez :
+For **each ThermoMaven device**, you'll get:
 
-#### 🌡️ Capteurs de Température (par sonde)
-
-```
-sensor.thermomaven_[appareil]_probe_1          # Température sonde 1
-sensor.thermomaven_[appareil]_probe_2          # Température sonde 2
-sensor.thermomaven_[appareil]_probe_3          # Température sonde 3 (si disponible)
-sensor.thermomaven_[appareil]_probe_4          # Température sonde 4 (si disponible)
-```
-
-#### 🔥 Capteurs de Zones (pour chaque sonde)
+#### 🌡️ Temperature Sensors (per probe)
 
 ```
-sensor.thermomaven_[appareil]_area_1_tip       # Zone 1 (Pointe)
-sensor.thermomaven_[appareil]_area_2           # Zone 2
-sensor.thermomaven_[appareil]_area_3           # Zone 3
-sensor.thermomaven_[appareil]_area_4           # Zone 4
-sensor.thermomaven_[appareil]_area_5_handle    # Zone 5 (Poignée)
+sensor.thermomaven_[device]_probe_1          # Probe 1 temperature
+sensor.thermomaven_[device]_probe_2          # Probe 2 temperature
+sensor.thermomaven_[device]_probe_3          # Probe 3 temperature (if available)
+sensor.thermomaven_[device]_probe_4          # Probe 4 temperature (if available)
 ```
 
-#### 🎛️ Contrôles Climate (v1.4.0+) ✨
+#### 🔥 Zone Sensors (for each probe)
 
 ```
-climate.thermomaven_[appareil]_probe_1_control # Contrôle sonde 1
-climate.thermomaven_[appareil]_probe_2_control # Contrôle sonde 2
-climate.thermomaven_[appareil]_probe_3_control # Contrôle sonde 3 (si disponible)
-climate.thermomaven_[appareil]_probe_4_control # Contrôle sonde 4 (si disponible)
+sensor.thermomaven_[device]_area_1_tip       # Zone 1 (Tip)
+sensor.thermomaven_[device]_area_2           # Zone 2
+sensor.thermomaven_[device]_area_3           # Zone 3
+sensor.thermomaven_[device]_area_4           # Zone 4
+sensor.thermomaven_[device]_area_5_handle    # Zone 5 (Handle)
 ```
 
-**Fonctionnalités Climate :**
-- 🎯 Définir température cible (32-572°F / 0-300°C)
-- ▶️ Démarrer/arrêter la cuisson
-- 📊 Afficher température actuelle et cible
-- 🔄 Modes : Off, Heat, Auto
-- 📋 Presets : Cooking, Ready, Resting, Remove
-
-#### ⏱️ Capteurs de Cuisson
+#### 🎛️ Climate Controls (v1.4.0+) ✨
 
 ```
-sensor.thermomaven_[appareil]_total_cook_time     # Temps total
-sensor.thermomaven_[appareil]_current_cook_time   # Temps actuel
-sensor.thermomaven_[appareil]_remaining_cook_time # Temps restant
-sensor.thermomaven_[appareil]_cooking_mode        # Mode de cuisson
-sensor.thermomaven_[appareil]_cooking_state       # État actuel
+climate.thermomaven_[device]_probe_1_control # Probe 1 control
+climate.thermomaven_[device]_probe_2_control # Probe 2 control
+climate.thermomaven_[device]_probe_3_control # Probe 3 control (if available)
+climate.thermomaven_[device]_probe_4_control # Probe 4 control (if available)
 ```
 
-#### 🔋 Capteurs Batterie & WiFi
+**Climate Features:**
+- 🎯 Set target temperature (32-572°F / 0-300°C)
+- ▶️ Start/stop cooking
+- 📊 Display current and target temperature
+- 🔄 Modes: Off, Heat, Auto
+- 📋 Presets: Cooking, Ready, Resting, Remove
+
+#### ⏱️ Cooking Sensors
 
 ```
-sensor.thermomaven_[appareil]_battery          # Batterie appareil
-sensor.thermomaven_[appareil]_probe_battery    # Batterie sonde
-sensor.thermomaven_[appareil]_wifi_signal      # Signal WiFi (RSSI)
+sensor.thermomaven_[device]_total_cook_time     # Total time
+sensor.thermomaven_[device]_current_cook_time   # Current time
+sensor.thermomaven_[device]_remaining_cook_time # Remaining time
+sensor.thermomaven_[device]_cooking_mode        # Cooking mode
+sensor.thermomaven_[device]_cooking_state       # Current state
 ```
 
-#### 🌡️ Capteurs Environnement
+#### 🔋 Battery & WiFi Sensors
 
 ```
-sensor.thermomaven_[appareil]_ambient          # Température ambiante
-sensor.thermomaven_[appareil]_target           # Température cible
+sensor.thermomaven_[device]_battery          # Device battery
+sensor.thermomaven_[device]_probe_battery    # Probe battery
+sensor.thermomaven_[device]_wifi_signal      # WiFi signal (RSSI)
 ```
 
-### 📱 Exemple d'Interface
+#### 🌡️ Environment Sensors
 
-Vos appareils apparaîtront dans :
-- **Paramètres** → **Appareils et services** → **ThermoMaven**
-- **Aperçu** (pour créer des cartes)
-- **Outils de développement** → **États**
+```
+sensor.thermomaven_[device]_ambient          # Ambient temperature
+sensor.thermomaven_[device]_target           # Target temperature
+```
 
-<img src="https://via.placeholder.com/800x400/1f1f1f/ffffff?text=Entités+ThermoMaven+dans+Home+Assistant" alt="Entités" width="700"/>
+## 💡 Usage Examples
 
-## 💡 Exemples d'Utilisation
-
-### Carte Thermostat
+### Thermostat Card
 
 ```yaml
 type: thermostat
@@ -185,7 +174,7 @@ features:
       - heat
 ```
 
-### Carte de Surveillance
+### Monitoring Card
 
 ```yaml
 type: entities
@@ -195,88 +184,88 @@ entities:
     name: Steak
     icon: mdi:food-steak
   - entity: sensor.thermomaven_grill_probe_2
-    name: Poulet
+    name: Chicken
     icon: mdi:food-drumstick
   - entity: sensor.thermomaven_grill_battery
-    name: Batterie
+    name: Battery
   - entity: sensor.thermomaven_grill_wifi_signal
     name: WiFi
 ```
 
-### Graphique Historique
+### History Graph
 
 ```yaml
 type: history-graph
-title: Température - 3 dernières heures
+title: Temperature - Last 3 Hours
 entities:
   - sensor.thermomaven_grill_probe_1
   - sensor.thermomaven_grill_probe_2
 hours_to_show: 3
 ```
 
-### Automation : Alerte de Cuisson
+### Automation: Cooking Alert
 
 ```yaml
 automation:
-  - alias: "🍖 Steak Prêt"
+  - alias: "🍖 Steak Ready"
     trigger:
       - platform: numeric_state
-      entity_id: sensor.thermomaven_grill_probe_1
-      above: 60  # 60°C
+        entity_id: sensor.thermomaven_grill_probe_1
+        above: 60  # 60°C
     action:
       - service: notify.mobile_app
         data:
           title: "🍖 BBQ"
-          message: "Le steak est prêt ! ({{ states('sensor.thermomaven_grill_probe_1') }}°C)"
+          message: "Steak is ready! ({{ states('sensor.thermomaven_grill_probe_1') }}°C)"
 ```
 
-### Automation : Batterie Faible
+### Automation: Low Battery
 
 ```yaml
 automation:
-  - alias: "🔋 Batterie Faible"
+  - alias: "🔋 Low Battery"
     trigger:
       - platform: numeric_state
-      entity_id: sensor.thermomaven_grill_battery
-      below: 20
+        entity_id: sensor.thermomaven_grill_battery
+        below: 20
     action:
       - service: persistent_notification.create
         data:
-          title: "⚠️ Batterie Faible"
-          message: "ThermoMaven : {{ states('sensor.thermomaven_grill_battery') }}%"
+          title: "⚠️ Low Battery"
+          message: "ThermoMaven: {{ states('sensor.thermomaven_grill_battery') }}%"
 ```
 
-## 🔧 Dépannage
+## 🔧 Troubleshooting
 
-### Les Capteurs Sont "Non Disponible"
+### Sensors Show "Unavailable"
 
-**✅ Solution :**
-1. Vérifiez que vos appareils ThermoMaven sont allumés
-2. Vérifiez qu'ils sont connectés au WiFi
-3. Rechargez l'intégration : **Paramètres** → **Intégrations** → **ThermoMaven** → **⋮** → **Recharger**
+**✅ Solution:**
+1. Check that your ThermoMaven devices are powered on
+2. Check WiFi connection
+3. Reload integration: **Settings** → **Integrations** → **ThermoMaven** → **⋮** → **Reload**
 
-### Aucun Appareil Détecté
+### No Devices Detected
 
-**✅ Vérifications :**
-- Les appareils sont bien associés à votre compte dans l'app mobile
-- Les appareils sont sous tension et connectés au WiFi
-- Vos identifiants ThermoMaven sont corrects
+**✅ Checks:**
+- Devices are paired with your account in the mobile app
+- Devices are powered on and connected to WiFi
+- Your ThermoMaven credentials are correct
 
-### Problème de Connexion MQTT
+### MQTT Connection Issues
 
-**✅ Vérifications :**
-- Votre connexion Internet fonctionne
-- Le port 8883 n'est pas bloqué par votre pare-feu
-- Consultez les logs : **Paramètres** → **Système** → **Journaux**
+**✅ Checks:**
+- Internet connection is working
+- Port 8883 is not blocked by firewall
+- Check logs: **Settings** → **System** → **Logs**
 
-### Les Entités Climate Ne S'Affichent Pas
+### Climate Entities Not Showing
 
-**✅ Solution (v1.4.0+) :**
-1. Vérifiez que vous avez bien la version 1.4.0+
-2. Redémarrez Home Assistant complètement
-3. Les entités climate apparaissent automatiquement après redémarrage
+**✅ Solution (v1.4.0+):**
+1. Verify you have version 1.4.0+
+2. Completely restart Home Assistant
+3. Climate entities appear automatically after restart
 
-### Activer les Logs de Debug
+### Enable Debug Logs
 
 ```yaml
 # configuration.yaml
@@ -286,98 +275,98 @@ logger:
     custom_components.thermomaven: debug
 ```
 
-Puis : **Paramètres** → **Système** → **Journaux** et filtrez par "thermomaven"
+Then: **Settings** → **System** → **Logs** and filter by "thermomaven"
 
-## 🚧 À Faire (Roadmap)
+## 🚧 Roadmap (To Do)
 
-Fonctionnalités prévues pour les prochaines versions :
+Planned features for upcoming versions:
 
-### 🎯 Version 1.5.0 (Planifiée)
+### 🎯 Version 1.5.0 (Planned)
 
-- **Synchronisation Target Temperature**
-  - Modifier le capteur `sensor.thermomaven_*_target_temperature` depuis l'entité Climate
-  - Synchronisation bidirectionnelle entre sensor et climate
+- **Target Temperature Synchronization**
+  - Update `sensor.thermomaven_*_target_temperature` from Climate entity
+  - Bidirectional sync between sensor ↔ climate
   
-- **Contrôle du Cook Time**
-  - Définir une durée de cuisson cible
-  - Alarmes et notifications quand le temps est écoulé
-  - Gestion du temps restant
+- **Cook Time Control**
+  - Set target cooking duration
+  - Alarms and notifications when time elapsed
+  - Remaining time management
   
-- **Gestion avancée du Cooking Mode**
-  - Sélection du mode de cuisson (Smart, Manual, etc.)
-  - Presets de cuisson personnalisés
-  - Profils de température par type d'aliment
+- **Advanced Cooking Mode Management**
+  - Select cooking mode (Smart, Manual, etc.)
+  - Custom cooking presets
+  - Temperature profiles by food type
 
-### 🔮 Futures Améliorations
+### 🔮 Future Improvements
 
-- 📊 Graphiques d'historique de température
-- 📱 Notifications push avancées
-- 🎨 Presets de cuisson personnalisables
-- ⏰ Minuteries et alarmes multiples
-- 🌡️ Gestion multi-zones améliorée
+- 📊 Temperature history graphs
+- 📱 Advanced push notifications
+- 🎨 Customizable cooking presets
+- ⏰ Multiple timers and alarms
+- 🌡️ Enhanced multi-zone management
 
-**Contributions bienvenues !** Si vous souhaitez implémenter une de ces fonctionnalités, ouvrez une issue ou pull request.
+**Contributions welcome!** If you'd like to implement any of these features, open an issue or pull request.
 
-## 📚 Documentation Complète
+## 📚 Complete Documentation
 
-- **[Guide Contrôle Climate](CLIMATE_CONTROL_GUIDE.md)** - Utilisation des entités Climate
-- **[Notes de Version 1.4.4](RELEASE_NOTES_1.4.4.md)** - Dernières nouveautés
-- **[Changelog](CHANGELOG.md)** - Historique des versions
-- **[Architecture Technique](ARCHITECTURE.md)** - Détails techniques
+- **[Climate Control Guide](CLIMATE_CONTROL_GUIDE.md)** - Using Climate entities
+- **[Release Notes 1.4.4](RELEASE_NOTES_1.4.4.md)** - Latest updates
+- **[Changelog](CHANGELOG.md)** - Version history
+- **[Technical Architecture](ARCHITECTURE.md)** - Technical details
 
-## 🆕 Nouveautés v1.4.4
+## 🆕 What's New in v1.4.4
 
-### 🎛️ Contrôle Climate
-- Entités Climate pour contrôle de température
-- Définir température cible (32-572°F / 0-300°C)
-- Démarrer/arrêter cuisson
-- Modes HVAC et Presets
+### 🎛️ Climate Control
+- Climate entities for temperature control
+- Set target temperature (32-572°F / 0-300°C)
+- Start/stop cooking
+- HVAC modes and Presets
 
-### 🐛 Corrections Critiques
-- ✅ Température cible persiste correctement
-- ⚡ API flooding arrêté (95% réduction appels)
-- 📡 Détection MQTT topic fixée (WT10, WT02, etc.)
+### 🐛 Critical Fixes
+- ✅ Target temperature persists correctly
+- ⚡ API flooding stopped (95% reduction)
+- 📡 MQTT topic detection fixed (WT10, WT02, etc.)
 
-### 📊 Fonctionnalités Complètes
-- **17+ capteurs** par appareil
-- **Mises à jour temps réel** via MQTT
-- **Multi-langue** (6 langues)
-- **Performance optimisée**
+### 📊 Complete Features
+- **17+ sensors** per device
+- **Real-time updates** via MQTT
+- **Multi-language** (6 languages)
+- **Optimized performance**
 
-## ⚠️ Prérequis
+## ⚠️ Requirements
 
-- **Home Assistant** 2023.1.0 ou supérieur
-- **Compte ThermoMaven** avec au moins un appareil associé
-- **Connexion Internet** (pour MQTT)
+- **Home Assistant** 2023.1.0 or higher
+- **ThermoMaven account** with at least one paired device
+- **Internet connection** (for MQTT)
 
-## 📝 Licence
+## 📝 License
 
-MIT License - Voir [LICENSE](LICENSE)
+MIT License - See [LICENSE](LICENSE)
 
-## ⚠️ Avertissement
+## ⚠️ Disclaimer
 
-Ceci est une intégration **non officielle** créée par reverse engineering de l'application mobile officielle. Non affilié à ThermoMaven.
+This is an **unofficial integration** created by reverse engineering the official mobile app. Not affiliated with ThermoMaven.
 
-**Utilisez à vos propres risques.**
+**Use at your own risk.**
 
-## 🤝 Contribuer
+## 🤝 Contributing
 
-Les contributions sont bienvenues !
+Contributions are welcome!
 
-1. Fork le projet
-2. Créez une branche (`git checkout -b feature/nouvelle-fonctionnalite`)
-3. Committez vos changements
-4. Push vers la branche
-5. Ouvrez une Pull Request
+1. Fork the project
+2. Create a branch (`git checkout -b feature/new-feature`)
+3. Commit your changes
+4. Push to the branch
+5. Open a Pull Request
 
 ## 📞 Support
 
-- 🐛 **Bugs** : [GitHub Issues](https://github.com/djiesr/thermomaven-ha/issues)
-- 💬 **Discussions** : [GitHub Discussions](https://github.com/djiesr/thermomaven-ha/discussions)
-- 📖 **Wiki** : [Documentation Wiki](https://github.com/djiesr/thermomaven-ha/wiki)
+- 🐛 **Bugs**: [GitHub Issues](https://github.com/djiesr/thermomaven-ha/issues)
+- 💬 **Discussions**: [GitHub Discussions](https://github.com/djiesr/thermomaven-ha/discussions)
+- 📖 **Wiki**: [Documentation Wiki](https://github.com/djiesr/thermomaven-ha/wiki)
 
 ---
 
-**🔥 Fait avec ❤️ pour la communauté BBQ et culinaire**
+**🔥 Made with ❤️ for the BBQ and cooking community**
 
-*Bon appétit ! 🍖🔥*
+*Happy grilling! 🍖🔥*
