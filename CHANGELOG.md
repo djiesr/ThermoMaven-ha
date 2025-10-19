@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.1-beta] - 2025-01-19 🧪
+
+### 🔧 HACS & Documentation Improvements
+
+#### HACS Compatibility
+- **Fixed `.hacs.json` configuration**
+  - Removed deprecated `default_branch: release`
+  - Now uses `main` branch correctly
+  - Better version detection in HACS
+
+#### Documentation
+- **Simplified README**
+  - Focused on Home Assistant users
+  - Clear installation steps (HACS + Manual)
+  - Detailed configuration process
+  - Complete entity list and examples
+  - Practical Lovelace cards and automations
+  - Troubleshooting guide for common issues
+  
+- Removed technical Python client details
+- Better focus on Home Assistant usage
+
+#### Testing
+- Beta release for testing HACS compatibility
+- All v1.4.0 features included
+- Feedback period: ~1-2 weeks
+
 ## [1.4.0] - 2025-01-19 🎉
 
 ### 🎛️ NEW FEATURE - Climate Control
