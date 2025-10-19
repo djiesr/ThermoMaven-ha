@@ -42,14 +42,8 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up ThermoMaven climate entities."""
-    _LOGGER.info("🔧 Climate setup started")
-    
     coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
     api = hass.data[DOMAIN][entry.entry_id]["api"]
-    
-    _LOGGER.info("📊 Coordinator data available: %s, devices: %s", 
-                 bool(coordinator.data), 
-                 len(coordinator.data.get("devices", [])) if coordinator.data else 0)
     
     # Wait for coordinator data
     if not coordinator.data or not coordinator.data.get("devices"):
@@ -66,24 +60,17 @@ async def async_setup_entry(
     entities_to_add = []
     devices = coordinator.data.get("devices", [])
     
-    _LOGGER.info("📱 Processing %d device(s) for climate entities", len(devices))
-    
     for device in devices:
         device_id = str(device.get("deviceId"))
-        device_name = device.get("deviceName", "Unknown")
-        device_model = device.get("deviceModel", "Unknown")
-        
-        _LOGGER.info("🔍 Checking device: %s (ID: %s, Model: %s)", 
-                     device_name, device_id, device_model)
         
         if not device_id or device_id == "None":
-            _LOGGER.warning("⚠️ Skipping device with invalid deviceId: %s", device_name)
+            _LOGGER.warning("Skipping device with invalid deviceId: %s", device.get("deviceName"))
             continue
         
+        device_model = device.get("deviceModel", "Unknown")
         num_probes = _get_num_probes(device_model)
         
-        _LOGGER.info("➕ Adding %d climate entities for device: %s (%s)", 
-                     num_probes, device_name, device_id)
+        _LOGGER.debug("➕ Adding climate entities for device: %s (%s)", device.get("deviceName"), device_id)
         
         # Add climate entity for each probe
         for probe_num in range(1, num_probes + 1):
@@ -94,12 +81,12 @@ async def async_setup_entry(
             )
     
     if entities_to_add:
-        _LOGGER.info("🌡️ Adding %d climate entities to Home Assistant", len(entities_to_add))
+        _LOGGER.debug("🌡️ Adding %d climate entities", len(entities_to_add))
         async_add_entities(entities_to_add, update_before_add=False)
     else:
-        _LOGGER.warning("⚠️ No climate entities to add - check device data")
+        _LOGGER.warning("⚠️ No climate entities to add")
     
-    _LOGGER.info("✅ Climate setup complete")
+    _LOGGER.debug("✅ Climate setup complete")
 
 
 def _get_num_probes(device_model: str) -> int:
@@ -139,6 +126,7 @@ class ThermoMavenClimate(CoordinatorEntity, ClimateEntity):
         self._device = device
         self._probe_num = probe_num
         self._entry_id = entry_id
+        self._target_temperature_override = None  # Cache local pour la température cible
         
         device_id = str(device.get("deviceId"))
         device_name = device.get("deviceName", "ThermoMaven")
@@ -192,6 +180,11 @@ class ThermoMavenClimate(CoordinatorEntity, ClimateEntity):
     @property
     def target_temperature(self) -> float | None:
         """Return the target temperature."""
+        # Si on a une température override locale (récemment définie), l'utiliser
+        if self._target_temperature_override is not None:
+            return self._target_temperature_override
+        
+        # Sinon, lire depuis les données du coordinator
         if not self.coordinator.data:
             return None
         
@@ -215,7 +208,12 @@ class ThermoMavenClimate(CoordinatorEntity, ClimateEntity):
                         set_temp = set_params[0].get("setTemperature")
                         if set_temp is not None:
                             # Temperature is in tenths of degrees F
-                            return set_temp / 10.0
+                            temp_from_device = set_temp / 10.0
+                            # Si la température de l'appareil correspond à notre override, effacer l'override
+                            if self._target_temperature_override is not None and abs(temp_from_device - self._target_temperature_override) < 0.5:
+                                _LOGGER.debug("Temperature confirmed by device, clearing override")
+                                self._target_temperature_override = None
+                            return temp_from_device
         
         return None
 
@@ -276,6 +274,11 @@ class ThermoMavenClimate(CoordinatorEntity, ClimateEntity):
         
         _LOGGER.debug("Setting target temperature to %.1f°F for probe %d", temperature, self._probe_num)
         
+        # Stocker la température localement immédiatement
+        self._target_temperature_override = temperature
+        # Forcer la mise à jour de l'interface
+        self.async_write_ha_state()
+        
         # Get probe color (bright/dark)
         probe_color = self._get_probe_color()
         
@@ -291,11 +294,16 @@ class ThermoMavenClimate(CoordinatorEntity, ClimateEntity):
         )
         
         if success:
-            _LOGGER.debug("✅ Temperature set successfully")
-            # Request coordinator refresh
+            _LOGGER.debug("✅ Temperature command sent successfully")
+            # Attendre un peu avant de rafraîchir pour laisser le temps à l'appareil de répondre
+            await asyncio.sleep(2)
+            # Request coordinator refresh pour obtenir la confirmation
             await self.coordinator.async_request_refresh()
         else:
-            _LOGGER.error("❌ Failed to set temperature")
+            _LOGGER.error("❌ Failed to send temperature command")
+            # Annuler l'override si la commande a échoué
+            self._target_temperature_override = None
+            self.async_write_ha_state()
 
     async def async_set_hvac_mode(self, hvac_mode: HVACMode) -> None:
         """Set new HVAC mode."""
@@ -305,12 +313,16 @@ class ThermoMavenClimate(CoordinatorEntity, ClimateEntity):
         
         # Map HVAC mode to cooking action
         if hvac_mode == HVACMode.HEAT:
-            # Start cooking
+            # Start cooking avec la température cible actuelle
+            target_temp = self.target_temperature or 165
+            self._target_temperature_override = target_temp  # Sauvegarder l'override
+            self.async_write_ha_state()
+            
             await self._api.async_start_cooking(
                 device_id=str(self._device.get("deviceId")),
                 device_type=self._device.get("deviceModel", "WT02"),
                 probe_color=probe_color,
-                target_temperature=int((self.target_temperature or 165) * 10)
+                target_temperature=int(target_temp * 10)
             )
         elif hvac_mode == HVACMode.OFF:
             # Stop cooking
@@ -320,6 +332,7 @@ class ThermoMavenClimate(CoordinatorEntity, ClimateEntity):
                 probe_color=probe_color
             )
         
+        await asyncio.sleep(2)  # Attendre la réponse de l'appareil
         await self.coordinator.async_request_refresh()
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
