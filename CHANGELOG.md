@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.5] - 2025-01-19 🌍
+
+### 🌍 Documentation & Translations
+
+#### README Improvements
+- **Translated README to English**
+  - Professional English documentation
+  - Better international accessibility
+  - Clear installation and configuration steps
+  
+- **Added Roadmap section**
+  - Future features planned for v1.5.0
+  - Target Temperature sync, Cook Time control, Cooking Mode management
+  - Community-driven development goals
+
+#### Climate Translation Fix
+- **Fixed climate entity translations**
+  - Added `_attr_translation_key` to all climate entities
+  - Climate names now properly translated based on HA language
+  - Works with all 6 supported languages (EN, FR, ES, PT, DE, ZH)
+  
+- **Translation keys:**
+  - `probe_1_control`, `probe_2_control`, etc.
+  - Consistent with sensor naming convention
+
+#### User Experience
+- ✅ All entities display in user's language
+- ✅ Professional English documentation
+- ✅ Clear future development plan
+- ✅ Better international support
+
 ## [1.4.4] - 2025-01-19 🐛
 
 ### 🐛 Critical Fixes

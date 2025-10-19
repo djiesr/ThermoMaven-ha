@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-Custom%20Integration-orange)](https://www.home-assistant.io/)
-[![Version](https://img.shields.io/badge/Version-1.4.4-blue)](https://github.com/djiesr/thermomaven-ha)
+[![Version](https://img.shields.io/badge/Version-1.4.5-blue)](https://github.com/djiesr/thermomaven-ha)
 [![hacs](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/hacs/integration)
 
 Home Assistant integration for ThermoMaven wireless thermometers (P1, P2, P4, G1, G2, G4).
@@ -314,7 +314,7 @@ Planned features for upcoming versions:
 - **[Changelog](CHANGELOG.md)** - Version history
 - **[Technical Architecture](ARCHITECTURE.md)** - Technical details
 
-## 🆕 What's New in v1.4.4
+## 🆕 What's New in v1.4.5
 
 ### 🎛️ Climate Control
 - Climate entities for temperature control
