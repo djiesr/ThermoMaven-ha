@@ -6,9 +6,10 @@
 
 ## 🎯 What's Fixed
 
-This release fixes **two critical issues**:
+This release fixes **three critical issues**:
 1. Target temperature not persisting in climate entities
 2. **API flooding** with continuous unnecessary requests
+3. **MQTT publish topic detection** for WT10 and other models
 
 ### 🐛 Problem 1: Temperature Persistence
 
@@ -64,6 +65,33 @@ Implemented a **local temperature cache** with smart synchronization:
 - ⚡ Less server load
 - ⚡ More reliable MQTT updates
 - ⚡ Better battery life (if on mobile connection)
+
+### ✅ Solution 3: MQTT Topic Detection 📡
+
+**Fixed publish topic for climate commands:**
+
+**Problem:**
+- ❌ `pubTopics` was missing from device data
+- ❌ Wrong fallback topic format for WT10 and other models
+- ❌ Climate commands not reaching the device
+
+**Solution - Smart Multi-Level Detection:**
+1. ✅ Check for `pubTopics` in device data (if available)
+2. ✅ **Deduce from `subTopics` pattern** (sub → pub)
+3. ✅ Construct from device model: `app/{MODEL}/{deviceId}/pub`
+4. ✅ Ultimate fallback: `app/device/{deviceId}/pub`
+
+**Example for WT10:**
+```
+subTopic:  app/WT10/216510650012434433/sub
+pubTopic:  app/WT10/216510650012434433/pub  ✅ CORRECT!
+```
+
+**Result:**
+- ✅ Climate control commands now work for all device models
+- ✅ WT10, WT02, WT06, WT07, WT09, WT11 all supported
+- ✅ Smart topic detection with multiple fallbacks
+- ✅ Detailed logging for troubleshooting
 
 ## 🔧 Technical Details
 
