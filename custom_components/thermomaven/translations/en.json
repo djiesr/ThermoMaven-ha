@@ -19,6 +19,83 @@
     "abort": {
       "already_configured": "This account is already configured"
     }
+  },
+  "entity": {
+    "sensor": {
+      "probe_1": {
+        "name": "Probe 1"
+      },
+      "probe_2": {
+        "name": "Probe 2"
+      },
+      "probe_3": {
+        "name": "Probe 3"
+      },
+      "probe_4": {
+        "name": "Probe 4"
+      },
+      "battery": {
+        "name": "Battery"
+      },
+      "probe_1_battery": {
+        "name": "Probe 1 Battery"
+      },
+      "probe_2_battery": {
+        "name": "Probe 2 Battery"
+      },
+      "probe_3_battery": {
+        "name": "Probe 3 Battery"
+      },
+      "probe_4_battery": {
+        "name": "Probe 4 Battery"
+      },
+      "area_1": {
+        "name": "Area 1 Tip"
+      },
+      "area_2": {
+        "name": "Area 2"
+      },
+      "area_3": {
+        "name": "Area 3"
+      },
+      "area_4": {
+        "name": "Area 4"
+      },
+      "area_5": {
+        "name": "Area 5 Handle"
+      },
+      "ambient_temp": {
+        "name": "Ambient Temperature"
+      },
+      "target_temp": {
+        "name": "Target Temperature"
+      },
+      "total_cook_time": {
+        "name": "Total Cook Time"
+      },
+      "current_cook_time": {
+        "name": "Current Cook Time"
+      },
+      "remaining_cook_time": {
+        "name": "Remaining Cook Time"
+      },
+      "cooking_mode": {
+        "name": "Cooking Mode"
+      },
+      "cooking_state": {
+        "name": "Cooking State",
+        "state": {
+          "cooking": "Cooking",
+          "charged": "Charged",
+          "charge": "Charging",
+          "idle": "Idle",
+          "standby": "Standby"
+        }
+      },
+      "wifi_rssi": {
+        "name": "WiFi Signal"
+      }
+    }
   }
 }
 

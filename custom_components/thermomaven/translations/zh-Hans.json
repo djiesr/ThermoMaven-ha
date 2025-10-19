@@ -1,0 +1,101 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "ThermoMaven 配置",
+        "description": "输入您的 ThermoMaven 账户凭据",
+        "data": {
+          "email": "电子邮件",
+          "password": "密码",
+          "region": "国家/地区"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "连接 ThermoMaven API 失败",
+      "invalid_auth": "电子邮件或密码无效",
+      "unknown": "发生意外错误"
+    },
+    "abort": {
+      "already_configured": "此账户已配置"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "probe_1": {
+        "name": "探头 1"
+      },
+      "probe_2": {
+        "name": "探头 2"
+      },
+      "probe_3": {
+        "name": "探头 3"
+      },
+      "probe_4": {
+        "name": "探头 4"
+      },
+      "battery": {
+        "name": "电池"
+      },
+      "probe_1_battery": {
+        "name": "探头 1 电池"
+      },
+      "probe_2_battery": {
+        "name": "探头 2 电池"
+      },
+      "probe_3_battery": {
+        "name": "探头 3 电池"
+      },
+      "probe_4_battery": {
+        "name": "探头 4 电池"
+      },
+      "area_1": {
+        "name": "区域 1 尖端"
+      },
+      "area_2": {
+        "name": "区域 2"
+      },
+      "area_3": {
+        "name": "区域 3"
+      },
+      "area_4": {
+        "name": "区域 4"
+      },
+      "area_5": {
+        "name": "区域 5 手柄"
+      },
+      "ambient_temp": {
+        "name": "环境温度"
+      },
+      "target_temp": {
+        "name": "目标温度"
+      },
+      "total_cook_time": {
+        "name": "总烹饪时间"
+      },
+      "current_cook_time": {
+        "name": "当前烹饪时间"
+      },
+      "remaining_cook_time": {
+        "name": "剩余烹饪时间"
+      },
+      "cooking_mode": {
+        "name": "烹饪模式"
+      },
+      "cooking_state": {
+        "name": "烹饪状态",
+        "state": {
+          "cooking": "烹饪中",
+          "charged": "已充电",
+          "charge": "充电中",
+          "idle": "空闲",
+          "standby": "待机"
+        }
+      },
+      "wifi_rssi": {
+        "name": "WiFi 信号"
+      }
+    }
+  }
+}
+

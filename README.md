@@ -1,10 +1,11 @@
-# ThermoMaven API Client & Home Assistant Integration
+# ThermoMaven Home Assistant Integration
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-Custom%20Integration-orange)](https://www.home-assistant.io/)
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
+[![Version](https://img.shields.io/badge/Version-1.3.0-blue)](https://github.com/yourusername/thermomaven-homeassistant)
 
-A comprehensive Python client and Home Assistant integration for ThermoMaven wireless thermometers, reverse-engineered from the official mobile app.
+A comprehensive Home Assistant integration and Python client for ThermoMaven wireless thermometers, reverse-engineered from the official mobile app.
 
 ## 🎯 Features
 
@@ -13,16 +14,25 @@ A comprehensive Python client and Home Assistant integration for ThermoMaven wir
 - **Real-time MQTT communication** via AWS IoT Core
 - **Home Assistant integration** with custom component
 - **Automatic device discovery** and entity creation
-- **Temperature monitoring** for all ThermoMaven devices
-- **Battery level tracking** with low battery alerts
+- **17+ sensors per device** (temperature, battery, cooking time, WiFi, etc.)
+- **Multi-language support** (English, French, Spanish, Portuguese, German, Chinese)
+- **Smart API caching** (reduces API calls by 98%)
 - **Multiple device support** (P1, P2, P4, G1, G2, G4)
 
-### 🌡️ Temperature Features
+### 🌡️ Advanced Temperature Monitoring
 - **Real-time temperature updates** via MQTT push
+- **5 area temperature sensors** (Tip → Handle zones)
+- **Ambient & target temperature** tracking
 - **Accurate temperature conversion** (Fahrenheit → Celsius)
 - **Multi-probe monitoring** (up to 4 probes per device)
 - **Temperature history** and graphing
 - **Custom temperature alerts** and notifications
+
+### ⏱️ Cooking Features (NEW in v1.3.0)
+- **Cooking time tracking** (total, current, remaining)
+- **Cooking mode monitoring** (smart, manual, etc.)
+- **Cooking state tracking** (cooking, idle, standby, charging)
+- **Target temperature alerts**
 
 ## 📱 Supported Devices
 
@@ -93,39 +103,80 @@ python thermomaven_mqtt_client.py
 
 #### What you'll get:
 
-For each ThermoMaven device:
+For each ThermoMaven device, **17 sensors** are created automatically:
+
+**🌡️ Temperature Sensors:**
 ```
-sensor.thermomaven_[device]_probe_1    # 🌡️ Temperature Probe 1
-sensor.thermomaven_[device]_probe_2    # 🌡️ Temperature Probe 2 (if available)
-sensor.thermomaven_[device]_probe_3    # 🌡️ Temperature Probe 3 (if available)
-sensor.thermomaven_[device]_probe_4    # 🌡️ Temperature Probe 4 (if available)
-sensor.thermomaven_[device]_battery    # 🔋 Battery Level
+sensor.thermomaven_[device]_area_1_tip       # Zone 1 (Tip)
+sensor.thermomaven_[device]_area_2           # Zone 2
+sensor.thermomaven_[device]_area_3           # Zone 3
+sensor.thermomaven_[device]_area_4           # Zone 4
+sensor.thermomaven_[device]_area_5_handle    # Zone 5 (Handle)
+sensor.thermomaven_[device]_ambient          # Ambient Temperature
+sensor.thermomaven_[device]_target           # Target Temperature
+```
+
+**⏱️ Cooking Sensors:**
+```
+sensor.thermomaven_[device]_total_cook_time     # Total cooking time
+sensor.thermomaven_[device]_current_cook_time   # Current session time
+sensor.thermomaven_[device]_remaining_cook_time # Time remaining
+sensor.thermomaven_[device]_cooking_mode        # Cooking mode
+sensor.thermomaven_[device]_cooking_state       # Current state
+```
+
+**🔋 Battery & Connectivity:**
+```
+sensor.thermomaven_[device]_battery          # Device battery
+sensor.thermomaven_[device]_probe_battery    # Probe battery
+sensor.thermomaven_[device]_wifi_signal      # WiFi signal (RSSI)
 ```
 
 ## 📚 Documentation
 
-- **[API Endpoints](API_ENDPOINTS.md)** - Complete API documentation
-- **[MQTT Guide](MQTT_GUIDE.md)** - Real-time messaging setup
 - **[Home Assistant Installation](HOMEASSISTANT_INSTALLATION.md)** - Detailed HA setup guide
-- **[Integration Summary](INTEGRATION_SUMMARY.md)** - Technical overview
-- **[Changelog](CHANGELOG.md)** - Version history
+- **[Architecture](ARCHITECTURE.md)** - Technical architecture and data flow
+- **[Changelog](CHANGELOG.md)** - Version history and release notes
+- **[API Documentation](api/)** - REST API and MQTT guides
+- **[Translations Guide](custom_components/thermomaven/translations/README.md)** - Multi-language support
 
 ## 🔧 Architecture
 
 ```
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   Python Client │────│  ThermoMaven API │────│  AWS IoT Core   │
-│                 │    │  (REST + Auth)   │    │     (MQTT)      │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
-         │                       │                       │
-         └───────────────────────┼───────────────────────┘
-                                 │
-                    ┌─────────────────┐
-                    │ Home Assistant  │
-                    │  Integration    │
-                    │  (Custom Comp)  │
-                    └─────────────────┘
+┌─────────────────────────────────────────────────────────┐
+│                    Home Assistant                        │
+│  ┌────────────────────────────────────────────────────┐ │
+│  │         ThermoMaven Integration (v1.3.0)           │ │
+│  │                                                     │ │
+│  │  ┌──────────────┐        ┌──────────────────┐     │ │
+│  │  │   REST API   │        │   MQTT Client    │     │ │
+│  │  │  (Login &    │───────▶│  (Real-time      │     │ │
+│  │  │   Devices)   │        │   Updates)       │     │ │
+│  │  └──────┬───────┘        └────────┬─────────┘     │ │
+│  │         │                         │               │ │
+│  │         └────────┬────────────────┘               │ │
+│  │                  ▼                                │ │
+│  │         ┌────────────────┐                        │ │
+│  │         │  Coordinator   │                        │ │
+│  │         │  + Cache       │                        │ │
+│  │         │  (Data Merge)  │                        │ │
+│  │         └────────┬───────┘                        │ │
+│  │                  │                                │ │
+│  │         ┌────────▼────────┐                       │ │
+│  │         │   17 Sensors    │                       │ │
+│  │         │   per Device    │                       │ │
+│  │         └─────────────────┘                       │ │
+│  └─────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────┘
+                      │
+                      ▼
+      ┌───────────────────────────────┐
+      │   ThermoMaven Cloud API       │
+      │   + AWS IoT Core (MQTT)       │
+      └───────────────────────────────┘
 ```
+
+See **[ARCHITECTURE.md](ARCHITECTURE.md)** for detailed technical documentation.
 
 ## 📊 Example Usage
 
@@ -239,14 +290,15 @@ The ThermoMaven API uses:
 ### Setup Development Environment
 
 ```bash
-git clone https://github.com/yourusername/thermomaven-client.git
-cd thermomaven-client
+git clone https://github.com/yourusername/thermomaven-homeassistant.git
+cd thermomaven-homeassistant
 pip install -r requirements.txt
 ```
 
-### Testing
+### Testing the Python Client
 
 ```bash
+cd api
 # Test API connection
 python thermomaven_client.py
 
@@ -254,20 +306,40 @@ python thermomaven_client.py
 python thermomaven_mqtt_client.py
 ```
 
+### Testing in Home Assistant
+
+1. Copy `custom_components/thermomaven` to your HA config folder
+2. Restart Home Assistant
+3. Add the integration via UI
+
 ### Debugging
 
 Enable debug logging in Home Assistant:
 ```yaml
 # configuration.yaml
 logger:
+  default: info
   logs:
     custom_components.thermomaven: debug
+    custom_components.thermomaven.thermomaven_api: debug
     paho.mqtt: debug
 ```
 
+View logs: **Settings** → **System** → **Logs**
+
 ## 📋 Requirements
 
-### Python Client
+### Home Assistant Integration
+- Home Assistant Core 2023.1.0+
+- Internet connection (for MQTT)
+- Valid ThermoMaven account
+
+**Dependencies** (auto-installed):
+- `paho-mqtt>=1.6.1`
+- `pyOpenSSL>=23.0.0`
+- `cryptography>=41.0.0`
+
+### Python Client (Standalone)
 - Python 3.8+
 - `requests>=2.31.0`
 - `python-dotenv>=1.0.0`
@@ -275,34 +347,43 @@ logger:
 - `pyOpenSSL>=23.0.0`
 - `cryptography>=41.0.0`
 
-### Home Assistant
-- Home Assistant Core 2023.1.0+
-- Internet connection (for MQTT)
-- Valid ThermoMaven account
-
 ## 🐛 Troubleshooting
 
 ### Common Issues
 
+#### Sensors showing "Unavailable" after restart/reload
+**✅ FIXED in v1.3.0!** The integration now:
+- Waits for MQTT device list before creating sensors
+- Forces coordinator refresh with proper timing
+- All sensors update immediately after reload
+
 #### No devices showing in Home Assistant
 - ✅ **Check**: Your ThermoMaven devices are paired with your account in the mobile app
 - ✅ **Check**: Devices are powered on and connected to WiFi
-- ✅ **Check**: Home Assistant logs for any errors
+- ✅ **Check**: Home Assistant logs for MQTT connection success
+- ✅ **Solution**: Reload the integration: **Settings** → **Integrations** → **ThermoMaven** → **⋮** → **Reload**
 
 #### MQTT connection fails
 - ✅ **Check**: Internet connection
 - ✅ **Check**: Firewall allows port 8883 (MQTT SSL)
 - ✅ **Check**: ThermoMaven credentials are correct
+- ✅ **Check**: Logs for: `✅ MQTT device list received`
 
-#### Temperature readings seem wrong
-- ✅ **Fixed**: Temperature conversion from Fahrenheit to Celsius
-- ✅ **Note**: ThermoMaven uses Fahrenheit internally (converted to Celsius)
+#### Diagnostic Information
+Check the **Battery** sensor attributes to view:
+- `mqtt_device_id`: MQTT identifier (should NOT be null)
+- `device_serial`: Physical serial number
+- `api_share_id`: API share identifier (if shared device)
+- `wifi_rssi`: WiFi signal strength
+
+See **[DIAGNOSTIC_GUIDE.md](MD/DIAGNOSTIC_GUIDE1.3.0.md)** for detailed troubleshooting.
 
 ### Getting Help
 
-1. **Check logs**: Settings → System → Logs
-2. **GitHub Issues**: [Create an issue](https://github.com/yourusername/thermomaven-client/issues)
-3. **Home Assistant Community**: [Community Forum](https://community.home-assistant.io/)
+1. **Enable debug logs**: See [Development](#-development) section
+2. **Check diagnostics**: View Battery sensor attributes
+3. **GitHub Issues**: [Create an issue](https://github.com/yourusername/thermomaven-homeassistant/issues)
+4. **Home Assistant Community**: [Community Forum](https://community.home-assistant.io/)
 
 ## 📝 License
 
@@ -331,11 +412,35 @@ We welcome contributions! Please:
 - Include tests for new features
 - Update documentation as needed
 
-## 🎉 Success Stories
+## 🆕 What's New in v1.3.0
 
-> *"This integration works perfectly with my ThermoMaven P4! I can monitor all 4 probes from Home Assistant and get alerts when my BBQ is ready."* - BBQ Enthusiast
+### 🏆 Major Improvements
+- **✅ RELOAD NOW WORKS!** Complete fix for reload/restart issues
+  - Existing sensors properly refresh after reload
+  - Forces coordinator refresh with optimal timing
+  - All sensors update with latest temperature data
+  - **NO MORE "Unavailable" after reload!**
 
-> *"Finally, I can automate my cooking process with Home Assistant. The MQTT integration provides real-time temperature updates."* - Home Chef
+### 📊 Enhanced Sensors
+- **17 sensors per device** (up from 5):
+  - 5 area temperature zones (Tip → Handle)
+  - Ambient & target temperature
+  - 3 cooking time sensors (total, current, remaining)
+  - Cooking mode & state
+  - Probe battery (separate from device battery)
+  - WiFi signal strength (RSSI)
+
+### 🌍 Multi-Language Support
+- 6 languages fully supported: English, French, Spanish, Portuguese, German, Chinese
+- All sensor names and states translated
+- Automatic language detection from Home Assistant
+
+### ⚡ Performance
+- Smart API caching (API called every 5 minutes instead of 10 seconds = 98% reduction)
+- MQTT as primary data source for real-time updates
+- Intelligent device merging between API and MQTT data
+
+See **[CHANGELOG.md](CHANGELOG.md)** for complete version history.
 
 ## 📞 Support & Community
 

@@ -1,0 +1,101 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configuración de ThermoMaven",
+        "description": "Introduce tus credenciales de ThermoMaven",
+        "data": {
+          "email": "Correo electrónico",
+          "password": "Contraseña",
+          "region": "País/Región"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Error al conectar con la API de ThermoMaven",
+      "invalid_auth": "Correo electrónico o contraseña inválidos",
+      "unknown": "Error inesperado"
+    },
+    "abort": {
+      "already_configured": "Esta cuenta ya está configurada"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "probe_1": {
+        "name": "Sonda 1"
+      },
+      "probe_2": {
+        "name": "Sonda 2"
+      },
+      "probe_3": {
+        "name": "Sonda 3"
+      },
+      "probe_4": {
+        "name": "Sonda 4"
+      },
+      "battery": {
+        "name": "Batería"
+      },
+      "probe_1_battery": {
+        "name": "Batería Sonda 1"
+      },
+      "probe_2_battery": {
+        "name": "Batería Sonda 2"
+      },
+      "probe_3_battery": {
+        "name": "Batería Sonda 3"
+      },
+      "probe_4_battery": {
+        "name": "Batería Sonda 4"
+      },
+      "area_1": {
+        "name": "Zona 1 Punta"
+      },
+      "area_2": {
+        "name": "Zona 2"
+      },
+      "area_3": {
+        "name": "Zona 3"
+      },
+      "area_4": {
+        "name": "Zona 4"
+      },
+      "area_5": {
+        "name": "Zona 5 Mango"
+      },
+      "ambient_temp": {
+        "name": "Temperatura Ambiente"
+      },
+      "target_temp": {
+        "name": "Temperatura Objetivo"
+      },
+      "total_cook_time": {
+        "name": "Tiempo Total de Cocción"
+      },
+      "current_cook_time": {
+        "name": "Tiempo Actual de Cocción"
+      },
+      "remaining_cook_time": {
+        "name": "Tiempo Restante de Cocción"
+      },
+      "cooking_mode": {
+        "name": "Modo de Cocción"
+      },
+      "cooking_state": {
+        "name": "Estado de Cocción",
+        "state": {
+          "cooking": "Cocinando",
+          "charged": "Cargado",
+          "charge": "Cargando",
+          "idle": "Inactivo",
+          "standby": "En Espera"
+        }
+      },
+      "wifi_rssi": {
+        "name": "Señal WiFi"
+      }
+    }
+  }
+}
+

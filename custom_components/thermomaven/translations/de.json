@@ -2,22 +2,22 @@
   "config": {
     "step": {
       "user": {
-        "title": "Configuration ThermoMaven",
-        "description": "Entrez vos identifiants ThermoMaven",
+        "title": "ThermoMaven Einrichtung",
+        "description": "Geben Sie Ihre ThermoMaven-Anmeldedaten ein",
         "data": {
-          "email": "Email",
-          "password": "Mot de passe",
-          "region": "Pays/Région"
+          "email": "E-Mail",
+          "password": "Passwort",
+          "region": "Land/Region"
         }
       }
     },
     "error": {
-      "cannot_connect": "Échec de connexion à l'API ThermoMaven",
-      "invalid_auth": "Email ou mot de passe invalide",
-      "unknown": "Erreur inattendue"
+      "cannot_connect": "Verbindung zur ThermoMaven-API fehlgeschlagen",
+      "invalid_auth": "Ungültige E-Mail oder Passwort",
+      "unknown": "Unerwarteter Fehler"
     },
     "abort": {
-      "already_configured": "Ce compte est déjà configuré"
+      "already_configured": "Dieses Konto ist bereits konfiguriert"
     }
   },
   "entity": {
@@ -50,51 +50,52 @@
         "name": "Batterie Sonde 4"
       },
       "area_1": {
-        "name": "Zone 1 Pointe"
+        "name": "Bereich 1 Spitze"
       },
       "area_2": {
-        "name": "Zone 2"
+        "name": "Bereich 2"
       },
       "area_3": {
-        "name": "Zone 3"
+        "name": "Bereich 3"
       },
       "area_4": {
-        "name": "Zone 4"
+        "name": "Bereich 4"
       },
       "area_5": {
-        "name": "Zone 5 Poignée"
+        "name": "Bereich 5 Griff"
       },
       "ambient_temp": {
-        "name": "Température Ambiante"
+        "name": "Umgebungstemperatur"
       },
       "target_temp": {
-        "name": "Température Cible"
+        "name": "Zieltemperatur"
       },
       "total_cook_time": {
-        "name": "Temps Total de Cuisson"
+        "name": "Gesamte Garzeit"
       },
       "current_cook_time": {
-        "name": "Temps de Cuisson Actuel"
+        "name": "Aktuelle Garzeit"
       },
       "remaining_cook_time": {
-        "name": "Temps de Cuisson Restant"
+        "name": "Verbleibende Garzeit"
       },
       "cooking_mode": {
-        "name": "Mode de Cuisson"
+        "name": "Garmodus"
       },
       "cooking_state": {
-        "name": "État de Cuisson",
+        "name": "Garzustand",
         "state": {
-          "cooking": "Cuisson",
-          "charged": "Chargé",
-          "charge": "En Charge",
-          "idle": "Inactif",
-          "standby": "En Attente"
+          "cooking": "Garen",
+          "charged": "Geladen",
+          "charge": "Laden",
+          "idle": "Inaktiv",
+          "standby": "Bereitschaft"
         }
       },
       "wifi_rssi": {
-        "name": "Signal WiFi"
+        "name": "WiFi-Signal"
       }
     }
   }
 }
+

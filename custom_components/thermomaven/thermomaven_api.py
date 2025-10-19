@@ -44,14 +44,15 @@ class ThermoMavenAPI:
         self.token = None
         self.user_id = None
         self.device_sn = "".join(random.choices("0123456789abcdef", k=16))
+        self._mqtt_device_list_received = False  # Flag pour savoir si on a reçu la liste MQTT
         
         # Determine API base URL based on region
         if region in EUROPEAN_COUNTRIES:
             self.api_base_url = API_BASE_URL_DE
-            _LOGGER.info("Using European API (DE) for region %s", region)
+            _LOGGER.debug("Using European API (DE) for region %s", region)
         else:
             self.api_base_url = API_BASE_URL_COM
-            _LOGGER.info("Using Global API (COM) for region %s", region)
+            _LOGGER.debug("Using Global API (COM) for region %s", region)
         
         self.mqtt_client = None
         self.mqtt_config = None
@@ -126,20 +127,33 @@ class ThermoMavenAPI:
                     if data.get("code") == "0":
                         self.token = data["data"]["token"]
                         self.user_id = data["data"]["userId"]
-                        _LOGGER.info("Login successful for user %s", self.email)
+                        _LOGGER.debug("Login successful for user %s", self.email)
                         return data
                 raise Exception(f"Login failed: {await response.text()}")
 
     async def async_get_devices(self) -> list[dict]:
         """Get list of devices."""
+        _LOGGER.debug("=== API DEVICE REQUEST ===")
+        
         my_devices = await self._async_request("POST", "/app/device/share/my/device/list", {})
         shared_devices = await self._async_request("POST", "/app/device/share/shared/device/list", {})
         
+        _LOGGER.debug("My devices response: %s", json.dumps(my_devices, indent=2))
+        _LOGGER.debug("Shared devices response: %s", json.dumps(shared_devices, indent=2))
+        
         devices = []
         if my_devices and my_devices.get("code") == "0":
-            devices.extend(my_devices.get("data", []))
+            my_data = my_devices.get("data", [])
+            devices.extend(my_data)
+            
         if shared_devices and shared_devices.get("code") == "0":
-            devices.extend(shared_devices.get("data", []))
+            shared_data = shared_devices.get("data", [])
+            devices.extend(shared_data)
+        
+        _LOGGER.debug("API returned: %d devices (My: %d, Shared: %d)", 
+                    len(devices),
+                    len(my_data) if my_devices and my_devices.get("code") == "0" else 0,
+                    len(shared_data) if shared_devices and shared_devices.get("code") == "0" else 0)
             
         return devices
 
@@ -178,24 +192,56 @@ class ThermoMavenAPI:
                 )
                 return {}
 
+    async def async_wait_for_mqtt_device_list(self, timeout=10):
+        """Wait for MQTT to receive the device list."""
+        _LOGGER.debug("⏳ Waiting for MQTT device list (timeout: %ds)...", timeout)
+        start_time = time.time()
+        
+        # Vérifier aussi que c'est bien un user:device:list et pas un status:report
+        while not self._mqtt_device_list_received or \
+              self._latest_mqtt_data.get("cmdType") != "user:device:list":
+            if time.time() - start_time > timeout:
+                _LOGGER.warning("⚠️ Timeout waiting for MQTT device list after %ds", timeout)
+                _LOGGER.warning("Last MQTT cmdType: %s", 
+                              self._latest_mqtt_data.get("cmdType") if self._latest_mqtt_data else "None")
+                return False
+            await asyncio.sleep(0.5)  # Check every 500ms
+        
+        _LOGGER.debug("✅ MQTT device list received in %.1fs", time.time() - start_time)
+        return True
+    
     async def async_setup_mqtt(self, coordinator):
         """Setup MQTT connection."""
         self.coordinator = coordinator
         
-        # Get MQTT certificate
-        self.mqtt_config = await self.async_get_mqtt_certificate()
-        if not self.mqtt_config:
-            _LOGGER.error("Failed to get MQTT certificate")
-            return False
-
-        # Download and convert certificate in executor
-        await self.hass.async_add_executor_job(self._setup_mqtt_sync)
+        # Reset flag and latest data to wait for fresh device list
+        self._mqtt_device_list_received = False
+        self._latest_mqtt_data = None  # Effacer les anciennes données MQTT
+        _LOGGER.debug("🔄 Reset MQTT flag and data, waiting for fresh device list...")
         
-        # Trigger initial device sync after MQTT setup
-        # The on_connect callback will also trigger sync, but this ensures it happens
-        # even if there's a timing issue with MQTT connection
-        await asyncio.sleep(2)  # Give MQTT time to connect
-        await self._trigger_device_sync()
+        # Check if MQTT is already running (reload case)
+        mqtt_already_running = self.mqtt_client is not None and hasattr(self.mqtt_client, '_thread') and self.mqtt_client._thread is not None
+        
+        if mqtt_already_running:
+            _LOGGER.debug("♻️ MQTT already running, forcing device list refresh...")
+            # Trigger device sync to get a fresh user:device:list
+            await self._trigger_device_sync()
+            # Pas besoin de re-setup MQTT, juste attendre le nouveau message
+        else:
+            # Get MQTT certificate
+            self.mqtt_config = await self.async_get_mqtt_certificate()
+            if not self.mqtt_config:
+                _LOGGER.error("Failed to get MQTT certificate")
+                return False
+
+            # Download and convert certificate in executor
+            await self.hass.async_add_executor_job(self._setup_mqtt_sync)
+            
+            # Trigger initial device sync after MQTT setup
+            # The on_connect callback will also trigger sync, but this ensures it happens
+            # even if there's a timing issue with MQTT connection
+            await asyncio.sleep(2)  # Give MQTT time to connect
+            await self._trigger_device_sync()
         
         return True
 
@@ -267,21 +313,21 @@ class ThermoMavenAPI:
         self.mqtt_client.connect(broker, MQTT_PORT, keepalive=60)
         self.mqtt_client.loop_start()
         
-        _LOGGER.info("MQTT client started for region %s", region)
+        _LOGGER.debug("MQTT client started for region %s", region)
         return True
 
     def _on_mqtt_connect(self, client, userdata, flags, rc):
         """Handle MQTT connection."""
         if rc == 0:
-            _LOGGER.info("Connected to MQTT broker")
+            _LOGGER.debug("Connected to MQTT broker")
             # Subscribe to topics
             for topic in self.mqtt_config["subTopics"]:
                 client.subscribe(topic)
-                _LOGGER.info("Subscribed to %s", topic)
+                _LOGGER.debug("Subscribed to %s", topic)
             
             # Trigger device list sync by calling API endpoints
             # This will cause the MQTT broker to publish user:device:list message
-            _LOGGER.info("Triggering device list synchronization via API")
+            _LOGGER.debug("Triggering device list synchronization via API")
             self.hass.add_job(self._trigger_device_sync())
         else:
             _LOGGER.error("Failed to connect to MQTT broker: %s", rc)
@@ -291,7 +337,12 @@ class ThermoMavenAPI:
         try:
             data = json.loads(msg.payload.decode("utf-8"))
             cmd_type = data.get("cmdType", "")
-            _LOGGER.debug("MQTT message received: %s on topic %s", cmd_type, msg.topic)
+            
+            # Log compact header
+            _LOGGER.debug("📨 MQTT: %s on %s", cmd_type, msg.topic)
+            
+            # Full message only at debug level
+            _LOGGER.debug("Full message: %s", json.dumps(data, indent=2))
             
             # Store the latest message data for coordinator
             self._latest_mqtt_data = data
@@ -301,14 +352,26 @@ class ThermoMavenAPI:
                 # Log the device data for debugging
                 cmd_data = data.get("cmdData", {})
                 devices = cmd_data.get("devices", [])
-                _LOGGER.info("Device list updated via MQTT: %d devices found", len(devices))
-                _LOGGER.debug("MQTT device data: %s", json.dumps(devices, indent=2))
+                _LOGGER.debug("Device list updated via MQTT: %d devices found", len(devices))
+                
+                # Marquer que la liste MQTT a été reçue
+                self._mqtt_device_list_received = True
+                _LOGGER.debug("✅ MQTT device list received and processed")
+                
+                # Log device details for debugging
+                for device in devices:
+                    device_id = device.get("deviceId")
+                    device_name = device.get("deviceName", "Unknown")
+                    device_sn = device.get("deviceSn", "Unknown")
+                    _LOGGER.debug("MQTT Device: %s, ID: %s, SN: %s", device_name, device_id, device_sn)
+                
+                _LOGGER.debug("Full MQTT device data: %s", json.dumps(devices, indent=2))
                 
                 # Subscribe to each device's topic for real-time updates
                 for device in devices:
                     device_topics = device.get("subTopics", [])
                     for topic in device_topics:
-                        _LOGGER.info("Subscribing to device topic: %s", topic)
+                        _LOGGER.debug("Subscribing to device topic: %s", topic)
                         self.mqtt_client.subscribe(topic)
                 
                 if self.coordinator:
@@ -316,10 +379,28 @@ class ThermoMavenAPI:
             
             # Handle temperature updates
             elif "status:report" in cmd_type:
-                _LOGGER.info("Temperature update received via MQTT (cmdType: %s)", cmd_type)
+                _LOGGER.debug("=== TEMPERATURE UPDATE VIA MQTT ===")
+                device_id = data.get("deviceId")
+                cmd_data = data.get("cmdData", {})
+                
+                # Log compact info instead of full JSON
+                temp = "N/A"
+                probes = cmd_data.get("probes", [])
+                if probes:
+                    cur_temp = probes[0].get("curTemperature")
+                    if cur_temp:
+                        temp_f = cur_temp / 10.0
+                        temp = f"{temp_f}°F"
+                
+                _LOGGER.debug("🌡️ Temperature update: Device %s = %s (Battery: %s%%)", 
+                           device_id, temp, cmd_data.get("batteryValue", "?"))
+                
                 # Store the status report data for the coordinator to use
                 if self.coordinator:
+                    _LOGGER.debug("Triggering coordinator refresh for temperature update")
                     self.hass.add_job(self.coordinator.async_request_refresh())
+                else:
+                    _LOGGER.warning("No coordinator available for temperature update")
                     
         except Exception as err:
             _LOGGER.error("Error processing MQTT message: %s", err)
@@ -339,10 +420,10 @@ class ThermoMavenAPI:
             # Small delay to ensure MQTT subscription is active
             await asyncio.sleep(1)
             
-            _LOGGER.info("Calling API endpoints to trigger MQTT device list...")
+            _LOGGER.debug("Calling API endpoints to trigger MQTT device list...")
             # These API calls will trigger the MQTT broker to send user:device:list
             await self.async_get_devices()
-            _LOGGER.info("Device sync triggered successfully")
+            _LOGGER.debug("Device sync triggered successfully")
         except Exception as err:
             _LOGGER.error("Failed to trigger device sync: %s", err)
 
