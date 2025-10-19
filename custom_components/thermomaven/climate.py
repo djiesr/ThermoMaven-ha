@@ -60,6 +60,25 @@ async def async_setup_entry(
     _LOGGER.debug("✅ Coordinator has %d device(s), proceeding with climate setup", 
                  len(coordinator.data.get("devices", [])))
     
+    # Get entity registry
+    entity_registry_instance = entity_registry.async_get(hass)
+    
+    # Remove old climate entities to force recreation
+    existing_climate_entities = [
+        entity_id
+        for entity_id, entity in entity_registry_instance.entities.items()
+        if entity.platform == DOMAIN 
+        and entity.config_entry_id == entry.entry_id
+        and entity_id.startswith("climate.")
+    ]
+    
+    if existing_climate_entities:
+        _LOGGER.debug("🗑️ Removing %d old climate entities to force recreation", len(existing_climate_entities))
+        for entity_id in existing_climate_entities:
+            entity_registry_instance.async_remove(entity_id)
+        # Wait for removal to be effective
+        await asyncio.sleep(0.5)
+    
     entities_to_add = []
     devices = coordinator.data.get("devices", [])
     
@@ -85,9 +104,11 @@ async def async_setup_entry(
     
     if entities_to_add:
         _LOGGER.debug("🌡️ Adding %d climate entities", len(entities_to_add))
-        async_add_entities(entities_to_add, True)
+        async_add_entities(entities_to_add, update_before_add=False)
     else:
         _LOGGER.warning("⚠️ No climate entities to add")
+    
+    _LOGGER.debug("✅ Climate setup complete")
 
 
 def _get_num_probes(device_model: str) -> int:
