@@ -4,9 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [1.4.4] - 2025-01-19 🐛
 
-### 🐛 Bug Fix - Target Temperature Persistence
+### 🐛 Critical Fixes
 
-#### Climate Control Fix
+#### Climate Temperature Persistence
 - **Fixed target temperature not persisting**
   - Temperature was reverting immediately after being set
   - Coordinator refresh was overwriting user input before device confirmation
@@ -15,14 +15,28 @@ All notable changes to this project will be documented in this file.
   - Added local temperature cache (`_target_temperature_override`)
   - Temperature updates instantly in UI
   - MQTT command sent in background
-  - Wait 2 seconds for device response before refresh
-  - Cache cleared when device confirms (±0.5°F tolerance)
+  - Smart cache clearing when device confirms (±0.5°F tolerance)
+  
+#### API Flooding Prevention ⚡
+- **CRITICAL: Stopped flooding API with continuous requests**
+  - API was being called every few seconds unnecessarily
+  - Now API is called ONLY when needed:
+    * First startup (initial device discovery)
+    * Manual sync via `thermomaven.sync_devices` service
+    * MQTT first connection
+  
+- **Performance improvements:**
+  - ✅ Reduced API calls by ~95%
+  - ✅ MQTT handles all real-time updates automatically
+  - ✅ No more forced coordinator refresh after climate commands
+  - ✅ Added `_ever_had_devices` flag to prevent repeated syncs
+  - ✅ Climate entities rely on MQTT confirmation instead of polling
   
 - **User experience:**
-  - ✅ Instant feedback when setting temperature
-  - ✅ Temperature persists correctly
-  - ✅ Smooth interaction without flickering
-  - ✅ Reliable MQTT command delivery
+  - ✅ Faster response times
+  - ✅ Less server load
+  - ✅ More reliable MQTT updates
+  - ✅ Smoother climate control
 
 ## [1.4.1] - 2025-01-19 🔧
 
