@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.4] - 2025-01-19 🐛
+
+### 🐛 Bug Fix - Target Temperature Persistence
+
+#### Climate Control Fix
+- **Fixed target temperature not persisting**
+  - Temperature was reverting immediately after being set
+  - Coordinator refresh was overwriting user input before device confirmation
+  
+- **Solution implemented:**
+  - Added local temperature cache (`_target_temperature_override`)
+  - Temperature updates instantly in UI
+  - MQTT command sent in background
+  - Wait 2 seconds for device response before refresh
+  - Cache cleared when device confirms (±0.5°F tolerance)
+  
+- **User experience:**
+  - ✅ Instant feedback when setting temperature
+  - ✅ Temperature persists correctly
+  - ✅ Smooth interaction without flickering
+  - ✅ Reliable MQTT command delivery
+
 ## [1.4.1] - 2025-01-19 🔧
 
 ### 🔧 HACS & Documentation Improvements
