@@ -1,8 +1,6 @@
 """Climate platform for ThermoMaven."""
 import asyncio
-import json
 import logging
-import uuid
 from typing import Any
 
 from homeassistant.components.climate import (
@@ -16,7 +14,6 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
-from homeassistant.helpers import entity_registry
 
 from .const import DOMAIN, DEVICE_MODELS
 
@@ -59,25 +56,6 @@ async def async_setup_entry(
     
     _LOGGER.debug("✅ Coordinator has %d device(s), proceeding with climate setup", 
                  len(coordinator.data.get("devices", [])))
-    
-    # Get entity registry
-    entity_registry_instance = entity_registry.async_get(hass)
-    
-    # Remove old climate entities to force recreation
-    existing_climate_entities = [
-        entity_id
-        for entity_id, entity in entity_registry_instance.entities.items()
-        if entity.platform == DOMAIN 
-        and entity.config_entry_id == entry.entry_id
-        and entity_id.startswith("climate.")
-    ]
-    
-    if existing_climate_entities:
-        _LOGGER.debug("🗑️ Removing %d old climate entities to force recreation", len(existing_climate_entities))
-        for entity_id in existing_climate_entities:
-            entity_registry_instance.async_remove(entity_id)
-        # Wait for removal to be effective
-        await asyncio.sleep(0.5)
     
     entities_to_add = []
     devices = coordinator.data.get("devices", [])
