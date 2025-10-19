@@ -42,8 +42,14 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up ThermoMaven climate entities."""
+    _LOGGER.info("🔧 Climate setup started")
+    
     coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
     api = hass.data[DOMAIN][entry.entry_id]["api"]
+    
+    _LOGGER.info("📊 Coordinator data available: %s, devices: %s", 
+                 bool(coordinator.data), 
+                 len(coordinator.data.get("devices", [])) if coordinator.data else 0)
     
     # Wait for coordinator data
     if not coordinator.data or not coordinator.data.get("devices"):
@@ -60,17 +66,24 @@ async def async_setup_entry(
     entities_to_add = []
     devices = coordinator.data.get("devices", [])
     
+    _LOGGER.info("📱 Processing %d device(s) for climate entities", len(devices))
+    
     for device in devices:
         device_id = str(device.get("deviceId"))
+        device_name = device.get("deviceName", "Unknown")
+        device_model = device.get("deviceModel", "Unknown")
+        
+        _LOGGER.info("🔍 Checking device: %s (ID: %s, Model: %s)", 
+                     device_name, device_id, device_model)
         
         if not device_id or device_id == "None":
-            _LOGGER.warning("Skipping device with invalid deviceId: %s", device.get("deviceName"))
+            _LOGGER.warning("⚠️ Skipping device with invalid deviceId: %s", device_name)
             continue
         
-        device_model = device.get("deviceModel", "Unknown")
         num_probes = _get_num_probes(device_model)
         
-        _LOGGER.debug("➕ Adding climate entities for device: %s (%s)", device.get("deviceName"), device_id)
+        _LOGGER.info("➕ Adding %d climate entities for device: %s (%s)", 
+                     num_probes, device_name, device_id)
         
         # Add climate entity for each probe
         for probe_num in range(1, num_probes + 1):
@@ -81,12 +94,12 @@ async def async_setup_entry(
             )
     
     if entities_to_add:
-        _LOGGER.debug("🌡️ Adding %d climate entities", len(entities_to_add))
+        _LOGGER.info("🌡️ Adding %d climate entities to Home Assistant", len(entities_to_add))
         async_add_entities(entities_to_add, update_before_add=False)
     else:
-        _LOGGER.warning("⚠️ No climate entities to add")
+        _LOGGER.warning("⚠️ No climate entities to add - check device data")
     
-    _LOGGER.debug("✅ Climate setup complete")
+    _LOGGER.info("✅ Climate setup complete")
 
 
 def _get_num_probes(device_model: str) -> int:
