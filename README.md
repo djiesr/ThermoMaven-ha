@@ -250,6 +250,7 @@ automation:
 - Devices are paired with your account in the mobile app
 - Devices are powered on and connected to WiFi
 - Your ThermoMaven credentials are correct
+- Are you set the same country of your app
 
 ### MQTT Connection Issues
 
