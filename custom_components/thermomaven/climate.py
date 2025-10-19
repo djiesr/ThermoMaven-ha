@@ -294,11 +294,9 @@ class ThermoMavenClimate(CoordinatorEntity, ClimateEntity):
         )
         
         if success:
-            _LOGGER.debug("✅ Temperature command sent successfully")
-            # Attendre un peu avant de rafraîchir pour laisser le temps à l'appareil de répondre
-            await asyncio.sleep(2)
-            # Request coordinator refresh pour obtenir la confirmation
-            await self.coordinator.async_request_refresh()
+            _LOGGER.debug("✅ Temperature command sent successfully - waiting for MQTT confirmation")
+            # Pas besoin de forcer un refresh, l'appareil va répondre via MQTT automatiquement
+            # Le _on_mqtt_message va déclencher le refresh quand le status:report arrive
         else:
             _LOGGER.error("❌ Failed to send temperature command")
             # Annuler l'override si la commande a échoué
@@ -332,8 +330,8 @@ class ThermoMavenClimate(CoordinatorEntity, ClimateEntity):
                 probe_color=probe_color
             )
         
-        await asyncio.sleep(2)  # Attendre la réponse de l'appareil
-        await self.coordinator.async_request_refresh()
+        # Pas besoin de forcer un refresh, MQTT va mettre à jour automatiquement
+        _LOGGER.debug("HVAC mode command sent - waiting for MQTT confirmation")
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""

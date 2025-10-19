@@ -146,11 +146,12 @@ class ThermoMavenDataUpdateCoordinator(DataUpdateCoordinator):
             
             # If no devices are returned and MQTT client exists, trigger a sync
             # Limited to prevent API spam if thermometer is offline
-            if not devices and self.api.mqtt_client:
+            # IMPORTANT: Ne sync que si on n'a JAMAIS eu de devices (premier démarrage)
+            if not devices and self.api.mqtt_client and not hasattr(self, '_ever_had_devices'):
                 if self._auto_sync_attempts < self._max_auto_sync_attempts:
                     self._auto_sync_attempts += 1
                     _LOGGER.debug(
-                        "No devices found, triggering MQTT sync (attempt %d/%d)",
+                        "No devices found on first startup, triggering MQTT sync (attempt %d/%d)",
                         self._auto_sync_attempts,
                         self._max_auto_sync_attempts
                     )
@@ -388,6 +389,7 @@ class ThermoMavenDataUpdateCoordinator(DataUpdateCoordinator):
             # Reset auto-sync counter if devices are found
             if devices:
                 self._auto_sync_attempts = 0
+                self._ever_had_devices = True  # Marquer qu'on a déjà eu des devices
             
             result = {
                 "devices": devices,

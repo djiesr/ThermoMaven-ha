@@ -223,10 +223,9 @@ class ThermoMavenAPI:
         mqtt_already_running = self.mqtt_client is not None and hasattr(self.mqtt_client, '_thread') and self.mqtt_client._thread is not None
         
         if mqtt_already_running:
-            _LOGGER.debug("♻️ MQTT already running, forcing device list refresh...")
-            # Trigger device sync to get a fresh user:device:list
-            await self._trigger_device_sync()
-            # Pas besoin de re-setup MQTT, juste attendre le nouveau message
+            _LOGGER.debug("♻️ MQTT already running, no need to re-setup")
+            # MQTT est déjà connecté, pas besoin de refaire le sync
+            # Les mises à jour arrivent déjà automatiquement
         else:
             # Get MQTT certificate
             self.mqtt_config = await self.async_get_mqtt_certificate()
@@ -237,11 +236,8 @@ class ThermoMavenAPI:
             # Download and convert certificate in executor
             await self.hass.async_add_executor_job(self._setup_mqtt_sync)
             
-            # Trigger initial device sync after MQTT setup
-            # The on_connect callback will also trigger sync, but this ensures it happens
-            # even if there's a timing issue with MQTT connection
-            await asyncio.sleep(2)  # Give MQTT time to connect
-            await self._trigger_device_sync()
+            # Le on_connect callback va trigger le sync automatiquement
+            # Pas besoin de le faire ici
         
         return True
 
@@ -325,10 +321,13 @@ class ThermoMavenAPI:
                 client.subscribe(topic)
                 _LOGGER.debug("Subscribed to %s", topic)
             
-            # Trigger device list sync by calling API endpoints
-            # This will cause the MQTT broker to publish user:device:list message
-            _LOGGER.debug("Triggering device list synchronization via API")
-            self.hass.add_job(self._trigger_device_sync())
+            # Trigger device list sync SEULEMENT lors de la première connexion
+            # Le message MQTT user:device:list sera publié par le broker
+            if not self._mqtt_device_list_received:
+                _LOGGER.debug("Triggering initial device list synchronization via API")
+                self.hass.add_job(self._trigger_device_sync())
+            else:
+                _LOGGER.debug("Device list already received, skipping API sync")
         else:
             _LOGGER.error("Failed to connect to MQTT broker: %s", rc)
 
