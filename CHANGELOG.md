@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.4.1-beta] - 2025-01-19 🧪
+## [1.4.1] - 2025-01-19 🔧
 
 ### 🔧 HACS & Documentation Improvements
 
@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
   - Removed deprecated `default_branch: release`
   - Now uses `main` branch correctly
   - Better version detection in HACS
+  - Fixed version format for HACS compatibility
 
 #### Documentation
 - **Simplified README**
@@ -24,10 +25,11 @@ All notable changes to this project will be documented in this file.
 - Removed technical Python client details
 - Better focus on Home Assistant usage
 
-#### Testing
-- Beta release for testing HACS compatibility
-- All v1.4.0 features included
-- Feedback period: ~1-2 weeks
+#### All v1.4.0 Features Included
+- Climate control entities
+- Temperature control via MQTT
+- Start/stop cooking sessions
+- HVAC and Preset modes
 
 ## [1.4.0] - 2025-01-19 🎉
 
