@@ -103,7 +103,7 @@ python thermomaven_mqtt_client.py
 
 #### What you'll get:
 
-For each ThermoMaven device, **17 sensors** are created automatically:
+For each ThermoMaven device, **17 sensors** and **climate controls** are created automatically:
 
 **🌡️ Temperature Sensors:**
 ```
@@ -131,6 +131,21 @@ sensor.thermomaven_[device]_battery          # Device battery
 sensor.thermomaven_[device]_probe_battery    # Probe battery
 sensor.thermomaven_[device]_wifi_signal      # WiFi signal (RSSI)
 ```
+
+**🎛️ Climate Controls (NEW!):**
+```
+climate.thermomaven_[device]_probe_1_control  # Control probe 1 temperature
+climate.thermomaven_[device]_probe_2_control  # Control probe 2 temperature
+climate.thermomaven_[device]_probe_3_control  # Control probe 3 temperature (if available)
+climate.thermomaven_[device]_probe_4_control  # Control probe 4 temperature (if available)
+```
+
+**Climate Control Features:**
+- 📊 View current and target temperature
+- 🎯 Set target temperature
+- ▶️ Start/stop cooking
+- 🔄 Preset modes: Cooking, Ready, Resting, Remove
+- 🌡️ Temperature unit: Fahrenheit (automatic conversion from device)
 
 ## 📚 Documentation
 

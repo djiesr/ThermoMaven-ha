@@ -95,6 +95,20 @@
       "wifi_rssi": {
         "name": "WiFi Signal"
       }
+    },
+    "climate": {
+      "probe_1_control": {
+        "name": "Probe 1 Control"
+      },
+      "probe_2_control": {
+        "name": "Probe 2 Control"
+      },
+      "probe_3_control": {
+        "name": "Probe 3 Control"
+      },
+      "probe_4_control": {
+        "name": "Probe 4 Control"
+      }
     }
   }
 }

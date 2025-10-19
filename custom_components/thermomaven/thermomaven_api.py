@@ -427,6 +427,220 @@ class ThermoMavenAPI:
         except Exception as err:
             _LOGGER.error("Failed to trigger device sync: %s", err)
 
+    async def async_set_probe_temperature(
+        self, device_id: str, device_type: str, probe_color: str, target_temperature: int
+    ) -> bool:
+        """Set target temperature for a probe via MQTT.
+        
+        Args:
+            device_id: Device ID
+            device_type: Device model (e.g., "WT02")
+            probe_color: Probe color ("bright" or "dark")
+            target_temperature: Target temperature in tenths of degrees F (e.g., 650 = 65.0°F)
+        
+        Returns:
+            True if command was published successfully
+        """
+        if not self.mqtt_client:
+            _LOGGER.error("MQTT client not initialized")
+            return False
+        
+        # Get device topics from latest MQTT data
+        pub_topic = self._get_device_pub_topic(device_id)
+        if not pub_topic:
+            _LOGGER.error("No publish topic found for device %s", device_id)
+            return False
+        
+        # Build command
+        cmd_data = {
+            "probeColor": probe_color,
+            "cookingAction": 3,  # 3 = modify settings
+            "setParams": [
+                {
+                    "setTemperature": target_temperature
+                }
+            ]
+        }
+        
+        message = {
+            "cmdType": "WT:probe:control",
+            "cmdData": cmd_data,
+            "cmdId": str(uuid.uuid4()).replace("-", ""),
+            "deviceId": device_id,
+            "deviceType": device_type,
+            "userId": str(self.user_id),
+            "appVersion": "1804"
+        }
+        
+        # Publish to MQTT
+        try:
+            payload = json.dumps(message, separators=(",", ":"), ensure_ascii=False)
+            _LOGGER.debug("Publishing temperature command to %s: %s", pub_topic, payload)
+            
+            result = await self.hass.async_add_executor_job(
+                self.mqtt_client.publish, pub_topic, payload, 1
+            )
+            
+            if result.rc == 0:
+                _LOGGER.debug("✅ Temperature command published successfully")
+                return True
+            else:
+                _LOGGER.error("❌ Failed to publish temperature command: %s", result.rc)
+                return False
+        except Exception as err:
+            _LOGGER.error("Error publishing temperature command: %s", err)
+            return False
+
+    async def async_start_cooking(
+        self, device_id: str, device_type: str, probe_color: str, target_temperature: int
+    ) -> bool:
+        """Start cooking with target temperature.
+        
+        Args:
+            device_id: Device ID
+            device_type: Device model (e.g., "WT02")
+            probe_color: Probe color ("bright" or "dark")
+            target_temperature: Target temperature in tenths of degrees F
+        
+        Returns:
+            True if command was published successfully
+        """
+        if not self.mqtt_client:
+            _LOGGER.error("MQTT client not initialized")
+            return False
+        
+        pub_topic = self._get_device_pub_topic(device_id)
+        if not pub_topic:
+            _LOGGER.error("No publish topic found for device %s", device_id)
+            return False
+        
+        # Generate cook UUID
+        cook_uuid = str(uuid.uuid4())
+        
+        cmd_data = {
+            "probeColor": probe_color,
+            "cookingAction": 1,  # 1 = start
+            "cookUuid": cook_uuid,
+            "startClient": "android",
+            "cookingState": "cooking",
+            "setParams": [
+                {
+                    "setTemperature": target_temperature
+                }
+            ]
+        }
+        
+        message = {
+            "cmdType": "WT:probe:control",
+            "cmdData": cmd_data,
+            "cmdId": str(uuid.uuid4()).replace("-", ""),
+            "deviceId": device_id,
+            "deviceType": device_type,
+            "userId": str(self.user_id),
+            "appVersion": "1804"
+        }
+        
+        try:
+            payload = json.dumps(message, separators=(",", ":"), ensure_ascii=False)
+            _LOGGER.debug("Publishing start cooking command to %s", pub_topic)
+            
+            result = await self.hass.async_add_executor_job(
+                self.mqtt_client.publish, pub_topic, payload, 1
+            )
+            
+            if result.rc == 0:
+                _LOGGER.debug("✅ Start cooking command published successfully")
+                return True
+            else:
+                _LOGGER.error("❌ Failed to publish start cooking command: %s", result.rc)
+                return False
+        except Exception as err:
+            _LOGGER.error("Error publishing start cooking command: %s", err)
+            return False
+
+    async def async_stop_cooking(
+        self, device_id: str, device_type: str, probe_color: str
+    ) -> bool:
+        """Stop cooking.
+        
+        Args:
+            device_id: Device ID
+            device_type: Device model (e.g., "WT02")
+            probe_color: Probe color ("bright" or "dark")
+        
+        Returns:
+            True if command was published successfully
+        """
+        if not self.mqtt_client:
+            _LOGGER.error("MQTT client not initialized")
+            return False
+        
+        pub_topic = self._get_device_pub_topic(device_id)
+        if not pub_topic:
+            _LOGGER.error("No publish topic found for device %s", device_id)
+            return False
+        
+        cmd_data = {
+            "probeColor": probe_color,
+            "cookingAction": 2,  # 2 = stop/pause
+            "cookingState": "ready"
+        }
+        
+        message = {
+            "cmdType": "WT:probe:control",
+            "cmdData": cmd_data,
+            "cmdId": str(uuid.uuid4()).replace("-", ""),
+            "deviceId": device_id,
+            "deviceType": device_type,
+            "userId": str(self.user_id),
+            "appVersion": "1804"
+        }
+        
+        try:
+            payload = json.dumps(message, separators=(",", ":"), ensure_ascii=False)
+            _LOGGER.debug("Publishing stop cooking command to %s", pub_topic)
+            
+            result = await self.hass.async_add_executor_job(
+                self.mqtt_client.publish, pub_topic, payload, 1
+            )
+            
+            if result.rc == 0:
+                _LOGGER.debug("✅ Stop cooking command published successfully")
+                return True
+            else:
+                _LOGGER.error("❌ Failed to publish stop cooking command: %s", result.rc)
+                return False
+        except Exception as err:
+            _LOGGER.error("Error publishing stop cooking command: %s", err)
+            return False
+
+    def _get_device_pub_topic(self, device_id: str) -> str | None:
+        """Get the publish topic for a device from MQTT device list.
+        
+        Args:
+            device_id: Device ID
+        
+        Returns:
+            Publish topic string or None if not found
+        """
+        if not self._latest_mqtt_data:
+            return None
+        
+        # Check if we have device list data
+        if self._latest_mqtt_data.get("cmdType") == "user:device:list":
+            cmd_data = self._latest_mqtt_data.get("cmdData", {})
+            devices = cmd_data.get("devices", [])
+            
+            for device in devices:
+                if str(device.get("deviceId")) == str(device_id):
+                    pub_topics = device.get("pubTopics", [])
+                    if pub_topics:
+                        return pub_topics[0]
+        
+        # Fallback: construct standard topic format
+        # Based on MQTT pattern: app/device/{deviceId}/pub
+        return f"app/device/{device_id}/pub"
+
     async def async_disconnect_mqtt(self):
         """Disconnect MQTT client."""
         if self.mqtt_client:

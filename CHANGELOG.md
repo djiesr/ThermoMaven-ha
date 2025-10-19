@@ -2,6 +2,51 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.0] - 2025-01-19 🎉
+
+### 🎛️ NEW FEATURE - Climate Control
+
+#### ✨ Climate Entities Added!
+- **Full temperature control via MQTT**
+  - Set target temperature for each probe
+  - Start/stop cooking sessions
+  - View current and target temperatures in one entity
+  - Preset modes for cooking states
+
+#### 🌡️ Climate Features
+- **Climate entity for each probe**:
+  - `climate.thermomaven_[device]_probe_1_control`
+  - `climate.thermomaven_[device]_probe_2_control`
+  - Additional probes for 4-probe models
+  
+- **Control capabilities**:
+  - Set target temperature (32°F - 572°F / 0°C - 300°C)
+  - Turn on/off (start/stop cooking)
+  - HVAC modes: Off, Heat, Auto
+  - Preset modes: Cooking, Ready, Resting, Remove
+  
+- **Real-time MQTT commands**:
+  - Commands published via MQTT to device
+  - Automatic topic detection from device list
+  - Fallback to standard topic format
+  
+#### 🔧 Technical Implementation
+- **New API methods**:
+  - `async_set_probe_temperature()` - Modify target temperature
+  - `async_start_cooking()` - Start cooking with target temp
+  - `async_stop_cooking()` - Stop/pause cooking
+  - `_get_device_pub_topic()` - Auto-detect publish topics
+
+- **MQTT command structure**:
+  - Command type: `WT:probe:control`
+  - Cooking actions: 1=start, 2=stop, 3=modify
+  - Temperature in tenths of degrees F (e.g., 650 = 65.0°F)
+  - Probe color detection (bright/dark)
+
+#### 🌍 Translations
+- Added climate entity translations in 6 languages
+- Consistent naming with sensor entities
+
 ## [1.3.0] - 2025-01-18 🎉
 
 ### 🏆 MAJOR UPDATE - Reload/Restart Fix

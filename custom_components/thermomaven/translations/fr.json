@@ -95,6 +95,20 @@
       "wifi_rssi": {
         "name": "Signal WiFi"
       }
+    },
+    "climate": {
+      "probe_1_control": {
+        "name": "Contrôle Sonde 1"
+      },
+      "probe_2_control": {
+        "name": "Contrôle Sonde 2"
+      },
+      "probe_3_control": {
+        "name": "Contrôle Sonde 3"
+      },
+      "probe_4_control": {
+        "name": "Contrôle Sonde 4"
+      }
     }
   }
 }
