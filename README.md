@@ -288,30 +288,61 @@ logger:
 
 Puis : **Paramètres** → **Système** → **Journaux** et filtrez par "thermomaven"
 
+## 🚧 À Faire (Roadmap)
+
+Fonctionnalités prévues pour les prochaines versions :
+
+### 🎯 Version 1.5.0 (Planifiée)
+
+- **Synchronisation Target Temperature**
+  - Modifier le capteur `sensor.thermomaven_*_target_temperature` depuis l'entité Climate
+  - Synchronisation bidirectionnelle entre sensor et climate
+  
+- **Contrôle du Cook Time**
+  - Définir une durée de cuisson cible
+  - Alarmes et notifications quand le temps est écoulé
+  - Gestion du temps restant
+  
+- **Gestion avancée du Cooking Mode**
+  - Sélection du mode de cuisson (Smart, Manual, etc.)
+  - Presets de cuisson personnalisés
+  - Profils de température par type d'aliment
+
+### 🔮 Futures Améliorations
+
+- 📊 Graphiques d'historique de température
+- 📱 Notifications push avancées
+- 🎨 Presets de cuisson personnalisables
+- ⏰ Minuteries et alarmes multiples
+- 🌡️ Gestion multi-zones améliorée
+
+**Contributions bienvenues !** Si vous souhaitez implémenter une de ces fonctionnalités, ouvrez une issue ou pull request.
+
 ## 📚 Documentation Complète
 
 - **[Guide Contrôle Climate](CLIMATE_CONTROL_GUIDE.md)** - Utilisation des entités Climate
-- **[Notes de Version 1.4.0](RELEASE_NOTES_1.4.0.md)** - Nouveautés et détails
+- **[Notes de Version 1.4.4](RELEASE_NOTES_1.4.4.md)** - Dernières nouveautés
 - **[Changelog](CHANGELOG.md)** - Historique des versions
 - **[Architecture Technique](ARCHITECTURE.md)** - Détails techniques
 
-## 🆕 Nouveautés v1.4.0
+## 🆕 Nouveautés v1.4.4
 
-### 🎛️ Contrôle de Température via Climate
+### 🎛️ Contrôle Climate
+- Entités Climate pour contrôle de température
+- Définir température cible (32-572°F / 0-300°C)
+- Démarrer/arrêter cuisson
+- Modes HVAC et Presets
 
-- Nouvelles entités `climate.*` pour contrôler chaque sonde
-- Définir la température cible directement depuis Home Assistant
-- Démarrer/arrêter les sessions de cuisson
-- Modes HVAC et Presets pour différents états
-- Commandes MQTT en temps réel vers l'appareil
+### 🐛 Corrections Critiques
+- ✅ Température cible persiste correctement
+- ⚡ API flooding arrêté (95% réduction appels)
+- 📡 Détection MQTT topic fixée (WT10, WT02, etc.)
 
-### 📊 Toutes les Fonctionnalités v1.3.0+
-
+### 📊 Fonctionnalités Complètes
 - **17+ capteurs** par appareil
 - **Mises à jour temps réel** via MQTT
-- **Rechargement sans problème** (fix majeur v1.3.0)
-- **Multi-langue** (6 langues supportées)
-- **Cache intelligent** (réduction de 98% des appels API)
+- **Multi-langue** (6 langues)
+- **Performance optimisée**
 
 ## ⚠️ Prérequis
 
