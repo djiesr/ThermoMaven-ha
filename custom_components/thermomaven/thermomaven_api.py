@@ -623,6 +623,7 @@ class ThermoMavenAPI:
             Publish topic string or None if not found
         """
         if not self._latest_mqtt_data:
+            _LOGGER.warning("No MQTT data available for pub topic detection")
             return None
         
         # Check if we have device list data
@@ -632,13 +633,32 @@ class ThermoMavenAPI:
             
             for device in devices:
                 if str(device.get("deviceId")) == str(device_id):
+                    # Check for pubTopics first
                     pub_topics = device.get("pubTopics", [])
                     if pub_topics:
+                        _LOGGER.debug("Found pubTopic for device %s: %s", device_id, pub_topics[0])
                         return pub_topics[0]
+                    
+                    # Fallback: construct from subTopic pattern
+                    sub_topics = device.get("subTopics", [])
+                    if sub_topics:
+                        # Format: app/WT10/216510650012434433/sub → app/WT10/216510650012434433/pub
+                        sub_topic = sub_topics[0]
+                        pub_topic = sub_topic.replace("/sub", "/pub")
+                        _LOGGER.debug("Constructed pubTopic from subTopic for device %s: %s", device_id, pub_topic)
+                        return pub_topic
+                    
+                    # Last fallback: device model pattern
+                    device_model = device.get("deviceModel")
+                    if device_model:
+                        pub_topic = f"app/{device_model}/{device_id}/pub"
+                        _LOGGER.debug("Constructed pubTopic from model for device %s: %s", device_id, pub_topic)
+                        return pub_topic
         
-        # Fallback: construct standard topic format
-        # Based on MQTT pattern: app/device/{deviceId}/pub
-        return f"app/device/{device_id}/pub"
+        # Ultimate fallback: standard format (may not work for all models)
+        fallback_topic = f"app/device/{device_id}/pub"
+        _LOGGER.warning("Using fallback pubTopic for device %s: %s", device_id, fallback_topic)
+        return fallback_topic
 
     async def async_disconnect_mqtt(self):
         """Disconnect MQTT client."""
