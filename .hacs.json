@@ -1,6 +1,5 @@
 {
   "name": "ThermoMaven",
   "render_readme": true,
-  "homeassistant": "2023.1.0",
-  "default_branch": "release"
+  "homeassistant": "2023.1.0"
 }
