@@ -8,7 +8,7 @@ DEFAULT_APP_ID = "ap4060eff28137181bd"
 
 # API endpoints
 API_BASE_URL_COM = "https://api.iot.thermomaven.com"
-API_BASE_URL_DE = "https://api-de.iot.thermomaven.com"
+API_BASE_URL_DE = "https://api.iot.thermomaven.de"
 
 # Supported countries
 COUNTRIES = {
