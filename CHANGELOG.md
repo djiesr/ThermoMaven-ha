@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.6] - 2025-02-14 🌍
+
+### 🌍 European API Server Fix
+
+#### API Endpoint Alignment with Official App
+- **Fixed European API URL** to match ThermoMaven official app
+  - Changed from: `api-de.iot.thermomaven.com`
+  - Changed to: `api.iot.thermomaven.de`
+  
+- **Why this matters:**
+  - The official ThermoMaven app uses `api.iot.thermomaven.de` for European countries
+  - Ensures compatibility for users in Europe (France, Germany, UK, etc.)
+  - Fixes potential connection issues reported outside North America
+
+- **Affected regions:** All European countries (AT, BE, BG, CH, CZ, DE, DK, ES, FI, FR, HU, IE, IS, IT, LU, NL, NO, PL, PT, RO, RS, SE, SK, TR, UK)
+
+#### User Impact
+- ✅ European users: Improved connection reliability
+- ✅ Alignment with app's regional architecture
+- ✅ No changes for US/CA/AU/NZ (still using api.iot.thermomaven.com)
+
 ## [1.4.5] - 2025-01-19 🌍
 
 ### 🌍 Documentation & Translations
