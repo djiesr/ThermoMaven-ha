@@ -30,7 +30,7 @@ jobs:
           name: ThermoMaven v${{ steps.version.outputs.VERSION }}
           body_path: RELEASE_NOTES_${{ steps.version.outputs.VERSION }}.md
           draft: false
-          prerelease: ${{ contains(steps.version.outputs.VERSION, 'beta') }}
+          prerelease: ${{ contains(steps.version.outputs.VERSION, 'beta') || contains(steps.version.outputs.VERSION, 'b0') }}
           files: thermomaven-${{ steps.version.outputs.VERSION }}.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
