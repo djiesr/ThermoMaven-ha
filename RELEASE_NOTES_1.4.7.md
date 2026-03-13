@@ -1,10 +1,8 @@
-# 🧪 ThermoMaven v1.4.7b0 (beta) - Fix « indisponible » après connexion
+# 🧪 ThermoMaven v1.4.7 - Fix « indisponible » après connexion
 
 **Release Date:** March 13, 2026  
-**Type:** Beta Release  
+**Type:** Bug Fix (release candidate)  
 **Focus:** Stabilité des capteurs après connexion MQTT
-
-> Version au format **1.4.7b0** pour compatibilité HACS (PEP 440).
 
 ## 🎯 Problème corrigé
 
@@ -24,15 +22,15 @@ Après la connexion, les entités (températures, batterie, etc.) devenaient **i
 ### Cas « un seul appareil sans deviceId »
 - Si l'API ne renvoie qu'un appareil sans `deviceId` et qu'un seul rapport de statut est reçu, l'intégration associe automatiquement ce rapport à cet appareil.
 
-## 🔄 Installation (beta)
+## 🔄 Installation
 
 ### Via HACS
 1. **HACS** → **Integrations** → **ThermoMaven**
-2. Cliquer sur **Mise à jour** et choisir **v1.4.7b0**
+2. Cliquer sur **Mise à jour** et choisir **v1.4.7**
 3. **Redémarrer Home Assistant**
 
 ### Mise à jour manuelle
-1. Télécharger [v1.4.7b0](https://github.com/djiesr/thermomaven-ha/releases/tag/v1.4.7b0)
+1. Télécharger [v1.4.7](https://github.com/djiesr/thermomaven-ha/releases/tag/v1.4.7)
 2. Extraire dans `/config/custom_components/thermomaven/`
 3. Redémarrer Home Assistant
 
@@ -47,8 +45,8 @@ Aucun. Rétrocompatible avec la v1.4.6.
 
 ## 🙏 Retour
 
-Merci de tester cette beta et de signaler tout souci sur [GitHub Issues](https://github.com/djiesr/thermomaven-ha/issues).
+Merci de signaler tout souci sur [GitHub Issues](https://github.com/djiesr/thermomaven-ha/issues).
 
 ---
 
-**Full Changelog:** [v1.4.6...v1.4.7b0](https://github.com/djiesr/thermomaven-ha/compare/v1.4.6...v1.4.7b0)
+**Full Changelog:** [v1.4.6...v1.4.7](https://github.com/djiesr/thermomaven-ha/compare/v1.4.6...v1.4.7)
