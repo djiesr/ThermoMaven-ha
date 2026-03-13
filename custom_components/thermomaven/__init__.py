@@ -382,6 +382,24 @@ class ThermoMavenDataUpdateCoordinator(DataUpdateCoordinator):
                     _LOGGER.debug("🧹 Deduplicated: %d → %d devices", len(devices), len(unique_devices))
                     devices = unique_devices
             
+            # Enrichir chaque appareil avec le dernier status:report (évite "No lastStatusCmd")
+            status_reports = getattr(self.api, "_device_status_reports", {})
+            if status_reports and devices:
+                # Cas: un seul appareil sans deviceId mais un rapport reçu → associer par position
+                if len(devices) == 1 and len(status_reports) == 1:
+                    only_device = devices[0]
+                    if not only_device.get("deviceId") or str(only_device.get("deviceId")) == "None":
+                        only_id = next(iter(status_reports))
+                        only_device["deviceId"] = only_id
+                        only_device["lastStatusCmd"] = status_reports[only_id]
+                        _LOGGER.debug("✅ Single device matched to status report (deviceId: %s)", only_id)
+                for device in devices:
+                    did = device.get("deviceId")
+                    if did and str(did) != "None":
+                        report = status_reports.get(str(did))
+                        if report:
+                            device["lastStatusCmd"] = report
+            
             _LOGGER.debug("=== FINAL: %d device(s) with lastStatusCmd: %s ===", 
                         len(devices) if devices else 0,
                         [bool(d.get("lastStatusCmd")) for d in devices] if devices else [])

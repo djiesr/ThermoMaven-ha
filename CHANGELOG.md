@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.7-beta] - 2026-03-13 🧪
+
+### 🐛 Fix « indisponible » après connexion (Beta)
+
+#### Problème
+- Entités (températures, batterie, etc.) passaient en **indisponible** quelques secondes après la connexion.
+- Logs : `Cannot update device None: device_id=None, devices=1` et `No lastStatusCmd in device data!`.
+
+#### Corrections
+- **Liste d’appareils préservée :** `_latest_mqtt_data` n’est plus écrasé par les messages `status:report` ; seuls les messages `user:device:list` mettent à jour la liste. Les rapports de température sont stockés dans un cache par `device_id` (`_device_status_reports`) et rattachés aux appareils à chaque refresh du coordinateur.
+- **deviceId dans status:report :** recherche à la racine, puis dans `cmdData`, puis extraction depuis le topic MQTT si besoin.
+- **Cas 1 appareil sans deviceId :** si l’API ne renvoie qu’un appareil sans `deviceId` et qu’un seul rapport est reçu, association automatique pour garder les entités disponibles.
+
+#### Fichiers modifiés
+- `thermomaven_api.py` : cache `_device_status_reports`, condition sur `_latest_mqtt_data`, fallback deviceId.
+- `__init__.py` : enrichissement des devices avec `lastStatusCmd` depuis le cache après déduplication.
+
 ## [1.4.6] - 2025-02-14 🌍
 
 ### 🌍 European API Server Fix

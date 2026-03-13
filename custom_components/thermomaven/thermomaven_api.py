@@ -57,7 +57,8 @@ class ThermoMavenAPI:
         self.mqtt_client = None
         self.mqtt_config = None
         self.coordinator = None
-        self._latest_mqtt_data = None
+        self._latest_mqtt_data = None  # Uniquement user:device:list (ne pas écraser par status:report)
+        self._device_status_reports = {}  # device_id -> dernier status:report
         
         # Fichiers temporaires pour les certificats
         self.cert_files = []
@@ -199,7 +200,7 @@ class ThermoMavenAPI:
         
         # Vérifier aussi que c'est bien un user:device:list et pas un status:report
         while not self._mqtt_device_list_received or \
-              self._latest_mqtt_data.get("cmdType") != "user:device:list":
+              (self._latest_mqtt_data or {}).get("cmdType") != "user:device:list":
             if time.time() - start_time > timeout:
                 _LOGGER.warning("⚠️ Timeout waiting for MQTT device list after %ds", timeout)
                 _LOGGER.warning("Last MQTT cmdType: %s", 
@@ -343,8 +344,10 @@ class ThermoMavenAPI:
             # Full message only at debug level
             _LOGGER.debug("Full message: %s", json.dumps(data, indent=2))
             
-            # Store the latest message data for coordinator
-            self._latest_mqtt_data = data
+            # Ne stocker que la liste des appareils dans _latest_mqtt_data (pas les status:report)
+            # pour que le coordinateur garde la structure des devices avec deviceId.
+            if cmd_type == "user:device:list":
+                self._latest_mqtt_data = data
             
             # Trigger coordinator update on device list changes
             if cmd_type == "user:device:list":
@@ -379,8 +382,17 @@ class ThermoMavenAPI:
             # Handle temperature updates
             elif "status:report" in cmd_type:
                 _LOGGER.debug("=== TEMPERATURE UPDATE VIA MQTT ===")
-                device_id = data.get("deviceId")
                 cmd_data = data.get("cmdData", {})
+                # deviceId peut être à la racine ou dans cmdData selon le firmware/API
+                device_id = data.get("deviceId") or cmd_data.get("deviceId")
+                if not device_id and msg.topic:
+                    # Fallback: extraire du topic (ex: app/device/12345/sub ou app/WT02/12345/sub)
+                    parts = msg.topic.strip("/").split("/")
+                    if len(parts) >= 3:
+                        device_id = parts[-2]  # avant "sub" ou dernier segment
+                if device_id:
+                    device_id = str(device_id)
+                    self._device_status_reports[device_id] = data
                 
                 # Log compact info instead of full JSON
                 temp = "N/A"
