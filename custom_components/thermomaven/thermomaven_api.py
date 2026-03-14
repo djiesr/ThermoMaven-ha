@@ -57,8 +57,7 @@ class ThermoMavenAPI:
         self.mqtt_client = None
         self.mqtt_config = None
         self.coordinator = None
-        self._latest_mqtt_data = None  # Uniquement user:device:list (ne pas écraser par status:report)
-        self._device_status_reports = {}  # device_id -> dernier status:report
+        self._latest_mqtt_data = None
         
         # Fichiers temporaires pour les certificats
         self.cert_files = []
@@ -198,13 +197,9 @@ class ThermoMavenAPI:
         _LOGGER.debug("⏳ Waiting for MQTT device list (timeout: %ds)...", timeout)
         start_time = time.time()
         
-        # Vérifier aussi que c'est bien un user:device:list et pas un status:report
-        while not self._mqtt_device_list_received or \
-              (self._latest_mqtt_data or {}).get("cmdType") != "user:device:list":
+        while not self._mqtt_device_list_received:
             if time.time() - start_time > timeout:
                 _LOGGER.warning("⚠️ Timeout waiting for MQTT device list after %ds", timeout)
-                _LOGGER.warning("Last MQTT cmdType: %s", 
-                              self._latest_mqtt_data.get("cmdType") if self._latest_mqtt_data else "None")
                 return False
             await asyncio.sleep(0.5)  # Check every 500ms
         
@@ -332,6 +327,15 @@ class ThermoMavenAPI:
         else:
             _LOGGER.error("Failed to connect to MQTT broker: %s", rc)
 
+    def _extract_device_id_from_topic(self, topic: str) -> str | None:
+        """Extract device ID from device-specific MQTT topic.
+        Topic format: device/WT10/216510650012434433/pub
+        """
+        parts = topic.split("/")
+        if len(parts) >= 4 and parts[0] == "device":
+            return parts[2]  # deviceId
+        return None
+
     def _on_mqtt_message(self, client, userdata, msg):
         """Handle MQTT message."""
         try:
@@ -344,11 +348,16 @@ class ThermoMavenAPI:
             # Full message only at debug level
             _LOGGER.debug("Full message: %s", json.dumps(data, indent=2))
             
-            # Ne stocker que la liste des appareils dans _latest_mqtt_data (pas les status:report)
-            # pour que le coordinateur garde la structure des devices avec deviceId.
-            if cmd_type == "user:device:list":
-                self._latest_mqtt_data = data
+            # Pour les messages sur un topic device/..., le payload n'a souvent pas deviceId :
+            # l'ajouter depuis le topic pour que le coordinator puisse mettre à jour le bon device.
+            if "status:report" in cmd_type or "device:cmd:receipt" in cmd_type:
+                topic_device_id = self._extract_device_id_from_topic(msg.topic)
+                if topic_device_id and not data.get("deviceId"):
+                    data = {**data, "deviceId": topic_device_id}
+                    _LOGGER.debug("Set deviceId from topic: %s", topic_device_id)
             
+            self._latest_mqtt_data = data
+
             # Trigger coordinator update on device list changes
             if cmd_type == "user:device:list":
                 # Log the device data for debugging
@@ -383,17 +392,10 @@ class ThermoMavenAPI:
             elif "status:report" in cmd_type:
                 _LOGGER.debug("=== TEMPERATURE UPDATE VIA MQTT ===")
                 cmd_data = data.get("cmdData", {})
-                # deviceId peut être à la racine ou dans cmdData selon le firmware/API
                 device_id = data.get("deviceId") or cmd_data.get("deviceId")
-                if not device_id and msg.topic:
-                    # Fallback: extraire du topic (ex: app/device/12345/sub ou app/WT02/12345/sub)
-                    parts = msg.topic.strip("/").split("/")
-                    if len(parts) >= 3:
-                        device_id = parts[-2]  # avant "sub" ou dernier segment
-                if device_id:
-                    device_id = str(device_id)
-                    self._device_status_reports[device_id] = data
-                
+                if not device_id:
+                    device_id = self._extract_device_id_from_topic(msg.topic)
+
                 # Log compact info instead of full JSON
                 temp = "N/A"
                 probes = cmd_data.get("probes", [])

@@ -64,11 +64,22 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     # Register services
     async def handle_sync_devices(call):
-        """Handle the sync_devices service call."""
-        _LOGGER.debug("Manual device sync requested via service")
-        # Reset auto-sync counter to allow new attempts
+        """Force refresh of the device list (e.g. after turning the thermometer on).
+        Resets MQTT list state, triggers API sync so the broker sends user:device:list,
+        waits for the new list, then refreshes the coordinator.
+        """
+        _LOGGER.debug("Manual device sync requested via service (full refresh)")
         coordinator._auto_sync_attempts = 0
+        # Forcer une nouvelle liste MQTT : reset flag et données
+        api._mqtt_device_list_received = False
+        api._latest_mqtt_data = None
         await api._trigger_device_sync()
+        # Attendre la nouvelle liste (timeout 15 s) avant de rafraîchir
+        mqtt_ready = await api.async_wait_for_mqtt_device_list(timeout=15)
+        if mqtt_ready:
+            _LOGGER.debug("New device list received, refreshing coordinator")
+        else:
+            _LOGGER.warning("Timeout waiting for device list; refreshing anyway")
         await coordinator.async_request_refresh()
     
     hass.services.async_register(DOMAIN, "sync_devices", handle_sync_devices)
@@ -251,17 +262,22 @@ class ThermoMavenDataUpdateCoordinator(DataUpdateCoordinator):
                         _LOGGER.warning("MQTT device list is empty")
                         
                 elif "status:report" in mqtt_data.get("cmdType", ""):
-                    # Mettre à jour les données de température des appareils existants
+                    # Mettre à jour les données de température des appareils existants.
+                    # Partir de la liste précédente (avec lastStatusCmd) pour ne pas tout perdre
+                    # quand on reçoit un status:report alors que _latest_mqtt_data écrase la liste.
                     device_id = mqtt_data.get("deviceId")
                     _LOGGER.debug("=== PROCESSING TEMPERATURE UPDATE ===")
                     _LOGGER.debug("Status report for device ID: %s", device_id)
                     _LOGGER.debug("Current devices: %d, Previous devices: %d", 
                                 len(devices) if devices else 0, len(previous_devices))
                     
-                    # Utiliser les appareils précédents si l'API n'en retourne pas
-                    if not devices and previous_devices:
-                        devices = previous_devices
-                        _LOGGER.debug("Using previous device list: %d devices", len(devices))
+                    # Pour un status report, utiliser la liste précédente comme base pour
+                    # conserver les lastStatusCmd des autres devices et mettre à jour le bon.
+                    if previous_devices:
+                        devices = list(previous_devices)
+                        _LOGGER.debug("Using previous device list as base: %d devices", len(devices))
+                    elif not devices:
+                        devices = []
                     
                     if device_id and devices:
                         device_found = False
@@ -381,24 +397,6 @@ class ThermoMavenDataUpdateCoordinator(DataUpdateCoordinator):
                 if len(unique_devices) != len(devices):
                     _LOGGER.debug("🧹 Deduplicated: %d → %d devices", len(devices), len(unique_devices))
                     devices = unique_devices
-            
-            # Enrichir chaque appareil avec le dernier status:report (évite "No lastStatusCmd")
-            status_reports = getattr(self.api, "_device_status_reports", {})
-            if status_reports and devices:
-                # Cas: un seul appareil sans deviceId mais un rapport reçu → associer par position
-                if len(devices) == 1 and len(status_reports) == 1:
-                    only_device = devices[0]
-                    if not only_device.get("deviceId") or str(only_device.get("deviceId")) == "None":
-                        only_id = next(iter(status_reports))
-                        only_device["deviceId"] = only_id
-                        only_device["lastStatusCmd"] = status_reports[only_id]
-                        _LOGGER.debug("✅ Single device matched to status report (deviceId: %s)", only_id)
-                for device in devices:
-                    did = device.get("deviceId")
-                    if did and str(did) != "None":
-                        report = status_reports.get(str(did))
-                        if report:
-                            device["lastStatusCmd"] = report
             
             _LOGGER.debug("=== FINAL: %d device(s) with lastStatusCmd: %s ===", 
                         len(devices) if devices else 0,
