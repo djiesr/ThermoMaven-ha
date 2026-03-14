@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.9] - 2026-03-14 🌍
+
+### 🐛 Fix MQTT broker for European countries (UK, FR, DE, etc.)
+
+#### Problem
+- In Europe (e.g. UK), MQTT failed with "Unexpected MQTT disconnection: 7".
+- The API correctly used the European server (`.de`), but the MQTT broker was chosen from the `clientId` region code (e.g. "UK", "FR"). `MQTT_BROKERS` only has keys "US" and "EU", so European country codes fell back to the **US** broker while the certificate from the European API is for the **EU** broker → connection refused.
+
+#### Fix
+- Map any European country code from `clientId` (UK, FR, DE, AT, etc.) to the **EU** broker using `EUROPEAN_COUNTRIES`.
+- Non-European regions (US, CA, AU, NZ, ZA) keep using the US broker (unchanged).
+
+#### Impact
+- ✅ UK and all European users: MQTT now connects to the correct EU broker.
+- ✅ US/CA/AU/NZ: no change (still US broker).
+- Fixes [Issue #3](https://github.com/djiesr/ThermoMaven-ha/issues/3).
+
 ## [1.4.7] - 2026-03-13
 
 ### 🐛 Fix « indisponible » après connexion (Beta)

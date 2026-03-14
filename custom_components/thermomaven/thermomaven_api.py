@@ -280,8 +280,10 @@ class ThermoMavenAPI:
         
         # Setup MQTT client
         client_id = self.mqtt_config["clientId"]
-        region = client_id.split("-")[2] if "-" in client_id else "US"
-        broker = MQTT_BROKERS.get(region, MQTT_BROKERS["US"])
+        region_from_client = client_id.split("-")[2] if "-" in client_id else "US"
+        # Map European country codes (UK, FR, DE, etc.) to EU broker; others use US
+        mqtt_region = "EU" if region_from_client in EUROPEAN_COUNTRIES else region_from_client
+        broker = MQTT_BROKERS.get(mqtt_region, MQTT_BROKERS["US"])
         
         self.mqtt_client = mqtt.Client(
             client_id=client_id,
@@ -305,7 +307,11 @@ class ThermoMavenAPI:
         self.mqtt_client.connect(broker, MQTT_PORT, keepalive=60)
         self.mqtt_client.loop_start()
         
-        _LOGGER.debug("MQTT client started for region %s", region)
+        _LOGGER.debug(
+            "MQTT client started for region %s (broker: %s)",
+            region_from_client,
+            "EU" if mqtt_region == "EU" else "US",
+        )
         return True
 
     def _on_mqtt_connect(self, client, userdata, flags, rc):
