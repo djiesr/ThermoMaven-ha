@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.5.0] - 2026-11-23
+
+### Fix: per-probe area and ambient sensors
+
+#### Problem
+- Area (zones 1-5) and ambient temperature sensors were created once per device and always read probe 1. On multi-probe devices (G2, P2, G4, P4), data from probes 2-4 was ignored, and all these sensors went unknown when probe 1 was docked.
+
+#### Fix
+- One set of five area sensors and one ambient sensor per probe. A docked probe only affects its own sensors.
+- Fixes [Issue #5](https://github.com/djiesr/ThermoMaven-ha/issues/5) and [Issue #6](https://github.com/djiesr/ThermoMaven-ha/issues/6). Thanks @solidcitizen ([PR #7](https://github.com/djiesr/ThermoMaven-ha/pull/7)).
+
+#### Breaking change
+Entity IDs changed. Update your automations and dashboards:
+- `sensor.thermomaven_<device>_area_N_*` -> `sensor.thermomaven_<device>_probe_P_area_N_*`
+- `sensor.thermomaven_<device>_ambient` -> `sensor.thermomaven_<device>_probe_P_ambient_temperature`
+
+#### Known limitation
+- Target temperature and cook time/mode/state sensors still read probe 1 only.
+
 ## [1.4.9] - 2026-03-14 🌍
 
 ### 🐛 Fix MQTT broker for European countries (UK, FR, DE, etc.)
