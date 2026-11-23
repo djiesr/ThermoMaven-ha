@@ -49,23 +49,77 @@
       "probe_4_battery": {
         "name": "探头 4 电池"
       },
-      "area_1": {
-        "name": "区域 1 尖端"
+      "probe_1_area_1": {
+        "name": "探头 1 区域 1 尖端"
       },
-      "area_2": {
-        "name": "区域 2"
+      "probe_1_area_2": {
+        "name": "探头 1 区域 2"
       },
-      "area_3": {
-        "name": "区域 3"
+      "probe_1_area_3": {
+        "name": "探头 1 区域 3"
       },
-      "area_4": {
-        "name": "区域 4"
+      "probe_1_area_4": {
+        "name": "探头 1 区域 4"
       },
-      "area_5": {
-        "name": "区域 5 手柄"
+      "probe_1_area_5": {
+        "name": "探头 1 区域 5 手柄"
       },
-      "ambient_temp": {
-        "name": "环境温度"
+      "probe_2_area_1": {
+        "name": "探头 2 区域 1 尖端"
+      },
+      "probe_2_area_2": {
+        "name": "探头 2 区域 2"
+      },
+      "probe_2_area_3": {
+        "name": "探头 2 区域 3"
+      },
+      "probe_2_area_4": {
+        "name": "探头 2 区域 4"
+      },
+      "probe_2_area_5": {
+        "name": "探头 2 区域 5 手柄"
+      },
+      "probe_3_area_1": {
+        "name": "探头 3 区域 1 尖端"
+      },
+      "probe_3_area_2": {
+        "name": "探头 3 区域 2"
+      },
+      "probe_3_area_3": {
+        "name": "探头 3 区域 3"
+      },
+      "probe_3_area_4": {
+        "name": "探头 3 区域 4"
+      },
+      "probe_3_area_5": {
+        "name": "探头 3 区域 5 手柄"
+      },
+      "probe_4_area_1": {
+        "name": "探头 4 区域 1 尖端"
+      },
+      "probe_4_area_2": {
+        "name": "探头 4 区域 2"
+      },
+      "probe_4_area_3": {
+        "name": "探头 4 区域 3"
+      },
+      "probe_4_area_4": {
+        "name": "探头 4 区域 4"
+      },
+      "probe_4_area_5": {
+        "name": "探头 4 区域 5 手柄"
+      },
+      "probe_1_ambient_temp": {
+        "name": "探头 1 环境温度"
+      },
+      "probe_2_ambient_temp": {
+        "name": "探头 2 环境温度"
+      },
+      "probe_3_ambient_temp": {
+        "name": "探头 3 环境温度"
+      },
+      "probe_4_ambient_temp": {
+        "name": "探头 4 环境温度"
       },
       "target_temp": {
         "name": "目标温度"
@@ -98,4 +152,3 @@
     }
   }
 }
-

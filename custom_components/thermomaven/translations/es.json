@@ -49,23 +49,77 @@
       "probe_4_battery": {
         "name": "Batería Sonda 4"
       },
-      "area_1": {
-        "name": "Zona 1 Punta"
+      "probe_1_area_1": {
+        "name": "Sonda 1 Zona 1 Punta"
       },
-      "area_2": {
-        "name": "Zona 2"
+      "probe_1_area_2": {
+        "name": "Sonda 1 Zona 2"
       },
-      "area_3": {
-        "name": "Zona 3"
+      "probe_1_area_3": {
+        "name": "Sonda 1 Zona 3"
       },
-      "area_4": {
-        "name": "Zona 4"
+      "probe_1_area_4": {
+        "name": "Sonda 1 Zona 4"
       },
-      "area_5": {
-        "name": "Zona 5 Mango"
+      "probe_1_area_5": {
+        "name": "Sonda 1 Zona 5 Mango"
       },
-      "ambient_temp": {
-        "name": "Temperatura Ambiente"
+      "probe_2_area_1": {
+        "name": "Sonda 2 Zona 1 Punta"
+      },
+      "probe_2_area_2": {
+        "name": "Sonda 2 Zona 2"
+      },
+      "probe_2_area_3": {
+        "name": "Sonda 2 Zona 3"
+      },
+      "probe_2_area_4": {
+        "name": "Sonda 2 Zona 4"
+      },
+      "probe_2_area_5": {
+        "name": "Sonda 2 Zona 5 Mango"
+      },
+      "probe_3_area_1": {
+        "name": "Sonda 3 Zona 1 Punta"
+      },
+      "probe_3_area_2": {
+        "name": "Sonda 3 Zona 2"
+      },
+      "probe_3_area_3": {
+        "name": "Sonda 3 Zona 3"
+      },
+      "probe_3_area_4": {
+        "name": "Sonda 3 Zona 4"
+      },
+      "probe_3_area_5": {
+        "name": "Sonda 3 Zona 5 Mango"
+      },
+      "probe_4_area_1": {
+        "name": "Sonda 4 Zona 1 Punta"
+      },
+      "probe_4_area_2": {
+        "name": "Sonda 4 Zona 2"
+      },
+      "probe_4_area_3": {
+        "name": "Sonda 4 Zona 3"
+      },
+      "probe_4_area_4": {
+        "name": "Sonda 4 Zona 4"
+      },
+      "probe_4_area_5": {
+        "name": "Sonda 4 Zona 5 Mango"
+      },
+      "probe_1_ambient_temp": {
+        "name": "Sonda 1 Temperatura Ambiente"
+      },
+      "probe_2_ambient_temp": {
+        "name": "Sonda 2 Temperatura Ambiente"
+      },
+      "probe_3_ambient_temp": {
+        "name": "Sonda 3 Temperatura Ambiente"
+      },
+      "probe_4_ambient_temp": {
+        "name": "Sonda 4 Temperatura Ambiente"
       },
       "target_temp": {
         "name": "Temperatura Objetivo"
@@ -98,4 +152,3 @@
     }
   }
 }
-

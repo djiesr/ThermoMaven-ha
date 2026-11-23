@@ -110,12 +110,14 @@ sensor.thermomaven_[device]_probe_4          # Probe 4 temperature (if available
 
 #### 🔥 Zone Sensors (for each probe)
 
+One set per probe (N = 1 to the number of probes on your device):
+
 ```
-sensor.thermomaven_[device]_area_1_tip       # Zone 1 (Tip)
-sensor.thermomaven_[device]_area_2           # Zone 2
-sensor.thermomaven_[device]_area_3           # Zone 3
-sensor.thermomaven_[device]_area_4           # Zone 4
-sensor.thermomaven_[device]_area_5_handle    # Zone 5 (Handle)
+sensor.thermomaven_[device]_probe_N_area_1_tip       # Probe N Zone 1 (Tip)
+sensor.thermomaven_[device]_probe_N_area_2           # Probe N Zone 2
+sensor.thermomaven_[device]_probe_N_area_3           # Probe N Zone 3
+sensor.thermomaven_[device]_probe_N_area_4           # Probe N Zone 4
+sensor.thermomaven_[device]_probe_N_area_5_handle    # Probe N Zone 5 (Handle)
 ```
 
 #### 🎛️ Climate Controls (v1.4.0+) ✨
@@ -155,8 +157,8 @@ sensor.thermomaven_[device]_wifi_signal      # WiFi signal (RSSI)
 #### 🌡️ Environment Sensors
 
 ```
-sensor.thermomaven_[device]_ambient          # Ambient temperature
-sensor.thermomaven_[device]_target           # Target temperature
+sensor.thermomaven_[device]_probe_N_ambient_temperature  # Ambient temperature at probe N handle
+sensor.thermomaven_[device]_target                        # Target temperature
 ```
 
 ## 💡 Usage Examples

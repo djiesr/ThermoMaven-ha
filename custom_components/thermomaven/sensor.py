@@ -112,16 +112,20 @@ async def async_setup_entry(
                     )
                 )
             
-            for area_num in range(1, 6):
+            for probe_num in range(1, num_probes + 1):
+                for area_num in range(1, 6):
+                    entities_to_add.append(
+                        ThermoMavenAreaTemperatureSensor(
+                            coordinator, device, probe_num, area_num, entry.entry_id
+                        )
+                    )
+
+            for probe_num in range(1, num_probes + 1):
                 entities_to_add.append(
-                    ThermoMavenAreaTemperatureSensor(
-                        coordinator, device, area_num, entry.entry_id
+                    ThermoMavenAmbientTemperatureSensor(
+                        coordinator, device, probe_num, entry.entry_id
                     )
                 )
-            
-            entities_to_add.append(
-                ThermoMavenAmbientTemperatureSensor(coordinator, device, entry.entry_id)
-            )
             entities_to_add.append(
                 ThermoMavenTargetTemperatureSensor(coordinator, device, entry.entry_id)
             )
@@ -474,27 +478,28 @@ class ThermoMavenProbeBatterySensor(CoordinatorEntity, SensorEntity):
 
 
 class ThermoMavenAreaTemperatureSensor(CoordinatorEntity, SensorEntity):
-    """Representation of a ThermoMaven area temperature sensor (tip to handle)."""
+    """Representation of a ThermoMaven per-probe area temperature sensor (tip to handle)."""
 
     _attr_device_class = SensorDeviceClass.TEMPERATURE
     _attr_state_class = SensorStateClass.MEASUREMENT
     _attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS
 
-    def __init__(self, coordinator, device, area_num, entry_id):
+    def __init__(self, coordinator, device, probe_num, area_num, entry_id):
         """Initialize the sensor."""
         super().__init__(coordinator)
         self._device = device
+        self._probe_num = probe_num
         self._area_num = area_num
         self._device_id = device.get("deviceId")
         self._device_name = device.get("deviceName", "ThermoMaven")
         self._device_model = device.get("deviceModel", "Unknown")
-        
+
         area_labels = ["Area 1 Tip", "Area 2", "Area 3", "Area 4", "Area 5 Handle"]
         self._attr_has_entity_name = True
-        self._attr_name = area_labels[area_num - 1]
-        self._attr_translation_key = f"area_{area_num}"
-        self._attr_unique_id = f"{self._device_id}_area_{area_num}"
-        
+        self._attr_name = f"Probe {probe_num} {area_labels[area_num - 1]}"
+        self._attr_translation_key = f"probe_{probe_num}_area_{area_num}"
+        self._attr_unique_id = f"{self._device_id}_probe_{probe_num}_area_{area_num}"
+
         # Use helper function to create device info with diagnostic data
         self._attr_device_info = _create_device_info(device)
 
@@ -509,11 +514,12 @@ class ThermoMavenAreaTemperatureSensor(CoordinatorEntity, SensorEntity):
                     cmd_data = last_status.get("cmdData", {})
                     if cmd_data.get("globalStatus") != "online":
                         return None
-                    
+
                     probes = cmd_data.get("probes", [])
-                    if probes:
-                        probe_data = probes[0]
-                        area_temps = probe_data.get("areaTemperature", [])
+                    if self._probe_num <= len(probes):
+                        probe_data = probes[self._probe_num - 1]
+                        # areaTemperature is absent while the probe is docked/charging
+                        area_temps = probe_data.get("areaTemperature") or []
                         if len(area_temps) >= self._area_num:
                             temp_raw = area_temps[self._area_num - 1]
                             if temp_raw is not None:
@@ -535,25 +541,26 @@ class ThermoMavenAreaTemperatureSensor(CoordinatorEntity, SensorEntity):
 
 
 class ThermoMavenAmbientTemperatureSensor(CoordinatorEntity, SensorEntity):
-    """Representation of a ThermoMaven ambient temperature sensor."""
+    """Representation of a ThermoMaven per-probe ambient temperature sensor."""
 
     _attr_device_class = SensorDeviceClass.TEMPERATURE
     _attr_state_class = SensorStateClass.MEASUREMENT
     _attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS
 
-    def __init__(self, coordinator, device, entry_id):
+    def __init__(self, coordinator, device, probe_num, entry_id):
         """Initialize the sensor."""
         super().__init__(coordinator)
         self._device = device
+        self._probe_num = probe_num
         self._device_id = device.get("deviceId")
         self._device_name = device.get("deviceName", "ThermoMaven")
         self._device_model = device.get("deviceModel", "Unknown")
-        
+
         self._attr_has_entity_name = True
-        self._attr_name = "Ambient Temperature"
-        self._attr_translation_key = "ambient_temp"
-        self._attr_unique_id = f"{self._device_id}_ambient_temp"
-        
+        self._attr_name = f"Probe {probe_num} Ambient Temperature"
+        self._attr_translation_key = f"probe_{probe_num}_ambient_temp"
+        self._attr_unique_id = f"{self._device_id}_probe_{probe_num}_ambient_temp"
+
         # Use helper function to create device info with diagnostic data
         self._attr_device_info = _create_device_info(device)
 
@@ -568,10 +575,11 @@ class ThermoMavenAmbientTemperatureSensor(CoordinatorEntity, SensorEntity):
                     cmd_data = last_status.get("cmdData", {})
                     if cmd_data.get("globalStatus") != "online":
                         return None
-                    
+
                     probes = cmd_data.get("probes", [])
-                    if probes:
-                        probe_data = probes[0]
+                    if self._probe_num <= len(probes):
+                        probe_data = probes[self._probe_num - 1]
+                        # curAmbientTemperature is absent while the probe is docked/charging
                         temp_raw = probe_data.get("curAmbientTemperature")
                         if temp_raw is not None:
                             temp_f = temp_raw / 10.0
