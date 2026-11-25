@@ -58,6 +58,7 @@ class ThermoMavenAPI:
         self.mqtt_config = None
         self.coordinator = None
         self._latest_mqtt_data = None
+        self._device_topics = set()
         
         # Fichiers temporaires pour les certificats
         self.cert_files = []
@@ -319,17 +320,12 @@ class ThermoMavenAPI:
         if rc == 0:
             _LOGGER.debug("Connected to MQTT broker")
             # Subscribe to topics
-            for topic in self.mqtt_config["subTopics"]:
+            for topic in sorted(set(self.mqtt_config["subTopics"]) | self._device_topics):
                 client.subscribe(topic)
                 _LOGGER.debug("Subscribed to %s", topic)
             
-            # Trigger device list sync SEULEMENT lors de la première connexion
-            # Le message MQTT user:device:list sera publié par le broker
-            if not self._mqtt_device_list_received:
-                _LOGGER.debug("Triggering initial device list synchronization via API")
-                self.hass.add_job(self._trigger_device_sync())
-            else:
-                _LOGGER.debug("Device list already received, skipping API sync")
+            # Refresh the inventory and discover any changed topics.
+            self.hass.add_job(self._trigger_device_sync())
         else:
             _LOGGER.error("Failed to connect to MQTT broker: %s", rc)
 
@@ -384,13 +380,12 @@ class ThermoMavenAPI:
                 
                 _LOGGER.debug("Full MQTT device data: %s", json.dumps(devices, indent=2))
                 
-                # Subscribe to each device's topic for real-time updates
-                for device in devices:
-                    device_topics = device.get("subTopics", [])
-                    for topic in device_topics:
-                        _LOGGER.debug("Subscribing to device topic: %s", topic)
-                        self.mqtt_client.subscribe(topic)
-                
+                # Remember subscriptions for the next connection.
+                topics = {topic for device in devices for topic in device.get("subTopics", [])}
+                self._device_topics = topics
+                for topic in sorted(topics):
+                    client.subscribe(topic)
+
                 if self.coordinator:
                     self.hass.add_job(self.coordinator.async_request_refresh())
             
@@ -427,7 +422,9 @@ class ThermoMavenAPI:
     def _on_mqtt_disconnect(self, client, userdata, rc):
         """Handle MQTT disconnection."""
         if rc != 0:
-            _LOGGER.warning("Unexpected MQTT disconnection: %s", rc)
+            self._mqtt_device_list_received = False
+            self._latest_mqtt_data = None
+            _LOGGER.debug("MQTT disconnected. Waiting for reconnect.")
 
     async def _trigger_device_sync(self):
         """Trigger device synchronization by calling API endpoints.
