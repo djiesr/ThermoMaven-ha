@@ -139,12 +139,16 @@ climate.thermomaven_[device]_probe_4_control # Probe 4 control (if available)
 #### ⏱️ Cooking Sensors
 
 ```
-sensor.thermomaven_[device]_total_cook_time     # Total time
-sensor.thermomaven_[device]_current_cook_time   # Current time
-sensor.thermomaven_[device]_remaining_cook_time # Remaining time
-sensor.thermomaven_[device]_cooking_mode        # Cooking mode
-sensor.thermomaven_[device]_cooking_state       # Current state
+sensor.thermomaven_[device]_probe_1_target_temperature # Target temperature
+sensor.thermomaven_[device]_probe_1_total_cook_time     # Total time
+sensor.thermomaven_[device]_probe_1_current_cook_time   # Current time
+sensor.thermomaven_[device]_probe_1_remaining_cook_time # Remaining time
+sensor.thermomaven_[device]_probe_1_cooking_mode        # Cooking mode
+sensor.thermomaven_[device]_probe_1_cooking_state       # Current state
 ```
+
+Each supported probe has its own set. On upgrade, existing cook sensors keep their
+entity IDs and history and continue to show probe 1.
 
 #### 🔋 Battery & WiFi Sensors
 

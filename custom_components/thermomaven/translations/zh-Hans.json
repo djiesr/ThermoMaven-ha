@@ -121,23 +121,98 @@
       "probe_4_ambient_temp": {
         "name": "探头 4 环境温度"
       },
-      "target_temp": {
-        "name": "目标温度"
+      "probe_1_target_temp": {
+        "name": "探头 1 目标温度"
       },
-      "total_cook_time": {
-        "name": "总烹饪时间"
+      "probe_1_total_cook_time": {
+        "name": "探头 1 总烹饪时间"
       },
-      "current_cook_time": {
-        "name": "当前烹饪时间"
+      "probe_1_current_cook_time": {
+        "name": "探头 1 当前烹饪时间"
       },
-      "remaining_cook_time": {
-        "name": "剩余烹饪时间"
+      "probe_1_remaining_cook_time": {
+        "name": "探头 1 剩余烹饪时间"
       },
-      "cooking_mode": {
-        "name": "烹饪模式"
+      "probe_1_cooking_mode": {
+        "name": "探头 1 烹饪模式"
       },
-      "cooking_state": {
-        "name": "烹饪状态",
+      "probe_1_cooking_state": {
+        "name": "探头 1 烹饪状态",
+        "state": {
+          "cooking": "烹饪中",
+          "charged": "已充电",
+          "charge": "充电中",
+          "idle": "空闲",
+          "standby": "待机"
+        }
+      },
+      "probe_2_target_temp": {
+        "name": "探头 2 目标温度"
+      },
+      "probe_2_total_cook_time": {
+        "name": "探头 2 总烹饪时间"
+      },
+      "probe_2_current_cook_time": {
+        "name": "探头 2 当前烹饪时间"
+      },
+      "probe_2_remaining_cook_time": {
+        "name": "探头 2 剩余烹饪时间"
+      },
+      "probe_2_cooking_mode": {
+        "name": "探头 2 烹饪模式"
+      },
+      "probe_2_cooking_state": {
+        "name": "探头 2 烹饪状态",
+        "state": {
+          "cooking": "烹饪中",
+          "charged": "已充电",
+          "charge": "充电中",
+          "idle": "空闲",
+          "standby": "待机"
+        }
+      },
+      "probe_3_target_temp": {
+        "name": "探头 3 目标温度"
+      },
+      "probe_3_total_cook_time": {
+        "name": "探头 3 总烹饪时间"
+      },
+      "probe_3_current_cook_time": {
+        "name": "探头 3 当前烹饪时间"
+      },
+      "probe_3_remaining_cook_time": {
+        "name": "探头 3 剩余烹饪时间"
+      },
+      "probe_3_cooking_mode": {
+        "name": "探头 3 烹饪模式"
+      },
+      "probe_3_cooking_state": {
+        "name": "探头 3 烹饪状态",
+        "state": {
+          "cooking": "烹饪中",
+          "charged": "已充电",
+          "charge": "充电中",
+          "idle": "空闲",
+          "standby": "待机"
+        }
+      },
+      "probe_4_target_temp": {
+        "name": "探头 4 目标温度"
+      },
+      "probe_4_total_cook_time": {
+        "name": "探头 4 总烹饪时间"
+      },
+      "probe_4_current_cook_time": {
+        "name": "探头 4 当前烹饪时间"
+      },
+      "probe_4_remaining_cook_time": {
+        "name": "探头 4 剩余烹饪时间"
+      },
+      "probe_4_cooking_mode": {
+        "name": "探头 4 烹饪模式"
+      },
+      "probe_4_cooking_state": {
+        "name": "探头 4 烹饪状态",
         "state": {
           "cooking": "烹饪中",
           "charged": "已充电",

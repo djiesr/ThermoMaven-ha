@@ -121,23 +121,98 @@
       "probe_4_ambient_temp": {
         "name": "Probe 4 Ambient Temperature"
       },
-      "target_temp": {
-        "name": "Target Temperature"
+      "probe_1_target_temp": {
+        "name": "Probe 1 Target Temperature"
       },
-      "total_cook_time": {
-        "name": "Total Cook Time"
+      "probe_1_total_cook_time": {
+        "name": "Probe 1 Total Cook Time"
       },
-      "current_cook_time": {
-        "name": "Current Cook Time"
+      "probe_1_current_cook_time": {
+        "name": "Probe 1 Current Cook Time"
       },
-      "remaining_cook_time": {
-        "name": "Remaining Cook Time"
+      "probe_1_remaining_cook_time": {
+        "name": "Probe 1 Remaining Cook Time"
       },
-      "cooking_mode": {
-        "name": "Cooking Mode"
+      "probe_1_cooking_mode": {
+        "name": "Probe 1 Cooking Mode"
       },
-      "cooking_state": {
-        "name": "Cooking State",
+      "probe_1_cooking_state": {
+        "name": "Probe 1 Cooking State",
+        "state": {
+          "cooking": "Cooking",
+          "charged": "Charged",
+          "charge": "Charging",
+          "idle": "Idle",
+          "standby": "Standby"
+        }
+      },
+      "probe_2_target_temp": {
+        "name": "Probe 2 Target Temperature"
+      },
+      "probe_2_total_cook_time": {
+        "name": "Probe 2 Total Cook Time"
+      },
+      "probe_2_current_cook_time": {
+        "name": "Probe 2 Current Cook Time"
+      },
+      "probe_2_remaining_cook_time": {
+        "name": "Probe 2 Remaining Cook Time"
+      },
+      "probe_2_cooking_mode": {
+        "name": "Probe 2 Cooking Mode"
+      },
+      "probe_2_cooking_state": {
+        "name": "Probe 2 Cooking State",
+        "state": {
+          "cooking": "Cooking",
+          "charged": "Charged",
+          "charge": "Charging",
+          "idle": "Idle",
+          "standby": "Standby"
+        }
+      },
+      "probe_3_target_temp": {
+        "name": "Probe 3 Target Temperature"
+      },
+      "probe_3_total_cook_time": {
+        "name": "Probe 3 Total Cook Time"
+      },
+      "probe_3_current_cook_time": {
+        "name": "Probe 3 Current Cook Time"
+      },
+      "probe_3_remaining_cook_time": {
+        "name": "Probe 3 Remaining Cook Time"
+      },
+      "probe_3_cooking_mode": {
+        "name": "Probe 3 Cooking Mode"
+      },
+      "probe_3_cooking_state": {
+        "name": "Probe 3 Cooking State",
+        "state": {
+          "cooking": "Cooking",
+          "charged": "Charged",
+          "charge": "Charging",
+          "idle": "Idle",
+          "standby": "Standby"
+        }
+      },
+      "probe_4_target_temp": {
+        "name": "Probe 4 Target Temperature"
+      },
+      "probe_4_total_cook_time": {
+        "name": "Probe 4 Total Cook Time"
+      },
+      "probe_4_current_cook_time": {
+        "name": "Probe 4 Current Cook Time"
+      },
+      "probe_4_remaining_cook_time": {
+        "name": "Probe 4 Remaining Cook Time"
+      },
+      "probe_4_cooking_mode": {
+        "name": "Probe 4 Cooking Mode"
+      },
+      "probe_4_cooking_state": {
+        "name": "Probe 4 Cooking State",
         "state": {
           "cooking": "Cooking",
           "charged": "Charged",

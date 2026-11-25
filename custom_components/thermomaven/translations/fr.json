@@ -121,23 +121,98 @@
       "probe_4_ambient_temp": {
         "name": "Sonde 4 Température Ambiante"
       },
-      "target_temp": {
-        "name": "Température Cible"
+      "probe_1_target_temp": {
+        "name": "Sonde 1 Température Cible"
       },
-      "total_cook_time": {
-        "name": "Temps Total de Cuisson"
+      "probe_1_total_cook_time": {
+        "name": "Sonde 1 Temps Total de Cuisson"
       },
-      "current_cook_time": {
-        "name": "Temps de Cuisson Actuel"
+      "probe_1_current_cook_time": {
+        "name": "Sonde 1 Temps de Cuisson Actuel"
       },
-      "remaining_cook_time": {
-        "name": "Temps de Cuisson Restant"
+      "probe_1_remaining_cook_time": {
+        "name": "Sonde 1 Temps de Cuisson Restant"
       },
-      "cooking_mode": {
-        "name": "Mode de Cuisson"
+      "probe_1_cooking_mode": {
+        "name": "Sonde 1 Mode de Cuisson"
       },
-      "cooking_state": {
-        "name": "État de Cuisson",
+      "probe_1_cooking_state": {
+        "name": "Sonde 1 État de Cuisson",
+        "state": {
+          "cooking": "Cuisson",
+          "charged": "Chargé",
+          "charge": "En Charge",
+          "idle": "Inactif",
+          "standby": "En Attente"
+        }
+      },
+      "probe_2_target_temp": {
+        "name": "Sonde 2 Température Cible"
+      },
+      "probe_2_total_cook_time": {
+        "name": "Sonde 2 Temps Total de Cuisson"
+      },
+      "probe_2_current_cook_time": {
+        "name": "Sonde 2 Temps de Cuisson Actuel"
+      },
+      "probe_2_remaining_cook_time": {
+        "name": "Sonde 2 Temps de Cuisson Restant"
+      },
+      "probe_2_cooking_mode": {
+        "name": "Sonde 2 Mode de Cuisson"
+      },
+      "probe_2_cooking_state": {
+        "name": "Sonde 2 État de Cuisson",
+        "state": {
+          "cooking": "Cuisson",
+          "charged": "Chargé",
+          "charge": "En Charge",
+          "idle": "Inactif",
+          "standby": "En Attente"
+        }
+      },
+      "probe_3_target_temp": {
+        "name": "Sonde 3 Température Cible"
+      },
+      "probe_3_total_cook_time": {
+        "name": "Sonde 3 Temps Total de Cuisson"
+      },
+      "probe_3_current_cook_time": {
+        "name": "Sonde 3 Temps de Cuisson Actuel"
+      },
+      "probe_3_remaining_cook_time": {
+        "name": "Sonde 3 Temps de Cuisson Restant"
+      },
+      "probe_3_cooking_mode": {
+        "name": "Sonde 3 Mode de Cuisson"
+      },
+      "probe_3_cooking_state": {
+        "name": "Sonde 3 État de Cuisson",
+        "state": {
+          "cooking": "Cuisson",
+          "charged": "Chargé",
+          "charge": "En Charge",
+          "idle": "Inactif",
+          "standby": "En Attente"
+        }
+      },
+      "probe_4_target_temp": {
+        "name": "Sonde 4 Température Cible"
+      },
+      "probe_4_total_cook_time": {
+        "name": "Sonde 4 Temps Total de Cuisson"
+      },
+      "probe_4_current_cook_time": {
+        "name": "Sonde 4 Temps de Cuisson Actuel"
+      },
+      "probe_4_remaining_cook_time": {
+        "name": "Sonde 4 Temps de Cuisson Restant"
+      },
+      "probe_4_cooking_mode": {
+        "name": "Sonde 4 Mode de Cuisson"
+      },
+      "probe_4_cooking_state": {
+        "name": "Sonde 4 État de Cuisson",
         "state": {
           "cooking": "Cuisson",
           "charged": "Chargé",

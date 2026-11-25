@@ -9,6 +9,7 @@ from datetime import timedelta
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import device_registry, entity_registry
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .const import DOMAIN, CONF_REGION
@@ -18,8 +19,63 @@ _LOGGER = logging.getLogger(__name__)
 
 PLATFORMS = [Platform.SENSOR, Platform.CLIMATE]
 
+_LEGACY_COOK_KEYS = (
+    "target_temp",
+    "total_cook_time",
+    "current_cook_time",
+    "remaining_cook_time",
+    "cooking_mode",
+    "cooking_state",
+)
+_LEGACY_ENVIRONMENT_KEYS = {"ambient_temp", *(f"area_{area}" for area in range(1, 6))}
+
+
+def _adopt_probe_one_sensors(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    """Adopt existing cook sensors and remove obsolete device-wide area sensors."""
+    registry = entity_registry.async_get(hass)
+    devices = device_registry.async_get(hass)
+    updates = []
+    obsolete = []
+    for entity in entity_registry.async_entries_for_config_entry(registry, entry.entry_id):
+        if entity.domain != "sensor" or entity.platform != DOMAIN:
+            continue
+        if entity.device_id is not None:
+            device = devices.async_get(entity.device_id)
+            if device is not None and any(
+                entity.unique_id == f"{identifier}_{key}"
+                for domain, identifier in device.identifiers
+                if domain == DOMAIN
+                for key in _LEGACY_ENVIRONMENT_KEYS
+            ):
+                obsolete.append(entity.entity_id)
+                continue
+        for key in _LEGACY_COOK_KEYS:
+            suffix = f"_{key}"
+            if not entity.unique_id.endswith(suffix):
+                continue
+            identifier = entity.unique_id.removesuffix(suffix)
+            _, separator, slot = identifier.rpartition("_probe_")
+            if separator and slot.isdecimal():
+                break
+            new_id = f"{identifier}_probe_1{suffix}"
+            if registry.async_get_entity_id("sensor", DOMAIN, new_id) is not None:
+                _LOGGER.error("ThermoMaven found conflicting probe 1 registry entries")
+                return False
+            updates.append((entity.entity_id, new_id))
+            break
+
+    for entity_id, unique_id in updates:
+        registry.async_update_entity(entity_id, new_unique_id=unique_id)
+    for entity_id in obsolete:
+        registry.async_remove(entity_id)
+    return True
+
+
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up ThermoMaven from a config entry."""
+    if not _adopt_probe_one_sensors(hass, entry):
+        return False
+
     email = entry.data["email"]
     password = entry.data["password"]
     app_key = entry.data.get("app_key", "bcd4596f1bb8419a92669c8017bf25e8")
