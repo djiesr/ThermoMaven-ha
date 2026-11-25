@@ -17,7 +17,6 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
-from homeassistant.helpers import entity_registry
 
 from .const import DOMAIN, DEVICE_MODELS
 
@@ -43,31 +42,6 @@ async def async_setup_entry(
     
     _LOGGER.debug("✅ Coordinator has %d device(s), proceeding with sensor setup", 
                  len(coordinator.data.get("devices", [])))
-    
-    # Get entity registry
-    entity_registry_instance = entity_registry.async_get(hass)
-    
-    # CRITIQUE: Sauvegarder les noms personnalisés avant suppression
-    custom_names = {}
-    existing_entities_to_remove = [
-        entity_id
-        for entity_id, entity in entity_registry_instance.entities.items()
-        if entity.platform == DOMAIN and entity.config_entry_id == entry.entry_id
-    ]
-    
-    if existing_entities_to_remove:
-        _LOGGER.debug("💾 Saving custom names before removing %d old entities", len(existing_entities_to_remove))
-        for entity_id in existing_entities_to_remove:
-            entity = entity_registry_instance.entities.get(entity_id)
-            if entity and entity.name:
-                custom_names[entity_id] = entity.name
-                _LOGGER.debug("Saved custom name: %s -> %s", entity_id, entity.name)
-        
-        _LOGGER.debug("🗑️ Removing %d old entities to force recreation", len(existing_entities_to_remove))
-        for entity_id in existing_entities_to_remove:
-            entity_registry_instance.async_remove(entity_id)
-        # Attendre que la suppression soit effective
-        await asyncio.sleep(0.5)
     
     entities_to_add = []
     
@@ -126,24 +100,18 @@ async def async_setup_entry(
                         coordinator, device, probe_num, entry.entry_id
                     )
                 )
-            entities_to_add.append(
-                ThermoMavenTargetTemperatureSensor(coordinator, device, entry.entry_id)
-            )
-            entities_to_add.append(
-                ThermoMavenTotalCookTimeSensor(coordinator, device, entry.entry_id)
-            )
-            entities_to_add.append(
-                ThermoMavenCurrentCookTimeSensor(coordinator, device, entry.entry_id)
-            )
-            entities_to_add.append(
-                ThermoMavenRemainingCookTimeSensor(coordinator, device, entry.entry_id)
-            )
-            entities_to_add.append(
-                ThermoMavenCookingModeSensor(coordinator, device, entry.entry_id)
-            )
-            entities_to_add.append(
-                ThermoMavenCookingStateSensor(coordinator, device, entry.entry_id)
-            )
+            for probe_num in range(1, num_probes + 1):
+                for sensor_class in (
+                    ThermoMavenTargetTemperatureSensor,
+                    ThermoMavenTotalCookTimeSensor,
+                    ThermoMavenCurrentCookTimeSensor,
+                    ThermoMavenRemainingCookTimeSensor,
+                    ThermoMavenCookingModeSensor,
+                    ThermoMavenCookingStateSensor,
+                ):
+                    entities_to_add.append(
+                        sensor_class(coordinator, device, probe_num, entry.entry_id)
+                    )
             entities_to_add.append(
                 ThermoMavenWiFiRSSISensor(coordinator, device, entry.entry_id)
             )
@@ -155,23 +123,7 @@ async def async_setup_entry(
         _LOGGER.debug("➕ Adding %d new entities", len(entities_to_add))
         async_add_entities(entities_to_add, update_before_add=True)
         
-        # Restaurer les noms personnalisés si disponibles
-        if custom_names:
-            _LOGGER.debug("🔄 Restoring %d custom names", len(custom_names))
-            await asyncio.sleep(1)  # Attendre que les entités soient créées
-            
-            for entity in entities_to_add:
-                entity_id = f"sensor.{entity.entity_id}"
-                if entity_id in custom_names:
-                    try:
-                        entity_registry_instance.async_update_entity(
-                            entity_id, 
-                            name=custom_names[entity_id]
-                        )
-                        _LOGGER.debug("Restored custom name: %s -> %s", entity_id, custom_names[entity_id])
-                    except Exception as e:
-                        _LOGGER.warning("Failed to restore custom name for %s: %s", entity_id, e)
-    
+
     # Register callback for future device additions
     coordinator.async_add_listener(lambda: hass.async_create_task(add_devices()))
     
@@ -606,18 +558,19 @@ class ThermoMavenTargetTemperatureSensor(CoordinatorEntity, SensorEntity):
     _attr_state_class = SensorStateClass.MEASUREMENT
     _attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS
 
-    def __init__(self, coordinator, device, entry_id):
+    def __init__(self, coordinator, device, probe_num, entry_id):
         """Initialize the sensor."""
         super().__init__(coordinator)
+        self._probe_num = probe_num
         self._device = device
         self._device_id = device.get("deviceId")
         self._device_name = device.get("deviceName", "ThermoMaven")
         self._device_model = device.get("deviceModel", "Unknown")
         
         self._attr_has_entity_name = True
-        self._attr_name = "Target Temperature"
-        self._attr_translation_key = "target_temp"
-        self._attr_unique_id = f"{self._device_id}_target_temp"
+        self._attr_name = f"Probe {probe_num} Target Temperature"
+        self._attr_translation_key = f"probe_{probe_num}_target_temp"
+        self._attr_unique_id = f"{self._device_id}_probe_{probe_num}_target_temp"
         
         # Use helper function to create device info with diagnostic data
         self._attr_device_info = _create_device_info(device)
@@ -634,13 +587,15 @@ class ThermoMavenTargetTemperatureSensor(CoordinatorEntity, SensorEntity):
                     if cmd_data.get("globalStatus") != "online":
                         return None
                     
-                    probes = cmd_data.get("probes", [])
-                    if probes:
-                        probe_data = probes[0]
-                        set_params = probe_data.get("setParams", [])
-                        if set_params:
+                    probes = cmd_data.get("probes")
+                    if isinstance(probes, list) and self._probe_num <= len(probes):
+                        probe_data = probes[self._probe_num - 1]
+                        if not isinstance(probe_data, dict):
+                            return None
+                        set_params = probe_data.get("setParams")
+                        if isinstance(set_params, list) and set_params and isinstance(set_params[0], dict):
                             temp_raw = set_params[0].get("setTemperature")
-                            if temp_raw is not None:
+                            if isinstance(temp_raw, (int, float)):
                                 temp_f = temp_raw / 10.0
                                 temp_c = (temp_f - 32) * 5/9
                                 return round(temp_c, 1)
@@ -665,18 +620,19 @@ class ThermoMavenTotalCookTimeSensor(CoordinatorEntity, SensorEntity):
     _attr_state_class = SensorStateClass.TOTAL
     _attr_native_unit_of_measurement = UnitOfTime.SECONDS
 
-    def __init__(self, coordinator, device, entry_id):
+    def __init__(self, coordinator, device, probe_num, entry_id):
         """Initialize the sensor."""
         super().__init__(coordinator)
+        self._probe_num = probe_num
         self._device = device
         self._device_id = device.get("deviceId")
         self._device_name = device.get("deviceName", "ThermoMaven")
         self._device_model = device.get("deviceModel", "Unknown")
         
         self._attr_has_entity_name = True
-        self._attr_name = "Total Cook Time"
-        self._attr_translation_key = "total_cook_time"
-        self._attr_unique_id = f"{self._device_id}_total_cook_time"
+        self._attr_name = f"Probe {probe_num} Total Cook Time"
+        self._attr_translation_key = f"probe_{probe_num}_total_cook_time"
+        self._attr_unique_id = f"{self._device_id}_probe_{probe_num}_total_cook_time"
         
         # Use helper function to create device info with diagnostic data
         self._attr_device_info = _create_device_info(device)
@@ -693,9 +649,11 @@ class ThermoMavenTotalCookTimeSensor(CoordinatorEntity, SensorEntity):
                     if cmd_data.get("globalStatus") != "online":
                         return None
                     
-                    probes = cmd_data.get("probes", [])
-                    if probes:
-                        probe_data = probes[0]
+                    probes = cmd_data.get("probes")
+                    if isinstance(probes, list) and self._probe_num <= len(probes):
+                        probe_data = probes[self._probe_num - 1]
+                        if not isinstance(probe_data, dict):
+                            return None
                         return probe_data.get("totalCookSec")
         return None
 
@@ -718,18 +676,19 @@ class ThermoMavenCurrentCookTimeSensor(CoordinatorEntity, SensorEntity):
     _attr_state_class = SensorStateClass.MEASUREMENT
     _attr_native_unit_of_measurement = UnitOfTime.SECONDS
 
-    def __init__(self, coordinator, device, entry_id):
+    def __init__(self, coordinator, device, probe_num, entry_id):
         """Initialize the sensor."""
         super().__init__(coordinator)
+        self._probe_num = probe_num
         self._device = device
         self._device_id = device.get("deviceId")
         self._device_name = device.get("deviceName", "ThermoMaven")
         self._device_model = device.get("deviceModel", "Unknown")
         
         self._attr_has_entity_name = True
-        self._attr_name = "Current Cook Time"
-        self._attr_translation_key = "current_cook_time"
-        self._attr_unique_id = f"{self._device_id}_current_cook_time"
+        self._attr_name = f"Probe {probe_num} Current Cook Time"
+        self._attr_translation_key = f"probe_{probe_num}_current_cook_time"
+        self._attr_unique_id = f"{self._device_id}_probe_{probe_num}_current_cook_time"
         
         # Use helper function to create device info with diagnostic data
         self._attr_device_info = _create_device_info(device)
@@ -746,9 +705,11 @@ class ThermoMavenCurrentCookTimeSensor(CoordinatorEntity, SensorEntity):
                     if cmd_data.get("globalStatus") != "online":
                         return None
                     
-                    probes = cmd_data.get("probes", [])
-                    if probes:
-                        probe_data = probes[0]
+                    probes = cmd_data.get("probes")
+                    if isinstance(probes, list) and self._probe_num <= len(probes):
+                        probe_data = probes[self._probe_num - 1]
+                        if not isinstance(probe_data, dict):
+                            return None
                         return probe_data.get("curCookSec")
         return None
 
@@ -771,18 +732,19 @@ class ThermoMavenRemainingCookTimeSensor(CoordinatorEntity, SensorEntity):
     _attr_state_class = SensorStateClass.MEASUREMENT
     _attr_native_unit_of_measurement = UnitOfTime.SECONDS
 
-    def __init__(self, coordinator, device, entry_id):
+    def __init__(self, coordinator, device, probe_num, entry_id):
         """Initialize the sensor."""
         super().__init__(coordinator)
+        self._probe_num = probe_num
         self._device = device
         self._device_id = device.get("deviceId")
         self._device_name = device.get("deviceName", "ThermoMaven")
         self._device_model = device.get("deviceModel", "Unknown")
         
         self._attr_has_entity_name = True
-        self._attr_name = "Remaining Cook Time"
-        self._attr_translation_key = "remaining_cook_time"
-        self._attr_unique_id = f"{self._device_id}_remaining_cook_time"
+        self._attr_name = f"Probe {probe_num} Remaining Cook Time"
+        self._attr_translation_key = f"probe_{probe_num}_remaining_cook_time"
+        self._attr_unique_id = f"{self._device_id}_probe_{probe_num}_remaining_cook_time"
         
         # Use helper function to create device info with diagnostic data
         self._attr_device_info = _create_device_info(device)
@@ -799,9 +761,11 @@ class ThermoMavenRemainingCookTimeSensor(CoordinatorEntity, SensorEntity):
                     if cmd_data.get("globalStatus") != "online":
                         return None
                     
-                    probes = cmd_data.get("probes", [])
-                    if probes:
-                        probe_data = probes[0]
+                    probes = cmd_data.get("probes")
+                    if isinstance(probes, list) and self._probe_num <= len(probes):
+                        probe_data = probes[self._probe_num - 1]
+                        if not isinstance(probe_data, dict):
+                            return None
                         return probe_data.get("curRemainedSec")
         return None
 
@@ -820,18 +784,19 @@ class ThermoMavenRemainingCookTimeSensor(CoordinatorEntity, SensorEntity):
 class ThermoMavenCookingModeSensor(CoordinatorEntity, SensorEntity):
     """Representation of a ThermoMaven cooking mode sensor."""
 
-    def __init__(self, coordinator, device, entry_id):
+    def __init__(self, coordinator, device, probe_num, entry_id):
         """Initialize the sensor."""
         super().__init__(coordinator)
+        self._probe_num = probe_num
         self._device = device
         self._device_id = device.get("deviceId")
         self._device_name = device.get("deviceName", "ThermoMaven")
         self._device_model = device.get("deviceModel", "Unknown")
         
         self._attr_has_entity_name = True
-        self._attr_name = "Cooking Mode"
-        self._attr_translation_key = "cooking_mode"
-        self._attr_unique_id = f"{self._device_id}_cooking_mode"
+        self._attr_name = f"Probe {probe_num} Cooking Mode"
+        self._attr_translation_key = f"probe_{probe_num}_cooking_mode"
+        self._attr_unique_id = f"{self._device_id}_probe_{probe_num}_cooking_mode"
         
         # Use helper function to create device info with diagnostic data
         self._attr_device_info = _create_device_info(device)
@@ -848,9 +813,11 @@ class ThermoMavenCookingModeSensor(CoordinatorEntity, SensorEntity):
                     if cmd_data.get("globalStatus") != "online":
                         return None
                     
-                    probes = cmd_data.get("probes", [])
-                    if probes:
-                        probe_data = probes[0]
+                    probes = cmd_data.get("probes")
+                    if isinstance(probes, list) and self._probe_num <= len(probes):
+                        probe_data = probes[self._probe_num - 1]
+                        if not isinstance(probe_data, dict):
+                            return None
                         return probe_data.get("cookingMode")
         return None
 
@@ -869,18 +836,19 @@ class ThermoMavenCookingModeSensor(CoordinatorEntity, SensorEntity):
 class ThermoMavenCookingStateSensor(CoordinatorEntity, SensorEntity):
     """Representation of a ThermoMaven cooking state sensor."""
 
-    def __init__(self, coordinator, device, entry_id):
+    def __init__(self, coordinator, device, probe_num, entry_id):
         """Initialize the sensor."""
         super().__init__(coordinator)
+        self._probe_num = probe_num
         self._device = device
         self._device_id = device.get("deviceId")
         self._device_name = device.get("deviceName", "ThermoMaven")
         self._device_model = device.get("deviceModel", "Unknown")
         
         self._attr_has_entity_name = True
-        self._attr_name = "Cooking State"
-        self._attr_translation_key = "cooking_state"
-        self._attr_unique_id = f"{self._device_id}_cooking_state"
+        self._attr_name = f"Probe {probe_num} Cooking State"
+        self._attr_translation_key = f"probe_{probe_num}_cooking_state"
+        self._attr_unique_id = f"{self._device_id}_probe_{probe_num}_cooking_state"
         self._attr_icon = "mdi:chef-hat"
         
         # Use helper function to create device info with diagnostic data
@@ -898,9 +866,11 @@ class ThermoMavenCookingStateSensor(CoordinatorEntity, SensorEntity):
                     if cmd_data.get("globalStatus") != "online":
                         return None
                     
-                    probes = cmd_data.get("probes", [])
-                    if probes:
-                        probe_data = probes[0]
+                    probes = cmd_data.get("probes")
+                    if isinstance(probes, list) and self._probe_num <= len(probes):
+                        probe_data = probes[self._probe_num - 1]
+                        if not isinstance(probe_data, dict):
+                            return None
                         cooking_state = probe_data.get("cookingState")
                         # Return raw value, translation is handled by Home Assistant
                         return cooking_state

@@ -121,23 +121,98 @@
       "probe_4_ambient_temp": {
         "name": "Sonde 4 Umgebungstemperatur"
       },
-      "target_temp": {
-        "name": "Zieltemperatur"
+      "probe_1_target_temp": {
+        "name": "Sonde 1 Zieltemperatur"
       },
-      "total_cook_time": {
-        "name": "Gesamte Garzeit"
+      "probe_1_total_cook_time": {
+        "name": "Sonde 1 Gesamte Garzeit"
       },
-      "current_cook_time": {
-        "name": "Aktuelle Garzeit"
+      "probe_1_current_cook_time": {
+        "name": "Sonde 1 Aktuelle Garzeit"
       },
-      "remaining_cook_time": {
-        "name": "Verbleibende Garzeit"
+      "probe_1_remaining_cook_time": {
+        "name": "Sonde 1 Verbleibende Garzeit"
       },
-      "cooking_mode": {
-        "name": "Garmodus"
+      "probe_1_cooking_mode": {
+        "name": "Sonde 1 Garmodus"
       },
-      "cooking_state": {
-        "name": "Garzustand",
+      "probe_1_cooking_state": {
+        "name": "Sonde 1 Garzustand",
+        "state": {
+          "cooking": "Garen",
+          "charged": "Geladen",
+          "charge": "Laden",
+          "idle": "Inaktiv",
+          "standby": "Bereitschaft"
+        }
+      },
+      "probe_2_target_temp": {
+        "name": "Sonde 2 Zieltemperatur"
+      },
+      "probe_2_total_cook_time": {
+        "name": "Sonde 2 Gesamte Garzeit"
+      },
+      "probe_2_current_cook_time": {
+        "name": "Sonde 2 Aktuelle Garzeit"
+      },
+      "probe_2_remaining_cook_time": {
+        "name": "Sonde 2 Verbleibende Garzeit"
+      },
+      "probe_2_cooking_mode": {
+        "name": "Sonde 2 Garmodus"
+      },
+      "probe_2_cooking_state": {
+        "name": "Sonde 2 Garzustand",
+        "state": {
+          "cooking": "Garen",
+          "charged": "Geladen",
+          "charge": "Laden",
+          "idle": "Inaktiv",
+          "standby": "Bereitschaft"
+        }
+      },
+      "probe_3_target_temp": {
+        "name": "Sonde 3 Zieltemperatur"
+      },
+      "probe_3_total_cook_time": {
+        "name": "Sonde 3 Gesamte Garzeit"
+      },
+      "probe_3_current_cook_time": {
+        "name": "Sonde 3 Aktuelle Garzeit"
+      },
+      "probe_3_remaining_cook_time": {
+        "name": "Sonde 3 Verbleibende Garzeit"
+      },
+      "probe_3_cooking_mode": {
+        "name": "Sonde 3 Garmodus"
+      },
+      "probe_3_cooking_state": {
+        "name": "Sonde 3 Garzustand",
+        "state": {
+          "cooking": "Garen",
+          "charged": "Geladen",
+          "charge": "Laden",
+          "idle": "Inaktiv",
+          "standby": "Bereitschaft"
+        }
+      },
+      "probe_4_target_temp": {
+        "name": "Sonde 4 Zieltemperatur"
+      },
+      "probe_4_total_cook_time": {
+        "name": "Sonde 4 Gesamte Garzeit"
+      },
+      "probe_4_current_cook_time": {
+        "name": "Sonde 4 Aktuelle Garzeit"
+      },
+      "probe_4_remaining_cook_time": {
+        "name": "Sonde 4 Verbleibende Garzeit"
+      },
+      "probe_4_cooking_mode": {
+        "name": "Sonde 4 Garmodus"
+      },
+      "probe_4_cooking_state": {
+        "name": "Sonde 4 Garzustand",
         "state": {
           "cooking": "Garen",
           "charged": "Geladen",

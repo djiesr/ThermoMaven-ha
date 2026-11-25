@@ -121,23 +121,98 @@
       "probe_4_ambient_temp": {
         "name": "Sonda 4 Temperatura Ambiente"
       },
-      "target_temp": {
-        "name": "Temperatura Objetivo"
+      "probe_1_target_temp": {
+        "name": "Sonda 1 Temperatura Objetivo"
       },
-      "total_cook_time": {
-        "name": "Tiempo Total de Cocción"
+      "probe_1_total_cook_time": {
+        "name": "Sonda 1 Tiempo Total de Cocción"
       },
-      "current_cook_time": {
-        "name": "Tiempo Actual de Cocción"
+      "probe_1_current_cook_time": {
+        "name": "Sonda 1 Tiempo Actual de Cocción"
       },
-      "remaining_cook_time": {
-        "name": "Tiempo Restante de Cocción"
+      "probe_1_remaining_cook_time": {
+        "name": "Sonda 1 Tiempo Restante de Cocción"
       },
-      "cooking_mode": {
-        "name": "Modo de Cocción"
+      "probe_1_cooking_mode": {
+        "name": "Sonda 1 Modo de Cocción"
       },
-      "cooking_state": {
-        "name": "Estado de Cocción",
+      "probe_1_cooking_state": {
+        "name": "Sonda 1 Estado de Cocción",
+        "state": {
+          "cooking": "Cocinando",
+          "charged": "Cargado",
+          "charge": "Cargando",
+          "idle": "Inactivo",
+          "standby": "En Espera"
+        }
+      },
+      "probe_2_target_temp": {
+        "name": "Sonda 2 Temperatura Objetivo"
+      },
+      "probe_2_total_cook_time": {
+        "name": "Sonda 2 Tiempo Total de Cocción"
+      },
+      "probe_2_current_cook_time": {
+        "name": "Sonda 2 Tiempo Actual de Cocción"
+      },
+      "probe_2_remaining_cook_time": {
+        "name": "Sonda 2 Tiempo Restante de Cocción"
+      },
+      "probe_2_cooking_mode": {
+        "name": "Sonda 2 Modo de Cocción"
+      },
+      "probe_2_cooking_state": {
+        "name": "Sonda 2 Estado de Cocción",
+        "state": {
+          "cooking": "Cocinando",
+          "charged": "Cargado",
+          "charge": "Cargando",
+          "idle": "Inactivo",
+          "standby": "En Espera"
+        }
+      },
+      "probe_3_target_temp": {
+        "name": "Sonda 3 Temperatura Objetivo"
+      },
+      "probe_3_total_cook_time": {
+        "name": "Sonda 3 Tiempo Total de Cocción"
+      },
+      "probe_3_current_cook_time": {
+        "name": "Sonda 3 Tiempo Actual de Cocción"
+      },
+      "probe_3_remaining_cook_time": {
+        "name": "Sonda 3 Tiempo Restante de Cocción"
+      },
+      "probe_3_cooking_mode": {
+        "name": "Sonda 3 Modo de Cocción"
+      },
+      "probe_3_cooking_state": {
+        "name": "Sonda 3 Estado de Cocción",
+        "state": {
+          "cooking": "Cocinando",
+          "charged": "Cargado",
+          "charge": "Cargando",
+          "idle": "Inactivo",
+          "standby": "En Espera"
+        }
+      },
+      "probe_4_target_temp": {
+        "name": "Sonda 4 Temperatura Objetivo"
+      },
+      "probe_4_total_cook_time": {
+        "name": "Sonda 4 Tiempo Total de Cocción"
+      },
+      "probe_4_current_cook_time": {
+        "name": "Sonda 4 Tiempo Actual de Cocción"
+      },
+      "probe_4_remaining_cook_time": {
+        "name": "Sonda 4 Tiempo Restante de Cocción"
+      },
+      "probe_4_cooking_mode": {
+        "name": "Sonda 4 Modo de Cocción"
+      },
+      "probe_4_cooking_state": {
+        "name": "Sonda 4 Estado de Cocción",
         "state": {
           "cooking": "Cocinando",
           "charged": "Cargado",
