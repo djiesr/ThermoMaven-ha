@@ -106,7 +106,7 @@ class ThermoMavenClimate(CoordinatorEntity, ClimateEntity):
     """Representation of a ThermoMaven Climate entity."""
 
     _attr_has_entity_name = True
-    _attr_temperature_unit = UnitOfTemperature.FAHRENHEIT
+    _attr_native_temperature_unit = UnitOfTemperature.FAHRENHEIT
     _attr_hvac_modes = [HVACMode.OFF, HVACMode.HEAT, HVACMode.AUTO]
     _attr_supported_features = (
         ClimateEntityFeature.TARGET_TEMPERATURE |
@@ -151,7 +151,7 @@ class ThermoMavenClimate(CoordinatorEntity, ClimateEntity):
         _LOGGER.debug("Created climate entity: %s (probe %d)", device_name, probe_num)
 
     @property
-    def current_temperature(self) -> float | None:
+    def native_current_temperature(self) -> float | None:
         """Return the current temperature."""
         if not self.coordinator.data:
             return None
@@ -178,7 +178,7 @@ class ThermoMavenClimate(CoordinatorEntity, ClimateEntity):
         return None
 
     @property
-    def target_temperature(self) -> float | None:
+    def native_target_temperature(self) -> float | None:
         """Return the target temperature."""
         # Si on a une température override locale (récemment définie), l'utiliser
         if self._target_temperature_override is not None:
@@ -216,6 +216,12 @@ class ThermoMavenClimate(CoordinatorEntity, ClimateEntity):
                             return temp_from_device
         
         return None
+
+    if not hasattr(ClimateEntity, "native_temperature_unit"):
+        # Older Home Assistant versions read the original property names.
+        _attr_temperature_unit = _attr_native_temperature_unit
+        current_temperature = native_current_temperature
+        target_temperature = native_target_temperature
 
     @property
     def hvac_mode(self) -> HVACMode:
@@ -312,7 +318,7 @@ class ThermoMavenClimate(CoordinatorEntity, ClimateEntity):
         # Map HVAC mode to cooking action
         if hvac_mode == HVACMode.HEAT:
             # Start cooking avec la température cible actuelle
-            target_temp = self.target_temperature or 165
+            target_temp = self.native_target_temperature or 165
             self._target_temperature_override = target_temp  # Sauvegarder l'override
             self.async_write_ha_state()
             
